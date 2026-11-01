@@ -154,48 +154,24 @@ export class GardenScene extends Phaser.Scene {
       this.tweens.add({ targets: stone, alpha: 0.72, duration: 1700 + (x % 4) * 120, yoyo: true, repeat: -1 });
     }
 
-    // Warm little lamps along the main path.
+    // Pixel-art props replace the temporary vector drawings.
     for (const [x, y] of [[270, 300], [370, 372], [270, 444], [370, 500]]) {
-      const post = this.add.container(x, y);
-      const g = this.add.graphics();
-      g.fillStyle(0x68452d); g.fillRect(-2, -19, 4, 20);
-      g.fillStyle(0x8c603b); g.fillRect(-5, -21, 10, 3);
-      g.fillStyle(0xffd77a); g.fillRoundedRect(-4, -31, 8, 10, 2);
-      g.lineStyle(1, 0xffedb2, 0.9); g.strokeRoundedRect(-4, -31, 8, 10, 2);
-      post.add(g).setDepth(y);
-      const glow = this.add.circle(x, y - 26, 15, 0xffd77a, 0.12).setDepth(y - 1);
-      this.tweens.add({ targets: glow, alpha: 0.23, scale: 1.35, duration: 1300, yoyo: true, repeat: -1 });
+      const lamp = this.add.image(x, y, 'path-lamp').setOrigin(0.5, 1).setDepth(y);
+      const glow = this.add.circle(x, y - 20, 12, 0xffd77a, 0.1).setDepth(y - 1);
+      this.tweens.add({ targets: glow, alpha: 0.2, scale: 1.35, duration: 1500, yoyo: true, repeat: -1 });
+      this.tweens.add({ targets: lamp, y: y - 1, duration: 1200, yoyo: true, repeat: -1 });
     }
 
-    // Flower clusters add colour around the lawn, with gentle swaying stems.
     const flowerSpots = [[96, 250], [142, 290], [390, 250], [430, 350], [120, 430], [470, 430], [540, 370]];
-    const flowerColors = [0xff8eaa, 0xffd66e, 0xf5f0df, 0xb99af5];
     flowerSpots.forEach(([x, y], i) => {
-      const bloom = this.add.container(x, y).setDepth(y);
-      const g = this.add.graphics();
-      const color = flowerColors[i % flowerColors.length];
-      g.fillStyle(0x397d3b); g.fillRect(-1, -2, 2, 9);
-      g.fillStyle(color); g.fillCircle(0, -5, 3); g.fillCircle(-3, -7, 2); g.fillCircle(3, -7, 2);
-      g.fillStyle(0xffe7a0); g.fillCircle(0, -6, 1.4);
-      bloom.add(g);
-      this.tweens.add({ targets: bloom, angle: i % 2 ? 5 : -5, duration: 1100 + i * 90, yoyo: true, repeat: -1 });
+      const flowers = this.add.image(x, y, 'flower-cluster').setOrigin(0.5, 1).setDepth(y);
+      this.tweens.add({ targets: flowers, angle: i % 2 ? 2 : -2, duration: 1450 + i * 80, yoyo: true, repeat: -1 });
     });
 
-    // A small resident goat in the meadow (not just an empty pen).
-    const goat = this.add.container(505, 316).setDepth(316);
-    const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.14); g.fillEllipse(0, 1, 34, 8);
-    g.fillStyle(0xf4eee0); g.fillEllipse(-1, -13, 31, 19);
-    g.fillStyle(0xe4d9c6); g.fillEllipse(-1, -7, 18, 5);
-    g.fillStyle(0xf4eee0); g.fillEllipse(13, -23, 14, 15);
-    g.fillStyle(0xf0c6b8); g.fillEllipse(18, -21, 5, 8);
-    g.fillStyle(0x6a4b38); g.fillCircle(16, -26, 1.5);
-    g.lineStyle(2, 0x9a7954); g.beginPath(); g.moveTo(9, -29); g.lineTo(7, -36); g.lineTo(12, -32); g.strokePath();
-    g.beginPath(); g.moveTo(17, -29); g.lineTo(20, -35); g.lineTo(20, -30); g.strokePath();
-    g.fillStyle(0x8c6848); g.fillRect(-11, -7, 3, 9); g.fillRect(5, -7, 3, 9);
-    goat.add(g);
-    this.tweens.add({ targets: goat, x: 518, duration: 2600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    this.tweens.add({ targets: goat, y: 313, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    // Pixel-art resident goat with a subtle idle bob.
+    const goat = this.add.image(505, 316, 'goat-pixel').setOrigin(0.5, 1).setDepth(316);
+    this.tweens.add({ targets: goat, x: 518, duration: 3000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: goat, y: 313, duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     // Fireflies near the pond at dusk-like warm light.
     for (let i = 0; i < 9; i++) {
@@ -204,11 +180,10 @@ export class GardenScene extends Phaser.Scene {
       this.tweens.add({ targets: bug, alpha: 0.08, y: y - 8, duration: 850 + i * 130, yoyo: true, repeat: -1, delay: i * 110 });
     }
 
-    // A bench beside the flower border.
-    const bench = this.add.graphics().setDepth(242);
-    bench.fillStyle(0x69472e); bench.fillRect(405, 235, 34, 5);
-    bench.fillStyle(0xb47b4d); bench.fillRect(403, 228, 38, 7);
-    bench.fillStyle(0x805333); bench.fillRect(408, 233, 3, 12); bench.fillRect(434, 233, 3, 12);
+    // Detailed wooden bench sprite beside the flower border.
+    this.add.image(422, 242, 'bench-pixel').setOrigin(0.5, 1).setDepth(242);
+    this.add.image(465, 267, 'planter').setOrigin(0.5, 1).setDepth(267);
+    this.add.image(390, 267, 'planter').setOrigin(0.5, 1).setDepth(267);
   }
 
   // ---------- every frame ----------
