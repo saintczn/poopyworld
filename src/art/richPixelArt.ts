@@ -109,7 +109,7 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
   });
   texture(scene,'bush',24,18,c=>{
     leafCluster(c,8,11,7,6,9); leafCluster(c,16,10,7,7,19); leafCluster(c,12,6,7,5,29);
-    for(const [x,y,col] of [[5,8,'#e78bc1'],[17,6,'#f3d16e'],[13,12,'#f0a0cb']]) {
+    for(const [x,y,col] of [[5,8,'#e78bc1'],[17,6,'#f3d16e'],[13,12,'#f0a0cb']] as [number,number,string][]) {
       rect(c,x,y,2,2,col); rect(c,x+1,y-1,1,1,'#fff0c6');
     }
   });
