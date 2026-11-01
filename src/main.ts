@@ -20,7 +20,10 @@ const game = new Phaser.Game({
 const start = document.getElementById('start')!;
 const hud = document.getElementById('hud')!;
 const button = document.getElementById('start-btn')!;
-if (window.matchMedia('(pointer: coarse)').matches) document.getElementById('mobile-note')!.hidden = false;
+const touchInteract = document.getElementById('touch-interact')!;
+const touchDirections = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-dir]'));
+const touchDevice = window.matchMedia('(pointer: coarse)').matches;
+touchInteract.hidden = !touchDevice;
 
 function begin() {
   start.hidden = true;
@@ -30,4 +33,36 @@ function begin() {
   game.canvas?.focus();
 }
 button.addEventListener('click', begin);
+
+const clearTouch = () => {
+  for (const direction of ['up', 'down', 'left', 'right']) game.registry.set(`touch-${direction}`, false);
+  touchDirections.forEach((el) => el.classList.remove('pressed'));
+};
+touchDirections.forEach((el) => {
+  const direction = el.dataset.dir!;
+  el.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    el.setPointerCapture(event.pointerId);
+    game.registry.set(`touch-${direction}`, true);
+    el.classList.add('pressed');
+  });
+  const release = (event: PointerEvent) => {
+    event.preventDefault();
+    game.registry.set(`touch-${direction}`, false);
+    el.classList.remove('pressed');
+  };
+  el.addEventListener('pointerup', release);
+  el.addEventListener('pointercancel', release);
+  el.addEventListener('lostpointercapture', () => {
+    game.registry.set(`touch-${direction}`, false);
+    el.classList.remove('pressed');
+  });
+});
+window.addEventListener('blur', clearTouch);
+touchInteract.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
+  game.registry.set('touch-interact', true);
+});
+touchInteract.addEventListener('pointerup', () => game.registry.set('touch-interact', false));
+touchInteract.addEventListener('pointercancel', () => game.registry.set('touch-interact', false));
 button.focus();
