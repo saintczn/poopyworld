@@ -17,49 +17,7 @@ const palette = {
 function rand(seed: number) {
   let n = seed >>> 0;
   return () => { n = (n * 1664525 + 1013904223) >>> 0; return n / 4294967296; };
-  // Additional hand-pixeled props: layered silhouettes, highlights and cast shadows.
-  texture(scene,'flower-cluster',32,30,c=>{
-    rect(c,3,26,26,2,'#285d2d');
-    const stem=(x:number,h:number)=>{rect(c,x,25-h,2,h,'#34743a');rect(c,x+1,25-h,1,h-2,'#75a84b');};
-    stem(8,12); stem(16,17); stem(24,11);
-    const bloom=(x:number,y:number,col:string)=>{
-      rect(c,x-3,y-1,7,4,col);rect(c,x-1,y-4,4,8,col);
-      rect(c,x-1,y-1,3,3,'#ffe39a');rect(c,x,y-2,1,1,'#fff2bd');
-    };
-    bloom(9,12,'#e98db3');bloom(17,7,'#f1ce6d');bloom(25,13,'#c4a0ed');
-    rect(c,5,22,4,2,'#76b84b');rect(c,19,20,5,2,'#76b84b');
-  });
-  texture(scene,'bench-pixel',48,28,c=>{
-    rect(c,5,23,38,3,'#38271f');rect(c,8,20,4,7,'#633d29');rect(c,36,20,4,7,'#633d29');
-    rect(c,4,12,40,8,'#75452d');rect(c,6,13,36,5,'#c1844e');
-    for(let x=9;x<42;x+=8){rect(c,x,13,1,5,'#70412b');rect(c,x+1,13,1,1,'#e0a96d');}
-    rect(c,3,7,42,6,'#633b29');rect(c,5,8,38,3,'#bd8050');
-    rect(c,7,5,34,2,'#e0a66b');rect(c,8,4,32,1,'#f0c18a');
-    rect(c,8,19,3,4,'#e2ae70');rect(c,37,19,3,4,'#e2ae70');
-  });
-  texture(scene,'path-lamp',16,30,c=>{
-    rect(c,7,13,3,16,'#563725');rect(c,6,26,5,3,'#a16a3d');
-    rect(c,4,5,9,10,'#50352a');rect(c,5,6,7,8,'#f4c96e');
-    rect(c,6,7,5,5,'#fff0b3');rect(c,3,4,11,2,'#c28a4f');
-    rect(c,5,15,8,2,'#70452e');rect(c,6,2,6,2,'#70452e');
-    rect(c,7,0,4,2,'#d5a05c');
-  });
-  texture(scene,'goat-pixel',36,32,c=>{
-    rect(c,5,27,25,3,'#315c2e');
-    rect(c,8,13,20,11,'#493b31');rect(c,7,11,21,11,'#f2ead9');
-    rect(c,22,7,10,11,'#f2ead9');rect(c,25,9,5,6,'#e6d8c4');
-    rect(c,29,12,2,2,'#4b3329');rect(c,23,4,2,6,'#9a7954');rect(c,29,4,2,6,'#9a7954');
-    rect(c,30,15,4,2,'#d99b8e');rect(c,12,22,3,7,'#684c38');rect(c,23,22,3,7,'#684c38');
-    rect(c,10,13,3,3,'#fffaf0');rect(c,17,12,3,2,'#fffaf0');
-    rect(c,7,16,3,4,'#d9c9b4');rect(c,18,20,4,2,'#d9c9b4');
-  });
-  texture(scene,'planter',20,18,c=>{
-    rect(c,3,8,14,8,'#a95839');rect(c,2,7,16,3,'#d58b55');
-    rect(c,5,10,10,4,'#87432e');rect(c,6,4,2,5,'#3f843b');rect(c,10,1,2,8,'#4c9843');rect(c,13,5,2,4,'#34753a');
-    rect(c,5,2,3,3,'#ed91b7');rect(c,9,0,4,4,'#f3d16e');rect(c,13,3,3,3,'#c49ae8');
-  });
 
-}
 function rect(c: Ctx, x: number, y: number, w: number, h: number, color: string) {
   c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
 }
@@ -209,4 +167,46 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
     rect(c,188,3,12,23,'#873322'); rect(c,186,1,16,4,'#d36b43');
     rect(c,24,27,4,47,'#332725'); rect(c,196,27,4,47,'#332725');
   });
+  // Additional hand-pixeled props: layered silhouettes, highlights and cast shadows.
+  texture(scene,'flower-cluster',32,30,c=>{
+    rect(c,3,26,26,2,'#285d2d');
+    const stem=(x:number,h:number)=>{rect(c,x,25-h,2,h,'#34743a');rect(c,x+1,25-h,1,h-2,'#75a84b');};
+    stem(8,12); stem(16,17); stem(24,11);
+    const bloom=(x:number,y:number,col:string)=>{
+      rect(c,x-3,y-1,7,4,col);rect(c,x-1,y-4,4,8,col);
+      rect(c,x-1,y-1,3,3,'#ffe39a');rect(c,x,y-2,1,1,'#fff2bd');
+    };
+    bloom(9,12,'#e98db3');bloom(17,7,'#f1ce6d');bloom(25,13,'#c4a0ed');
+    rect(c,5,22,4,2,'#76b84b');rect(c,19,20,5,2,'#76b84b');
+  });
+  texture(scene,'bench-pixel',48,28,c=>{
+    rect(c,5,23,38,3,'#38271f');rect(c,8,20,4,7,'#633d29');rect(c,36,20,4,7,'#633d29');
+    rect(c,4,12,40,8,'#75452d');rect(c,6,13,36,5,'#c1844e');
+    for(let x=9;x<42;x+=8){rect(c,x,13,1,5,'#70412b');rect(c,x+1,13,1,1,'#e0a96d');}
+    rect(c,3,7,42,6,'#633b29');rect(c,5,8,38,3,'#bd8050');
+    rect(c,7,5,34,2,'#e0a66b');rect(c,8,4,32,1,'#f0c18a');
+    rect(c,8,19,3,4,'#e2ae70');rect(c,37,19,3,4,'#e2ae70');
+  });
+  texture(scene,'path-lamp',16,30,c=>{
+    rect(c,7,13,3,16,'#563725');rect(c,6,26,5,3,'#a16a3d');
+    rect(c,4,5,9,10,'#50352a');rect(c,5,6,7,8,'#f4c96e');
+    rect(c,6,7,5,5,'#fff0b3');rect(c,3,4,11,2,'#c28a4f');
+    rect(c,5,15,8,2,'#70452e');rect(c,6,2,6,2,'#70452e');
+    rect(c,7,0,4,2,'#d5a05c');
+  });
+  texture(scene,'goat-pixel',36,32,c=>{
+    rect(c,5,27,25,3,'#315c2e');
+    rect(c,8,13,20,11,'#493b31');rect(c,7,11,21,11,'#f2ead9');
+    rect(c,22,7,10,11,'#f2ead9');rect(c,25,9,5,6,'#e6d8c4');
+    rect(c,29,12,2,2,'#4b3329');rect(c,23,4,2,6,'#9a7954');rect(c,29,4,2,6,'#9a7954');
+    rect(c,30,15,4,2,'#d99b8e');rect(c,12,22,3,7,'#684c38');rect(c,23,22,3,7,'#684c38');
+    rect(c,10,13,3,3,'#fffaf0');rect(c,17,12,3,2,'#fffaf0');
+    rect(c,7,16,3,4,'#d9c9b4');rect(c,18,20,4,2,'#d9c9b4');
+  });
+  texture(scene,'planter',20,18,c=>{
+    rect(c,3,8,14,8,'#a95839');rect(c,2,7,16,3,'#d58b55');
+    rect(c,5,10,10,4,'#87432e');rect(c,6,4,2,5,'#3f843b');rect(c,10,1,2,8,'#4c9843');rect(c,13,5,2,4,'#34753a');
+    rect(c,5,2,3,3,'#ed91b7');rect(c,9,0,4,4,'#f3d16e');rect(c,13,3,3,3,'#c49ae8');
+  });
+
 }
