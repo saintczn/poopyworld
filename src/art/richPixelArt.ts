@@ -17,6 +17,7 @@ const palette = {
 function rand(seed: number) {
   let n = seed >>> 0;
   return () => { n = (n * 1664525 + 1013904223) >>> 0; return n / 4294967296; };
+}
 
 function rect(c: Ctx, x: number, y: number, w: number, h: number, color: string) {
   c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
