@@ -52,6 +52,7 @@ export class GardenScene extends Phaser.Scene {
     kb.on('keydown-E', press);
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
+    this.game.events.on('touch-interact', press);
     kb.on('keydown-ESC', () => { this.escapePressed = true; });
   }
 
