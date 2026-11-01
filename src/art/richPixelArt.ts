@@ -159,13 +159,21 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
     for(let x=35;x<192;x+=12) rect(c,x,32,2,42,'#70402e');
     for(let y=38;y<72;y+=10) rect(c,31,y,162,2,'#8e4d35');
     // roof slopes, layered shingle rows
-    for(let row=0;row<8;row++) {
-      const inset=row*10;
-      rect(c,10+inset,4+row*8,204-inset*2,9,row%2?'#a63c28':'#bd4b2e');
-      rect(c,10+inset,4+row*8,204-inset*2,2,'#dc6840');
-      for(let sx=15+inset;sx<209-inset;sx+=15) rect(c,sx,7+row*8,2,5,'#873021');
+    for(let row=0;row<10;row++) {
+      const inset=(9-row)*10;
+      const rx=10+inset, ry=1+row*7, rw=204-inset*2;
+      rect(c,rx,ry,rw,8,row%2?'#a63c28':'#bd4b2e');
+      rect(c,rx,ry,rw,2,'#e47a4d');
+      // Alternating offset shingle seams, each with a dark lower edge.
+      for(let sx=rx+((row%2)*7)+5;sx<rx+rw-4;sx+=14) {
+        rect(c,sx,ry+2,1,5,'#7b2b21');
+        rect(c,sx+1,ry+6,5,1,'#8e3324');
+      }
+      rect(c,rx+2,ry+3,Math.max(2,rw-4),1,'#cb5938');
     }
-    rect(c,5,68,214,8,'#70291f'); rect(c,7,68,210,2,'#e06a42');
+    // Heavy carved eaves and a visible ridge cap.
+    rect(c,4,67,216,10,'#70291f'); rect(c,6,67,212,2,'#e06a42');
+    rect(c,107,0,10,8,'#e47a4d'); rect(c,109,0,6,7,'#f08a59');
     // ground floor walls
     rect(c,15,76,194,60,'#54352c'); rect(c,20,80,184,53,'#d69b65');
     for(let x=24;x<200;x+=8) rect(c,x,81,1,51,'#c18154');
