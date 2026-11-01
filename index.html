@@ -3,120 +3,147 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PoopyWorld</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<title>PoopyWorld — jullie wereld</title>
+<meta name="theme-color" content="#243b32">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@500;700;800&display=swap">
 <style>
-  /* Layout: the game fills the screen; small pixel-framed panels float over it. Single dark "night garden" look by choice. */
   :root {
-    --ground: #1b2a24;      /* behind the game canvas */
-    --panel: #fff6e4;       /* parchment panels */
-    --panel-edge: #3b2a1e;  /* dark wood frame */
-    --ink: #2b1f17;
-    --ink-soft: #6b5442;
-    --leaf: #5fae4e;        /* accent: garden green */
+    --ground: #243b32;
+    --panel: #fff7e8;
+    --panel-edge: #493326;
+    --ink: #30251e;
+    --ink-soft: #76604c;
+    --leaf: #65a957;
+    --leaf-dark: #3e7938;
     --font-pixel: "Pixelify Sans", "Courier New", monospace;
-    --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-    color-scheme: dark;
+    --font-body: "Nunito", system-ui, sans-serif;
   }
   [hidden] { display: none !important; }
-  html, body { height: 100%; }
+  * { box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; }
   body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--panel);
-    font-family: var(--font-body);
-    overflow: hidden;
-    padding-left: max(0px, env(safe-area-inset-left, 0px));
-    padding-right: max(0px, env(safe-area-inset-right, 0px));
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--font-body); overflow: hidden;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
   #game { position: fixed; inset: 0; display: grid; place-items: center; }
   #game canvas { image-rendering: pixelated; }
-
   .panel {
-    background: var(--panel);
-    color: var(--ink);
-    border: 3px solid var(--panel-edge);
-    box-shadow: 0 0 0 3px var(--panel), 0 0 0 6px var(--panel-edge), 0 8px 0 6px rgba(0,0,0,.25);
-    border-radius: 2px;
+    background: var(--panel); color: var(--ink);
+    border: 3px solid var(--panel-edge); border-radius: 4px;
+    box-shadow: 0 0 0 2px #fff7e8, 0 0 0 5px var(--panel-edge), 0 9px 0 5px rgba(0,0,0,.22);
   }
-
   #hud {
-    position: fixed;
-    top: calc(12px + env(safe-area-inset-top, 0px));
-    left: max(16px, env(safe-area-inset-left, 0px));
-    display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+    position: fixed; top: max(16px, env(safe-area-inset-top, 0px));
+    left: max(18px, env(safe-area-inset-left, 0px));
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     pointer-events: none;
   }
-  #hud .badge { font-family: var(--font-pixel); font-weight: 700; font-size: 15px; padding: 4px 10px; }
-  #hud .badge span { color: var(--leaf); }
-  #hud .keys { font-size: 13px; padding: 4px 10px; color: var(--ink-soft); }
+  #hud .badge { font-family: var(--font-pixel); font-weight: 700; font-size: 17px; padding: 7px 12px; }
+  #hud .badge span, #start h1 span { color: var(--leaf-dark); }
+  #hud .keys { font-size: 13px; padding: 7px 11px; color: var(--ink-soft); }
   kbd {
     font-family: var(--font-pixel); font-size: 12px; color: var(--ink);
-    background: #f1e2c4; border: 2px solid var(--panel-edge); border-bottom-width: 3px;
-    padding: 0 4px; border-radius: 2px;
+    background: #f0e3cb; border: 2px solid var(--panel-edge);
+    border-bottom-width: 3px; padding: 0 4px; border-radius: 3px;
   }
-
+  #touch-controls {
+    position: fixed; left: max(16px, env(safe-area-inset-left, 0px));
+    bottom: max(18px, env(safe-area-inset-bottom, 0px));
+    display: none; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 48px);
+    gap: 5px; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  #touch-controls button {
+    border: 2px solid var(--panel-edge); border-bottom-width: 4px; border-radius: 8px;
+    background: rgba(255,247,232,.92); color: var(--ink); font: 700 22px var(--font-pixel);
+    touch-action: none; -webkit-tap-highlight-color: transparent;
+  }
+  #touch-controls button:active, #touch-controls button.pressed { background: #d8edc8; transform: translateY(2px); border-bottom-width: 2px; }
+  #touch-controls [data-dir="up"] { grid-column: 2; grid-row: 1; }
+  #touch-controls [data-dir="left"] { grid-column: 1; grid-row: 2; }
+  #touch-controls [data-dir="down"] { grid-column: 2; grid-row: 2; }
+  #touch-controls [data-dir="right"] { grid-column: 3; grid-row: 2; }
+  #touch-interact {
+    position: fixed; right: max(22px, env(safe-area-inset-right, 0px));
+    bottom: max(34px, env(safe-area-inset-bottom, 0px)); width: 68px; height: 68px;
+    border-radius: 50% !important; background: #65a957 !important; color: white !important;
+    font-size: 16px !important;
+  }
+  @media (pointer: coarse) {
+    #touch-controls { display: grid; }
+    #hud .keys { display: none; }
+  }
   #dialog {
-    position: fixed;
-    left: 50%; transform: translateX(-50%);
-    bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-    width: min(620px, calc(100% - 44px));
-    padding: 14px 18px 12px;
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: max(24px, env(safe-area-inset-bottom, 0px));
+    width: min(620px, calc(100% - 40px)); padding: 15px 19px 12px;
   }
-  #dialog .who { font-family: var(--font-pixel); font-weight: 700; font-size: 16px; color: var(--panel-edge); margin-bottom: 4px; }
-  #dialog .text { font-size: 16px; line-height: 1.5; min-height: 3em; }
-  #dialog .next { text-align: right; font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
-
+  #dialog .who { font-family: var(--font-pixel); font-weight: 700; font-size: 18px; margin-bottom: 5px; }
+  #dialog .text { font-size: 16px; line-height: 1.55; min-height: 2.8em; }
+  #dialog .next { text-align: right; font-size: 12px; color: var(--ink-soft); margin-top: 5px; }
   #start {
     position: fixed; inset: 0; display: grid; place-items: center;
-    background: rgba(12, 20, 16, .55);
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: rgba(13, 25, 20, .18); padding: 22px;
   }
-  #start .card { max-width: 420px; padding: 22px 24px; text-align: center; display: grid; gap: 12px; }
-  #start h1 { margin: 0; font-family: var(--font-pixel); font-size: 34px; letter-spacing: .5px; color: var(--panel-edge); text-wrap: balance; }
-  #start h1 span { color: var(--leaf); }
-  #start p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+  #start .card {
+    width: min(460px, 100%); padding: 27px 30px 24px;
+    text-align: center; display: grid; justify-items: center; gap: 13px;
+  }
+  #start .eyebrow {
+    margin: 0; color: var(--leaf-dark); text-transform: uppercase;
+    letter-spacing: 2px; font-size: 11px; font-weight: 800;
+  }
+  #start h1 { margin: 0; font-family: var(--font-pixel); font-size: clamp(36px, 7vw, 48px); line-height: 1; }
+  #start .intro { margin: 0; max-width: 350px; font-size: 16px; line-height: 1.55; color: var(--ink-soft); }
   #start button {
-    justify-self: center;
-    font-family: var(--font-pixel); font-weight: 700; font-size: 18px;
-    color: var(--panel); background: var(--leaf);
-    border: 3px solid var(--panel-edge); border-bottom-width: 6px;
-    padding: 8px 28px; cursor: pointer; border-radius: 2px;
+    margin-top: 4px; font-family: var(--font-pixel); font-weight: 700; font-size: 20px;
+    color: white; background: var(--leaf-dark); border: 3px solid var(--panel-edge);
+    border-bottom-width: 6px; padding: 9px 36px; cursor: pointer; border-radius: 3px;
   }
-  #start button:hover { filter: brightness(1.08); }
+  #start button:hover { filter: brightness(1.12); }
   #start button:active { border-bottom-width: 3px; transform: translateY(3px); }
-  #start button:focus-visible { outline: 3px solid var(--panel); outline-offset: 3px; }
-  #start .mobile-note { font-size: 13px; }
+  #start button:focus-visible { outline: 3px solid var(--leaf); outline-offset: 4px; }
+  #start .footnote { margin: 2px 0 0; color: #8a7561; font-size: 12px; line-height: 1.45; }
+  @media (max-width: 560px) {
+    #hud { gap: 7px; left: 12px; top: 12px; }
+    #hud .keys { font-size: 11px; }
+    #start .card { padding: 24px 19px 21px; }
+    #dialog { bottom: 16px; }
+  }
   @media (prefers-reduced-motion: reduce) { #start button:active { transform: none; } }
 </style>
 </head>
 <body>
   <div id="game"></div>
-
   <div id="hud" hidden>
     <div class="badge panel">Poopy<span>World</span></div>
-    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> / <kbd>spatie</kbd></div>
+    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>← ↑ ↓ →</kbd> · Kijken <kbd>E</kbd></div>
   </div>
-
+  <div id="touch-controls" aria-label="Aanraakbesturing">
+    <button type="button" data-dir="up" aria-label="Omhoog">▲</button>
+    <button type="button" data-dir="left" aria-label="Links">◀</button>
+    <button type="button" data-dir="down" aria-label="Omlaag">▼</button>
+    <button type="button" data-dir="right" aria-label="Rechts">▶</button>
+  </div>
+  <button id="touch-interact" type="button" aria-label="Interactie" hidden>KIJK</button>
   <div id="dialog" class="panel" hidden>
     <div class="who" id="dialog-who"></div>
     <div class="text" id="dialog-text"></div>
-    <div class="next">verder met <kbd>E</kbd></div>
+    <div class="next">verder met <kbd>E</kbd> · sluiten <kbd>Esc</kbd></div>
   </div>
-
   <div id="start">
     <div class="card panel">
+      <p class="eyebrow">een wereld van jullie samen</p>
       <h1>Poopy<span>World</span></h1>
-      <p>Mijlpaal 1: de tuin van de villa. Loop rond en bekijk alles wat je tegenkomt.</p>
-      <button id="start-btn" type="button">Spelen</button>
-      <p class="mobile-note" id="mobile-note" hidden>Speel dit op je laptop. De joystick voor de telefoon komt later.</p>
+      <p class="intro">Welkom thuis. Dit is jullie tuin: dwaal rond, ontdek kleine plekjes en kijk alvast waar jullie avonturen beginnen.</p>
+      <button id="start-btn" type="button">Naar buiten</button>
+      <p class="footnote" id="mobile-note" hidden>De besturing voor telefoon en tablet komt nog. Voor nu speelt dit het fijnst op een computer.</p>
+      <p class="footnote">Deze online versie is nog in ontwikkeling. Samen online spelen wordt later toegevoegd.</p>
     </div>
   </div>
-
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

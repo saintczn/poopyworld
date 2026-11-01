@@ -52,6 +52,7 @@ export class GardenScene extends Phaser.Scene {
     kb.on('keydown-E', press);
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
+    this.game.events.on('touch-interact', press);
     kb.on('keydown-ESC', () => { this.escapePressed = true; });
   }
 
@@ -147,7 +148,7 @@ export class GardenScene extends Phaser.Scene {
   update(time: number) {
     if (!this.registry.get('started')) { this.interactPressed = false; return; }
     const k = this.keys;
-    const interact = this.interactPressed;
+    const interact = this.interactPressed || Boolean(this.registry.get('touch-interact'));
     const escape = this.escapePressed;
     this.interactPressed = false;
     this.escapePressed = false;
@@ -160,8 +161,8 @@ export class GardenScene extends Phaser.Scene {
       return;
     }
 
-    const dx = (k.LEFT.isDown || k.A.isDown ? -1 : 0) + (k.RIGHT.isDown || k.D.isDown ? 1 : 0);
-    const dy = (k.UP.isDown || k.W.isDown ? -1 : 0) + (k.DOWN.isDown || k.S.isDown ? 1 : 0);
+    const dx = (k.LEFT.isDown || k.A.isDown || this.registry.get('touch-left') ? -1 : 0) + (k.RIGHT.isDown || k.D.isDown || this.registry.get('touch-right') ? 1 : 0);
+    const dy = (k.UP.isDown || k.W.isDown || this.registry.get('touch-up') ? -1 : 0) + (k.DOWN.isDown || k.S.isDown || this.registry.get('touch-down') ? 1 : 0);
     this.player.move(dx, dy);
 
     this.nearby = this.findNearby();
