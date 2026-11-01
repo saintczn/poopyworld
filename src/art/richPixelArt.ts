@@ -54,10 +54,23 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
       const x = tx * TILE, y = ty * TILE, type = grid[ty][tx];
       if (type === Ground.Grass || type === Ground.Flowers) {
         rect(c,x,y,TILE,TILE,palette.grass);
-        for (let i=0;i<18;i++) {
+        // Layered grass is painted in irregular clusters rather than evenly scattered noise.
+        for (let i=0;i<7;i++) {
+          const gx=x+Math.floor(r()*13), gy=y+Math.floor(r()*13);
+          const tone=r();
+          const col=tone<.34?'#347b32':tone<.7?'#70b94c':tone<.88?'#8bc85b':'#285f2d';
+          rect(c,gx,gy,2+Math.floor(r()*3),1,col);
+          if(i%2===0) rect(c,gx+1,gy-1,1,2,'#a0d36a');
+          if(i%3===0) rect(c,gx,gy+1,1,2,'#285f2d');
+        }
+        for(let i=0;i<13;i++) {
           const gx=x+Math.floor(r()*16), gy=y+Math.floor(r()*16);
-          rect(c,gx,gy,1,1,r()>.48?palette.grassLight:palette.grassDark);
-          if (i%5===0) rect(c,gx+1,gy,1,2,palette.grassDeep);
+          rect(c,gx,gy,1,1,r()>.55?'#79bd51':'#3d8737');
+        }
+        // Tiny shadowed tufts and occasional broad leaf blades create readable texture at game scale.
+        for(let i=0;i<3;i++) {
+          const gx=x+2+Math.floor(r()*12), gy=y+2+Math.floor(r()*12);
+          rect(c,gx,gy,1,3,'#285f2d'); rect(c,gx+1,gy+1,1,2,'#8bc85b');
         }
         if (type === Ground.Flowers) for(let i=0;i<11;i++) {
           const fx=x+2+Math.floor(r()*12), fy=y+2+Math.floor(r()*12);
@@ -68,10 +81,17 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
         }
       } else if (type === Ground.Path) {
         rect(c,x,y,16,16,palette.path);
-        for(let i=0;i<5;i++) {
-          const sx=x+1+Math.floor(r()*11), sy=y+1+Math.floor(r()*11);
-          rect(c,sx,sy,3+Math.floor(r()*3),2,palette.pathLight);
-          rect(c,sx,sy+2,3,1,palette.pathDark);
+        // Uneven packed-earth color clusters and embedded pebbles.
+        for(let i=0;i<9;i++) {
+          const sx=x+1+Math.floor(r()*13), sy=y+1+Math.floor(r()*13);
+          const w=1+Math.floor(r()*4), h=1+Math.floor(r()*2);
+          const tone=r();
+          rect(c,sx,sy,w,h,tone<.35?'#a98258':tone<.7?'#d9b77f':'#e6c994');
+          if(i%3===0) rect(c,sx,sy+h,w,1,'#896342');
+        }
+        for(let i=0;i<4;i++) {
+          const sx=x+Math.floor(r()*15), sy=y+Math.floor(r()*15);
+          rect(c,sx,sy,1,1,'#76543a');
         }
         if(at(tx,ty-1)!==Ground.Path) rect(c,x,y,16,2,palette.pathDark);
         if(at(tx,ty+1)!==Ground.Path) rect(c,x,y+14,16,2,palette.pathDark);
@@ -98,15 +118,21 @@ export function buildRichPixelArt(scene: Phaser.Scene) {
     }
   });
 
-  texture(scene,'tree',40,56,c=>{
-    rect(c,18,34,7,19,'#704329'); rect(c,22,35,3,17,'#4e3022');
-    rect(c,13,49,17,4,'#4e3022');
-    leafCluster(c,20,18,15,15,12); leafCluster(c,10,24,9,10,21);
-    leafCluster(c,30,25,9,10,31); leafCluster(c,20,10,10,9,41);
-    for(const [x,y] of [[12,13],[25,8],[31,21],[8,25],[21,28],[28,15]]) {
+  texture(scene,'tree',48,64,c=>{
+    // Soft oval shadow and a branching, bark-textured trunk.
+    rect(c,7,57,34,4,'rgba(24,47,27,0.30)');
+    rect(c,20,39,9,20,'#704329'); rect(c,24,40,3,18,'#4e3022');
+    rect(c,16,48,5,3,'#805334'); rect(c,28,45,5,3,'#805334');
+    rect(c,14,56,21,3,'#4e3022');
+    // Overlapping canopy lobes with dark undersides and broken highlights.
+    leafCluster(c,24,23,18,18,112); leafCluster(c,12,29,11,12,121);
+    leafCluster(c,36,29,11,12,131); leafCluster(c,24,12,12,11,141);
+    leafCluster(c,8,22,7,8,151); leafCluster(c,40,23,7,8,161);
+    for(const [x,y] of [[11,14],[22,7],[34,12],[39,24],[7,29],[17,32],[29,27],[35,35],[18,18],[27,15]]) {
       rect(c,x,y,2,2,'#91ce61'); rect(c,x+1,y+2,1,1,'#b4df78');
     }
-    rect(c,16,20,2,1,'#d4e98a'); rect(c,29,28,2,1,'#d4e98a');
+    rect(c,15,23,3,2,'#d4e98a'); rect(c,31,19,3,2,'#d4e98a');
+    rect(c,23,34,4,2,'#20592d'); rect(c,37,31,3,2,'#20592d');
   });
   texture(scene,'bush',24,18,c=>{
     leafCluster(c,8,11,7,6,9); leafCluster(c,16,10,7,7,19); leafCluster(c,12,6,7,5,29);
