@@ -25,7 +25,7 @@ De tuin bevat alvast herkenningspunten die bij jullie wereld horen: de villa met
 
 ## Besturing
 
-- Lopen: WASD of pijltjestoetsen
+- Lopen: WASD of pijltjestoetsen (computer), of de aanraakknoppen op telefoon/tablet
 - Bekijken / verder: E, spatie of Enter
 - Tekst sluiten: Esc
 
