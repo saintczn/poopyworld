@@ -50,6 +50,32 @@
     background: #f0e3cb; border: 2px solid var(--panel-edge);
     border-bottom-width: 3px; padding: 0 4px; border-radius: 3px;
   }
+  #touch-controls {
+    position: fixed; left: max(16px, env(safe-area-inset-left, 0px));
+    bottom: max(18px, env(safe-area-inset-bottom, 0px));
+    display: none; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 48px);
+    gap: 5px; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  #touch-controls button {
+    border: 2px solid var(--panel-edge); border-bottom-width: 4px; border-radius: 8px;
+    background: rgba(255,247,232,.92); color: var(--ink); font: 700 22px var(--font-pixel);
+    touch-action: none; -webkit-tap-highlight-color: transparent;
+  }
+  #touch-controls button:active, #touch-controls button.pressed { background: #d8edc8; transform: translateY(2px); border-bottom-width: 2px; }
+  #touch-controls [data-dir="up"] { grid-column: 2; grid-row: 1; }
+  #touch-controls [data-dir="left"] { grid-column: 1; grid-row: 2; }
+  #touch-controls [data-dir="down"] { grid-column: 2; grid-row: 2; }
+  #touch-controls [data-dir="right"] { grid-column: 3; grid-row: 2; }
+  #touch-interact {
+    position: fixed; right: max(22px, env(safe-area-inset-right, 0px));
+    bottom: max(34px, env(safe-area-inset-bottom, 0px)); width: 68px; height: 68px;
+    border-radius: 50% !important; background: #65a957 !important; color: white !important;
+    font-size: 16px !important;
+  }
+  @media (pointer: coarse) {
+    #touch-controls { display: grid; }
+    #hud .keys { display: none; }
+  }
   #dialog {
     position: fixed; left: 50%; transform: translateX(-50%);
     bottom: max(24px, env(safe-area-inset-bottom, 0px));
@@ -96,6 +122,13 @@
     <div class="badge panel">Poopy<span>World</span></div>
     <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>← ↑ ↓ →</kbd> · Kijken <kbd>E</kbd></div>
   </div>
+  <div id="touch-controls" aria-label="Aanraakbesturing">
+    <button type="button" data-dir="up" aria-label="Omhoog">▲</button>
+    <button type="button" data-dir="left" aria-label="Links">◀</button>
+    <button type="button" data-dir="down" aria-label="Omlaag">▼</button>
+    <button type="button" data-dir="right" aria-label="Rechts">▶</button>
+  </div>
+  <button id="touch-interact" type="button" aria-label="Interactie" hidden>KIJK</button>
   <div id="dialog" class="panel" hidden>
     <div class="who" id="dialog-who"></div>
     <div class="text" id="dialog-text"></div>
