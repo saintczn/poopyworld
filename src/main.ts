@@ -62,6 +62,7 @@ window.addEventListener('blur', clearTouch);
 touchInteract.addEventListener('pointerdown', (event) => {
   event.preventDefault();
   game.registry.set('touch-interact', true);
+  game.events.emit('touch-interact');
 });
 touchInteract.addEventListener('pointerup', () => game.registry.set('touch-interact', false));
 touchInteract.addEventListener('pointercancel', () => game.registry.set('touch-interact', false));
