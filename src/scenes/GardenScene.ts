@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { TILE, INTERACT_RANGE } from '../config';
+import { buildGardenDetails } from '../art/gardenDetails';
 import {
   MAP_WIDTH, MAP_HEIGHT, Ground, groundAreas, groundExceptions, gate, goatPen,
   trees, bushes, interactables, spawn, type Interactable,
@@ -34,6 +35,7 @@ export class GardenScene extends Phaser.Scene {
     this.buildWaterCollision();
     this.buildFences();
     this.buildScenery();
+    buildGardenDetails(this);
 
     this.player = new Player(this, spawn.x, spawn.y, 'player-1');
     this.physics.add.collider(this.player, this.solids);
@@ -87,16 +89,14 @@ export class GardenScene extends Phaser.Scene {
 
   private buildFences() {
     const W = MAP_WIDTH, H = MAP_HEIGHT;
-    // Garden border
     for (let x = 0; x < W; x++) this.fenceH(x, 0);
     for (let x = 0; x < W; x++) if (x < gate.x || x >= gate.x + gate.w) this.fenceH(x, H - 1);
     for (let y = 1; y < H - 1; y++) { this.fenceV(0, y); this.fenceV(W - 1, y); }
     this.solid(0, 0, W * TILE, 14);
-    this.solid(0, (H - 1) * TILE + 6, W * TILE, 10); // also closes the gate for now
+    this.solid(0, (H - 1) * TILE + 6, W * TILE, 10);
     this.solid(0, 0, 11, H * TILE);
     this.solid((W - 1) * TILE + 5, 0, 11, H * TILE);
 
-    // Goat meadow
     const g = goatPen;
     for (let x = g.x; x < g.x + g.w; x++) { this.fenceH(x, g.y); this.fenceH(x, g.y + g.h - 1); }
     for (let y = g.y + 1; y < g.y + g.h - 1; y++) {
@@ -119,7 +119,6 @@ export class GardenScene extends Phaser.Scene {
   }
 
   private buildScenery() {
-    // The villa (14 x 9 tiles). Walls are solid; you can walk right up to the front door.
     this.add.image(13 * TILE, 2 * TILE, 'villa').setOrigin(0).setDepth(2 * TILE + 144);
     this.solid(13 * TILE + 6, 2 * TILE + 66, 14 * TILE - 12, 74);
 
@@ -141,8 +140,6 @@ export class GardenScene extends Phaser.Scene {
     this.prop('shelter', 548, 262, 34, 10);
     this.prop('sign', 350, 466, 4, 3);
   }
-
-  // ---------- every frame ----------
 
   update(time: number) {
     if (!this.registry.get('started')) { this.interactPressed = false; return; }
