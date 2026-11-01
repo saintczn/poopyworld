@@ -144,8 +144,8 @@ export const interactables: Interactable[] = [
     at: { x: 444, y: 286 },
     who: 'Geitenwei',
     lines: [
-      'Een lege wei met een schuurtje.',
-      'Hier komen straks de geiten. Volgens de geruchten zijn ze nu al aan het ontsnappen.',
+      'Kijk nou — er woont al een nieuwsgierig geitje in de wei!',
+      'Ze scharrelt tussen het hooi en houdt alles in de gaten. Geef haar straks maar een naam.',
     ],
   },
   {
