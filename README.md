@@ -19,6 +19,10 @@ Het poppetje wordt nu nog alleen in deze browser bewaard; met accounts (mijlpaal
 
 Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC` en `python3 tools/build_characters.py /pad/naar/LPC`
 
+## PUCK Arcade
+
+In Heartwood Village kun je PUCK binnengaan. De rode kast speelt **Bitterbal Rush**: 45 seconden bitterballen vangen tegen Femke, Ricardo en Lotte (elk met eigen snelheid en tactiek). Goud = 3 punten, mosterd = even duizelig. Je verdient tickets en een record. De andere kasten komen later.
+
 ## Besturing
 
 - Lopen: WASD of pijltjestoetsen

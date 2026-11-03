@@ -147,6 +147,52 @@ export function buildHandmade(scene: Phaser.Scene) {
   scene.anims.create({ key: 'kroki-idle', frames: scene.anims.generateFrameNumbers('kroki', { frames: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1] }), frameRate: 4, repeat: -1 });
   scene.anims.create({ key: 'kroki-flap', frames: scene.anims.generateFrameNumbers('kroki', { frames: [2, 0, 2, 0] }), frameRate: 12, repeat: -1 });
 
+  // ---- arcade cabinets: 4 colour schemes, 36 x 66 ----
+  const cabinets: Array<[string, string, string, string]> = [
+    ['cab-0', '#c8433a', '#ffcf5a', '#ff9a3d'],  // Bitterbal Rush
+    ['cab-1', '#3f86c4', '#9be3ff', '#ffffff'],  // Goat Mayhem
+    ['cab-2', '#5aa83f', '#c6ff8a', '#f6c83a'],  // Slippery Panic
+    ['cab-3', '#b056c8', '#ff9ae0', '#ff5f8a'],  // Strawberry Escape
+  ];
+  for (const [key, body, screen, marquee] of cabinets) {
+    canvas(scene, key, 36, 66, (c) => {
+      px(c, 4, 62, 28, 4, 'rgba(0,0,0,0.3)');
+      // body
+      px(c, 3, 4, 30, 59, OUT); px(c, 4, 5, 28, 57, body); px(c, 4, 5, 2, 57, 'rgba(255,255,255,0.25)'); px(c, 29, 5, 3, 57, 'rgba(0,0,0,0.25)');
+      // marquee
+      px(c, 5, 6, 26, 8, OUT); px(c, 6, 7, 24, 6, marquee); px(c, 8, 9, 20, 2, 'rgba(255,255,255,0.6)');
+      // screen
+      px(c, 6, 17, 24, 18, OUT); px(c, 7, 18, 22, 16, '#1b1530'); px(c, 8, 19, 20, 14, screen);
+      px(c, 9, 20, 6, 2, 'rgba(255,255,255,0.7)'); px(c, 12, 26, 3, 3, OUT); px(c, 20, 23, 3, 3, OUT); px(c, 16, 29, 4, 2, OUT);
+      // control panel
+      px(c, 3, 37, 30, 8, OUT); px(c, 4, 38, 28, 6, '#2b2440'); px(c, 8, 39, 3, 3, '#e8394f'); px(c, 13, 40, 3, 3, '#f6c83a'); px(c, 22, 39, 2, 4, '#c9cfd4'); px(c, 21, 38, 4, 2, '#e8394f');
+      // coin slot
+      px(c, 15, 50, 6, 4, OUT); px(c, 16, 51, 4, 2, '#f6c83a');
+    });
+  }
+
+  // ---- Bitterbal Rush items ----
+  canvas(scene, 'bitterbal', 14, 14, (c) => {
+    px(c, 3, 1, 8, 12, OUT); px(c, 1, 3, 12, 8, OUT); px(c, 2, 2, 10, 10, OUT);
+    px(c, 3, 2, 8, 10, '#9a5a2a'); px(c, 2, 3, 10, 8, '#9a5a2a');
+    px(c, 3, 3, 4, 3, '#c98a4a'); px(c, 4, 3, 2, 1, '#e8b878');
+    for (const [x, y] of [[8, 4], [5, 7], [9, 8], [6, 10], [3, 8]] as const) px(c, x, y, 1, 1, '#d89a58');
+    px(c, 8, 10, 3, 1, '#6a3a1a');
+  });
+  canvas(scene, 'bitterbal-gold', 14, 14, (c) => {
+    px(c, 3, 1, 8, 12, OUT); px(c, 1, 3, 12, 8, OUT); px(c, 2, 2, 10, 10, OUT);
+    px(c, 3, 2, 8, 10, '#e8b030'); px(c, 2, 3, 10, 8, '#e8b030');
+    px(c, 3, 3, 4, 3, '#ffe27a'); px(c, 4, 3, 2, 1, '#ffffff'); px(c, 8, 10, 3, 1, '#b07a10');
+  });
+  canvas(scene, 'mustard', 14, 16, (c) => {
+    px(c, 2, 4, 10, 12, OUT); px(c, 3, 5, 8, 10, '#f2c230'); px(c, 3, 5, 2, 10, '#ffe27a');
+    px(c, 3, 1, 8, 4, OUT); px(c, 4, 2, 6, 2, '#8a5a34');
+    px(c, 4, 8, 6, 4, '#c8433a'); px(c, 6, 9, 2, 2, '#ffffff');
+  });
+  canvas(scene, 'stars', 18, 8, (c) => {
+    for (const [x, y] of [[1, 3], [8, 0], [14, 4]] as const) { px(c, x + 1, y, 1, 3, '#ffe27a'); px(c, x, y + 1, 3, 1, '#ffe27a'); }
+  });
+
   // ---- wooden sign: 30 x 36 ----
   canvas(scene, 'sign', 30, 36, (c) => {
     woodPost(c, 13, 16, 18);

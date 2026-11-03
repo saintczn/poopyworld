@@ -80,7 +80,8 @@ export class VillageScene extends WorldScene {
     img.setDepth(b.y + img.height - 30);
     for (const [x, y, w, h] of b.walls) this.solid(b.x + x, b.y + y, w, h);
     for (const [x, y] of b.windows) lights.push({ x: b.x + x, y: b.y + y, size: 90 });
-    this.interactables.push({ id: b.id, at: b.door, who: b.who, lines: b.lines });
+    if (b.id === 'puck') this.interactables.push({ id: b.id, at: b.door, who: 'PUCK Arcade', lines: [], action: () => this.travel('puck', { x: 256, y: 370, facing: 'up' }) });
+    else this.interactables.push({ id: b.id, at: b.door, who: b.who, lines: b.lines });
 
     // hanging sign above the door
     const signY = b.sprite.startsWith('cottage') ? b.y + 64 : b.sprite === 'house-b' ? b.y + 122 : b.y + 112;

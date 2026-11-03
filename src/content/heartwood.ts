@@ -30,7 +30,7 @@ export const buildings: Building[] = [
   {
     id: 'puck', sprite: 'house-purple', x: 360, y: 128, sign: 'PUCK', signColour: '#ff5fd2',
     door: { x: 440, y: 336 }, walls: HOUSE_A_WALLS, windows: HOUSE_A_WINDOWS, who: 'PUCK Arcade',
-    lines: ['Binnen hoor je piepjes, muntjes en gejuich.', 'Hier komen straks de minigames: jullie twee plus twee dorpelingen. Goat Mayhem, Slippery Panic, Bitterbal Rush...', 'De deur gaat binnenkort open.'],
+    lines: [],
   },
   {
     id: 'cafe', sprite: 'cottage', x: 800, y: 160, sign: 'Café', signColour: '#ffd27a',
