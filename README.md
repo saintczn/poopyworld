@@ -10,7 +10,7 @@ Een privé 2D-pixelart-RPG met een eigen Hub, gemaakt voor twee spelers.
 | 2 | Inloggen voor twee spelers, elkaar live zien bewegen, stickers | Nog niet begonnen |
 | 3 | Villa binnen, Kroki's plekje, Gilly op bezoek | Woonkamer met keuken, Kroki (groen-gele parkiet), en Gilly, Yara en Ben op bezoek gebouwd en getest |
 | 4 | Samen inrichten (bouwen en decoreren) | Inrichten van de woonkamer gebouwd (slepen, draaien, toevoegen, weghalen, ongedaan maken; lokaal bewaard). Samen tegelijk komt met accounts |
-| 5 | Stukje wereld richting Heartwood | Nog niet begonnen |
+| 5 | Stukje wereld richting Heartwood | Heartwood Village gebouwd: plein met fontein, PUCK, café, winkel, post, museum, viswinkel, marktkraam, prikbord, 6 dorpelingen; via het tuinhek |
 | 6 | Hub v0: dashboard, check-in, vraag van de dag, brieven | Begroeting, check-in, vraag van de dag en geschiedenis gebouwd (lokaal); brieven nog niet |
 
 De pixelart komt uit LPC Revised (gratis te gebruiken met naamsvermelding, zie `CREDITS.md`).

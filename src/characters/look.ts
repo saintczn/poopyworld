@@ -158,3 +158,18 @@ export function splitSheet(sheet: HTMLCanvasElement) {
   idle.getContext('2d')!.drawImage(sheet, 512, 0, 192, 256, 0, 0, 192, 256);
   return { walk, idle };
 }
+
+/** A random but sensible look (used for villagers). */
+export function randomLook(rnd: () => number = Math.random): Look {
+  const pick = <V>(l: V[]) => l[Math.floor(rnd() * l.length)];
+  const body = pick(OPTIONS.body)[0];
+  return {
+    body, skin: pick(OPTIONS.skin), eyes: pick(OPTIONS.eyes),
+    hair: pick(OPTIONS.hair.filter(([k]) => k !== 'none'))[0],
+    hairColor: pick(['Raven', 'Black', 'Chestnut', 'Brown', 'Ash Brown', 'Blonde', 'Red', 'Gray', 'Platinum']),
+    beard: body === 'm' && rnd() < 0.35 ? pick(['trimmed', 'full', 'mustache']) : 'none',
+    shirt: pick(OPTIONS.shirt)[0], shirtColor: pick(OPTIONS.cloth), legs: pick(OPTIONS.legs)[0],
+    legsColor: pick(['Denim', 'Navy', 'Black', 'Charcoal', 'Tan', 'Brown', 'Forest']),
+    shoes: pick(OPTIONS.shoes)[0], shoesColor: pick(['Brown', 'Black', 'Leather', 'Tan', 'White']),
+  };
+}

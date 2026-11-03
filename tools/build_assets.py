@@ -72,6 +72,43 @@ for y in range(h):
             out[y, x, :3] = roof_map[k]
 Image.fromarray(out).save(OUT / 'house.png')
 
+# Village variants of the same house: other roof colours.
+import colorsys
+def roof_variant(hue_shift, sat_mul, name):
+    v = out.copy()
+    for y in range(h):
+        for x in range(w):
+            roof = (y < 103) if x < 167 else (y < 71)
+            if 205 <= x <= 222 and y < 29:
+                roof = False
+            k = tuple(int(c) for c in a[y, x, :3])
+            if roof and a[y, x, 3] > 0 and k in roof_map:
+                r, g, b = [c / 255 for c in roof_map[k]]
+                hh, ll, ss = colorsys.rgb_to_hls(r, g, b)
+                r, g, b = colorsys.hls_to_rgb((hh + hue_shift) % 1, ll, min(1, ss * sat_mul))
+                v[y, x, :3] = [int(r * 255), int(g * 255), int(b * 255)]
+    Image.fromarray(v).save(OUT / name)
+roof_variant(0.58, 0.9, 'house-blue.png')
+roof_variant(0.30, 0.7, 'house-green.png')
+roof_variant(0.78, 0.8, 'house-purple.png')
+
+# The cottage (Paneled House A) and a blue-roofed version.
+cot = np.array(Image.open(LPC / 'Structure/Structures/Paneled House A.png').convert('RGBA'))
+Image.fromarray(cot).save(OUT / 'cottage.png')
+cb = cot.copy()
+for y in range(cot.shape[0]):
+    for x in range(cot.shape[1]):
+        r, g, b, al = [int(c) for c in cot[y, x]]
+        if al == 0 or y > 70:
+            continue
+        hh, ll, ss = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+        if ss > 0.25 and (hh < 0.12 or hh > 0.95):
+            r2, g2, b2 = colorsys.hls_to_rgb((hh + 0.56) % 1, ll, ss * 0.8)
+            cb[y, x, :3] = [int(r2 * 255), int(g2 * 255), int(b2 * 255)]
+Image.fromarray(cb).save(OUT / 'cottage-blue.png')
+copy('Structure/Structures/Brick House B.png', 'house-b.png')
+copy('Structure/Misc/Fountain A.png', 'fountain.png')
+
 # (Characters are built by tools/build_characters.py)
 
 print('Assets written to', OUT)

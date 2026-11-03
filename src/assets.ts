@@ -50,7 +50,16 @@ export const animalSheets: Record<string, [string, number]> = {
   'chicken-walk': [chickenWalk, 32], 'chicken-eat': [chickenEat, 32],
 };
 
+import houseBlue from './assets/house-blue.png';
+import houseGreen from './assets/house-green.png';
+import housePurple from './assets/house-purple.png';
+import cottage from './assets/cottage.png';
+import cottageBlue from './assets/cottage-blue.png';
+import houseB from './assets/house-b.png';
+import fountain from './assets/fountain.png';
+
 export const sheets = {
+  'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
   floorwood, walls, sofa, fireplace, rug, shelf, tv, counter, sink, oven, fridge, floorlamp, paintings, clock, window, endtable,

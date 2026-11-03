@@ -8,7 +8,6 @@ import { Ambient, type LightSpot } from '../world/ambient';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
-import type { Look } from '../characters/look';
 
 const T = TILE;
 
@@ -39,6 +38,8 @@ export class GardenScene extends WorldScene {
     this.interactables = G.interactables.map((it) => ({ ...it }));
     const door = this.interactables.find((i) => i.id === 'door');
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
+    const gate = this.interactables.find((i) => i.id === 'gate');
+    if (gate) { gate.who = 'Naar Heartwood'; gate.lines = []; gate.action = () => this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' }); }
     const pond = this.interactables.find((i) => i.id === 'pond');
     if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
     this.addKroki();
@@ -96,50 +97,6 @@ export class GardenScene extends WorldScene {
     }
   }
 
-  /** Keeps an interactable on top of a moving sprite. */
-  private follow(sprite: Phaser.GameObjects.Sprite, it: { id: string; who: string; lines: string[]; action: () => void }) {
-    const entry = { ...it, at: { x: sprite.x, y: sprite.y } };
-    this.interactables.push(entry);
-    this.events.on('update', () => { entry.at.x = sprite.x; entry.at.y = sprite.y - 4; });
-  }
-
-  /** A family member visiting: wanders between a few spots and stops to talk when you press E. */
-  private addVisitor(name: string, look: Look, spots: Array<{ x: number; y: number }>, talk: () => string[], pace = 16) {
-    const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
-    const it = { id: name, at: { x: -999, y: -999 }, who: name, lines: [] as string[], action: () => {} };
-    this.interactables.push(it);
-    install(look).then((key) => {
-      if (!this.sys.isActive()) return;
-      const npc = this.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-down`);
-      this.add.image(0, 0, 'shadow').setOrigin(0.5, 0.6).setName(`${name}-shadow`);
-      const shadow = this.children.getByName(`${name}-shadow`) as Phaser.GameObjects.Image;
-      let talking = false;
-      const dirTo = (dx: number, dy: number) => (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down');
-      const walk = () => {
-        if (talking || !this.sys.isActive()) return;
-        const to = Phaser.Math.RND.pick(spots);
-        const dx = to.x - npc.x, dy = to.y - npc.y;
-        npc.play(`${key}-walk-${dirTo(dx, dy)}`);
-        this.tweens.add({
-          targets: npc, x: to.x, y: to.y, duration: Math.max(200, Math.hypot(dx, dy) * pace),
-          onComplete: () => { npc.play(`${key}-idle-down`); this.time.delayedCall(Phaser.Math.Between(2500, 7000), walk); },
-        });
-      };
-      it.action = () => {
-        talking = true;
-        this.tweens.killTweensOf(npc);
-        npc.play(`${key}-idle-${dirTo(this.player.x - npc.x, this.player.y - npc.y)}`);
-        this.say(name, talk());
-        this.time.delayedCall(6000, () => { talking = false; walk(); });
-      };
-      this.time.delayedCall(Phaser.Math.Between(1000, 3000), walk);
-      this.events.on('update', () => {
-        npc.setDepth(npc.y);
-        shadow.setPosition(Math.round(npc.x), Math.round(npc.y)).setDepth(npc.y - 1);
-        it.at.x = npc.x; it.at.y = npc.y - 6;
-      });
-    });
-  }
 
   private enterHouse() {
     this.travel('house', { x: 256, y: 372, facing: 'up' });
@@ -150,6 +107,7 @@ export class GardenScene extends WorldScene {
     // Walking up the stairs into the doorway also goes inside.
     const p = this.player;
     if (p && this.registry.get('started') && Math.abs(p.x - G.doorway.x) < 24 && p.y < G.doorway.y && p.facing === 'up') this.enterHouse();
+    if (p && this.registry.get('started') && p.y > G.MAP_H * T - 14) this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' });
   }
 
   // ---------- building the garden ----------
@@ -256,7 +214,6 @@ export class GardenScene extends WorldScene {
     this.solid(0, 0, W, 2.6 * T);
     this.solid(0, 0, 1.7 * T, H);
     this.solid(W - 1.6 * T, 0, 1.6 * T, H);
-    // Road to Heartwood is closed for now.
-    this.solid(G.bottomFence.gapX * T, H - 0.8 * T, G.bottomFence.gapW * T, 0.8 * T);
+    // The road to Heartwood is open: walking out of the gate goes to the village (see tick).
   }
 }
