@@ -63,6 +63,8 @@ export abstract class WorldScene extends Phaser.Scene {
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
     kb.on('keydown-ESC', () => { this.escapePressed = true; });
+    // Sticker emotes on keys 1-6.
+    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.showSticker(i)));
     kb.on('keydown-C', () => {
       if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-creator'); }
     });
@@ -96,6 +98,21 @@ export abstract class WorldScene extends Phaser.Scene {
     img.setOrigin(0.5, 1).setDepth(y).setFlipX(flip);
     if (solid) this.solid(x - solid[0] / 2, y - solid[1], solid[0], solid[1]);
     return img;
+  }
+
+  private sticker?: Phaser.GameObjects.Image;
+
+  /** Pops a sticker above the player's head for a moment. */
+  protected showSticker(i: number) {
+    if (!this.registry.get('started') || this.dialog.isOpen) return;
+    this.sticker?.destroy();
+    const s = this.add.image(this.player.x, this.player.y - 56, 'stickers', i).setOrigin(0.5, 1).setDepth(100001).setScale(0.2);
+    this.sticker = s;
+    this.tweens.add({ targets: s, scale: 1, duration: 160, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: s, alpha: 0, delay: 1800, duration: 300, onComplete: () => s.destroy() });
+    const follow = () => { if (s.active) s.setPosition(Math.round(this.player.x), Math.round(this.player.y) - 56); };
+    this.events.on('update', follow);
+    s.once('destroy', () => this.events.off('update', follow));
   }
 
   /** Shows a text box. */

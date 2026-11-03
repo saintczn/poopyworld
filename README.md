@@ -25,6 +25,7 @@ Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC` en `
 - Bekijken / verder: E, spatie of Enter
 - Tekst sluiten: Esc
 - Poppetje aanpassen: C
+- Stickers boven je hoofd: 1 hartje, 2 lachen, 3 kusje, 4 middelvinger, 5 drolletje, 6 muziek
 
 ## Techniek
 
