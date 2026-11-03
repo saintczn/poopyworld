@@ -1,13 +1,14 @@
 import Phaser from 'phaser';
 import { TILE, INTERACT_RANGE } from '../config';
-import {
-  MAP_WIDTH, MAP_HEIGHT, Ground, groundAreas, groundExceptions, gate, goatPen,
-  trees, bushes, interactables, spawn, type Interactable,
-} from '../content/villaGarden';
+import { sprites } from '../assets';
+import * as G from '../content/villaGarden';
+import { paintGround } from '../world/ground';
 import { Player } from '../entities/Player';
 import { Dialog } from '../ui/dialog';
 
-type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'E' | 'SPACE' | 'ENTER' | 'ESC', Phaser.Input.Keyboard.Key>;
+type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT', Phaser.Input.Keyboard.Key>;
+
+const T = TILE;
 
 /** The villa garden: the first playable area. */
 export class GardenScene extends Phaser.Scene {
@@ -16,7 +17,7 @@ export class GardenScene extends Phaser.Scene {
   private keys!: Keys;
   private hint!: Phaser.GameObjects.Image;
   private dialog = new Dialog();
-  private nearby: Interactable | null = null;
+  private nearby: G.Interactable | null = null;
   /** Set by key presses, so even a very quick tap is never missed. */
   private interactPressed = false;
   private escapePressed = false;
@@ -26,36 +27,49 @@ export class GardenScene extends Phaser.Scene {
   }
 
   create() {
-    const worldW = MAP_WIDTH * TILE, worldH = MAP_HEIGHT * TILE;
+    const worldW = G.MAP_W * T, worldH = G.MAP_H * T;
     this.physics.world.setBounds(0, 0, worldW, worldH);
-    this.add.image(0, 0, 'ground').setOrigin(0).setDepth(-10);
     this.solids = this.physics.add.staticGroup();
 
-    this.buildWaterCollision();
-    this.buildFences();
-    this.buildScenery();
+    paintGround(this, 'garden-ground', { w: G.MAP_W, h: G.MAP_H, dirt: G.dirt, pond: G.pond, soil: G.soil, seed: 21 });
+    this.add.image(0, 0, 'garden-ground').setOrigin(0).setDepth(-1000);
 
-    this.player = new Player(this, spawn.x, spawn.y, 'player-1');
+    this.buildPond();
+    this.buildHouse();
+    this.buildFences();
+    this.buildNature();
+    this.buildProps();
+    this.buildBorders();
+
+    this.player = new Player(this, G.spawn.x, G.spawn.y, 'player');
     this.physics.add.collider(this.player, this.solids);
 
     this.hint = this.add.image(0, 0, 'key-e').setOrigin(0.5, 1).setDepth(100000).setVisible(false);
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, worldW, worldH);
-    cam.startFollow(this.player, true, 0.12, 0.12);
+    cam.startFollow(this.player, true, 0.14, 0.14);
     cam.setRoundPixels(true);
-    cam.setBackgroundColor('#1b2a24');
+    cam.setBackgroundColor('#2d4a2b');
 
-    this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,ENTER,ESC') as Keys;
+    this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT') as Keys;
     const kb = this.input.keyboard!;
     const press = () => { this.interactPressed = true; };
     kb.on('keydown-E', press);
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
     kb.on('keydown-ESC', () => { this.escapePressed = true; });
+
+    // Debug helper for screenshots: ?at=x,y puts the player there.
+    const at = new URLSearchParams(location.search).get('at');
+    if (at) {
+      const [x, y] = at.split(',').map(Number);
+      this.player.setPosition(x, y);
+      cam.centerOn(x, y);
+    }
   }
 
-  // ---------- building the garden ----------
+  // ---------- helpers ----------
 
   /** An invisible wall. x, y, w, h in pixels (top-left). */
   private solid(x: number, y: number, w: number, h: number) {
@@ -64,82 +78,107 @@ export class GardenScene extends Phaser.Scene {
     this.solids.add(z);
   }
 
-  private buildWaterCollision() {
-    const water = new Set<string>();
-    for (const a of groundAreas) {
-      if (a.type !== Ground.Water) continue;
-      for (let y = a.y; y < a.y + a.h; y++) for (let x = a.x; x < a.x + a.w; x++) water.add(`${x},${y}`);
-    }
-    for (const e of groundExceptions) water.delete(`${e.x},${e.y}`);
-    for (const key of water) {
-      const [x, y] = key.split(',').map(Number);
-      this.solid(x * TILE + 1, y * TILE + 2, TILE - 2, TILE - 3);
-    }
-  }
-
-  private fenceH(tx: number, ty: number) {
-    this.add.image(tx * TILE, ty * TILE, 'fence-h').setOrigin(0).setDepth(ty * TILE + 14);
-  }
-
-  private fenceV(tx: number, ty: number) {
-    this.add.image(tx * TILE, ty * TILE, 'fence-v').setOrigin(0).setDepth(ty * TILE + 16);
-  }
-
-  private buildFences() {
-    const W = MAP_WIDTH, H = MAP_HEIGHT;
-    // Garden border
-    for (let x = 0; x < W; x++) this.fenceH(x, 0);
-    for (let x = 0; x < W; x++) if (x < gate.x || x >= gate.x + gate.w) this.fenceH(x, H - 1);
-    for (let y = 1; y < H - 1; y++) { this.fenceV(0, y); this.fenceV(W - 1, y); }
-    this.solid(0, 0, W * TILE, 14);
-    this.solid(0, (H - 1) * TILE + 6, W * TILE, 10); // also closes the gate for now
-    this.solid(0, 0, 11, H * TILE);
-    this.solid((W - 1) * TILE + 5, 0, 11, H * TILE);
-
-    // Goat meadow
-    const g = goatPen;
-    for (let x = g.x; x < g.x + g.w; x++) { this.fenceH(x, g.y); this.fenceH(x, g.y + g.h - 1); }
-    for (let y = g.y + 1; y < g.y + g.h - 1; y++) {
-      if (y < g.openingY || y >= g.openingY + g.openingH) this.fenceV(g.x, y);
-      this.fenceV(g.x + g.w - 1, y);
-    }
-    this.solid(g.x * TILE, g.y * TILE + 6, g.w * TILE, 9);
-    this.solid(g.x * TILE, (g.y + g.h - 1) * TILE + 6, g.w * TILE, 9);
-    this.solid(g.x * TILE + 5, (g.y + 1) * TILE, 6, (g.openingY - g.y - 1) * TILE);
-    const below = g.openingY + g.openingH;
-    this.solid(g.x * TILE + 5, below * TILE, 6, (g.y + g.h - 1 - below) * TILE);
-    this.solid((g.x + g.w - 1) * TILE + 5, (g.y + 1) * TILE, 6, (g.h - 2) * TILE);
-  }
-
-  /** Places an image with its feet at (x, y) and a small solid base. */
-  private prop(key: string, x: number, y: number, baseW: number, baseH: number) {
-    const img = this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y);
-    if (baseW > 0) this.solid(x - baseW / 2, y - baseH, baseW, baseH);
+  /** A named sprite with its feet at (x, y) pixels, sorted by depth, with an optional solid base. */
+  private place(name: string, x: number, y: number, solid?: [number, number], flip = false) {
+    const def = sprites[name];
+    const img = def ? this.add.image(x, y, def[0], name) : this.add.image(x, y, name);
+    img.setOrigin(0.5, 1).setDepth(y).setFlipX(flip);
+    if (solid) this.solid(x - solid[0] / 2, y - solid[1], solid[0], solid[1]);
     return img;
   }
 
-  private buildScenery() {
-    // The villa (14 x 9 tiles). Walls are solid; you can walk right up to the front door.
-    this.add.image(13 * TILE, 2 * TILE, 'villa').setOrigin(0).setDepth(2 * TILE + 144);
-    this.solid(13 * TILE + 6, 2 * TILE + 66, 14 * TILE - 12, 74);
+  // ---------- building the garden ----------
 
-    for (const [tx, ty] of trees) this.prop('tree', tx * TILE + 8, ty * TILE + 16, 10, 6);
-    for (const [tx, ty] of bushes) this.prop('bush', tx * TILE + 8, ty * TILE + 15, 12, 5);
+  private buildPond() {
+    const p = G.pond;
+    // The water (inner area) blocks walking; the banks are walkable.
+    this.solid((p.x + 0.55) * T, (p.y + 0.6) * T, (p.w - 1.1) * T, (p.h - 1.1) * T);
+    for (const [key, x, y] of G.pondDecor) {
+      this.add.image(x * T, y * T, sprites[key][0], key).setOrigin(0.5, 1).setDepth(-500);
+    }
+    for (const [key, x, y] of G.crops) this.place(key, x * T, y * T);
+  }
 
-    const ng = this.prop('flag-ng', 232, 192, 4, 3);
-    const nl = this.prop('flag-nl', 408, 192, 4, 3);
-    this.anims.create({ key: 'wave-ng', frames: [{ key: 'flag-ng', frame: 0 }, { key: 'flag-ng', frame: 1 }], frameRate: 3, repeat: -1 });
-    this.anims.create({ key: 'wave-nl', frames: [{ key: 'flag-nl', frame: 0 }, { key: 'flag-nl', frame: 1 }], frameRate: 3, repeat: -1 });
-    this.add.sprite(ng.x, ng.y, 'flag-ng').setOrigin(0.5, 1).setDepth(ng.depth).play('wave-ng');
-    this.add.sprite(nl.x, nl.y, 'flag-nl').setOrigin(0.5, 1).setDepth(nl.depth).play({ key: 'wave-nl', startFrame: 1 });
-    ng.destroy(); nl.destroy();
+  private buildHouse() {
+    const { x, y } = G.house;
+    this.add.image(x, y, 'house', 'house').setOrigin(0).setDepth(y + 192);
+    // Walls (the stairs at the front door stay walkable).
+    this.solid(x + 32, y + 100, 128, 76);
+    this.solid(x + 32, y + 176, 32, 16);
+    this.solid(x + 96, y + 176, 64, 16);
+    this.solid(x + 160, y + 70, 64, 90);
+    this.solid(x + 22, y + 60, 10, 120);
+  }
 
-    this.prop('mailbox', 354, 214, 6, 3);
-    this.prop('perch', 456, 162, 14, 4);
-    this.prop('dining', 136, 140, 44, 12);
-    this.prop('sign', 436, 270, 4, 3);
-    this.prop('shelter', 548, 262, 34, 10);
-    this.prop('sign', 350, 466, 4, 3);
+  private fenceH(tx: number, ty: number, end: boolean) {
+    this.add.image(tx * T, ty * T, 'fence', end ? 'fence-h-end' : 'fence-h').setOrigin(0).setDepth(ty * T + 28);
+  }
+
+  private fenceV(tx: number, ty: number, frame: 'top' | 'mid' | 'post' | 'bottom') {
+    this.add.image(tx * T, ty * T, 'fence', `fence-v-${frame}`).setOrigin(0).setDepth(ty * T + 30);
+  }
+
+  /** Horizontal fence from tile x0 to x1 (inclusive) on row ty. */
+  private fenceRun(x0: number, x1: number, ty: number) {
+    for (let x = x0; x <= x1; x++) this.fenceH(x, ty, x === x1);
+    this.solid(x0 * T + 10, ty * T + 18, (x1 - x0) * T + 12, 12);
+  }
+
+  /** Vertical fence on column tx from tile y0 to y1 (inclusive). */
+  private fenceCol(tx: number, y0: number, y1: number) {
+    for (let y = y0; y <= y1; y++) {
+      const f = y === y0 ? 'top' : y === y1 ? 'bottom' : (y - y0) % 3 === 0 ? 'post' : 'mid';
+      this.fenceV(tx, y, f);
+    }
+    this.solid(tx * T + 10, y0 * T, 12, (y1 - y0 + 1) * T);
+  }
+
+  private buildFences() {
+    const g = G.goatPen;
+    const x1 = g.x + g.w - 1, y1 = g.y + g.h - 1;
+    this.fenceRun(g.x, x1, g.y);
+    this.fenceRun(g.x, x1, y1);
+    this.fenceCol(g.x, g.y + 1, g.openingY - 1);
+    this.fenceCol(g.x, g.openingY + g.openingH, y1 - 1);
+    this.fenceCol(x1, g.y + 1, y1 - 1);
+
+    // Garden fence along the bottom, with the gate gap.
+    const b = G.bottomFence;
+    this.fenceRun(1, b.gapX - 1, b.y);
+    this.fenceRun(b.gapX + b.gapW, G.MAP_W - 2, b.y);
+  }
+
+  private buildNature() {
+    for (const [key, x, y] of G.trees) {
+      const px = x * T, py = y * T;
+      const pine = key.startsWith('pine');
+      this.add.image(px, py - 4, 'trees', pine ? 'shadow-pine' : 'shadow-tree').setOrigin(0.5, 0.5).setAlpha(0.3).setDepth(-400);
+      this.place(key, px, py, [22, 10]);
+    }
+    for (const [key, x, y] of G.flowers) this.place(key, x * T, y * T);
+  }
+
+  private buildProps() {
+    for (const p of G.props) {
+      const img = this.place(p.key, p.x * T, p.y * T, p.solid, p.flip);
+      if (p.anim) (this.add.sprite(img.x, img.y, 'campfire').setOrigin(0.5, 1).setDepth(img.depth).play(p.anim), img.destroy());
+    }
+    for (const h of G.handmade) {
+      const px = h.x * T, py = h.y * T;
+      if (h.anim) this.add.sprite(px, py, h.key).setOrigin(0.5, 1).setDepth(py).play(h.anim);
+      else this.add.image(px, py, h.key).setOrigin(0.5, 1).setDepth(py);
+      if (h.solid) this.solid(px - h.solid[0] / 2, py - h.solid[1], h.solid[0], h.solid[1]);
+    }
+  }
+
+  /** Keeps the player out of the forest edges. */
+  private buildBorders() {
+    const W = G.MAP_W * T, H = G.MAP_H * T;
+    this.solid(0, 0, W, 2.6 * T);
+    this.solid(0, 0, 1.7 * T, H);
+    this.solid(W - 1.6 * T, 0, 1.6 * T, H);
+    // Road to Heartwood is closed for now.
+    this.solid(G.bottomFence.gapX * T, H - 0.8 * T, G.bottomFence.gapW * T, 0.8 * T);
   }
 
   // ---------- every frame ----------
@@ -168,7 +207,7 @@ export class GardenScene extends Phaser.Scene {
     const bob = Math.sin(time / 180) > 0 ? -1 : 0;
     this.hint
       .setVisible(this.nearby !== null)
-      .setPosition(Math.round(this.player.x), Math.round(this.player.y) - 26 + bob);
+      .setPosition(Math.round(this.player.x), Math.round(this.player.y) - 52 + bob);
 
     if (interact && this.nearby) {
       this.player.halt();
@@ -176,14 +215,14 @@ export class GardenScene extends Phaser.Scene {
     }
   }
 
-  private findNearby(): Interactable | null {
+  private findNearby(): G.Interactable | null {
     const look = this.player.lookPoint();
-    let best: Interactable | null = null;
+    let best: G.Interactable | null = null;
     let bestD = INTERACT_RANGE;
-    for (const it of interactables) {
+    for (const it of G.interactables) {
       const d = Math.min(
         Phaser.Math.Distance.Between(look.x, look.y, it.at.x, it.at.y),
-        Phaser.Math.Distance.Between(this.player.x, this.player.y - 3, it.at.x, it.at.y) + 4,
+        Phaser.Math.Distance.Between(this.player.x, this.player.y - 4, it.at.x, it.at.y) + 6,
       );
       if (d < bestD) { bestD = d; best = it; }
     }
