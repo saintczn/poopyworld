@@ -87,6 +87,18 @@
   #start button:focus-visible { outline: 3px solid var(--panel); outline-offset: 3px; }
   #start .small { font-size: 12px; font-weight: 600; }
 
+  /* ---------- fishing ---------- */
+  #fishing {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    width: min(560px, calc(100% - 48px)); padding: 14px 20px; display: grid; gap: 10px;
+  }
+  #fishing .who { justify-self: start; font-family: var(--font-pixel); font-weight: 700; font-size: 16px; color: var(--panel); background: var(--wood); padding: 2px 10px; border-radius: 4px; }
+  #fishing .text { font-size: 16px; font-weight: 700; line-height: 1.45; }
+  #fish-bar { position: relative; height: 22px; background: #4a9fd6; border: 3px solid var(--wood-dark); border-radius: 6px; overflow: hidden; }
+  #fish-zone { position: absolute; top: 0; bottom: 0; background: #6fd35a; box-shadow: inset 0 0 0 2px #3f9a35; }
+  #fish-marker { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: var(--ink); }
+
   /* ---------- character creator ---------- */
   #creator {
     position: fixed; inset: 0; display: grid; place-items: center; overflow-y: auto;
@@ -161,6 +173,12 @@
     <div class="who" id="dialog-who"></div>
     <div class="text" id="dialog-text"></div>
     <div class="next">verder met <kbd>E</kbd></div>
+  </div>
+
+  <div id="fishing" class="panel" hidden>
+    <div class="who">Vissen</div>
+    <div class="text" id="fish-msg"></div>
+    <div id="fish-bar" hidden><div id="fish-zone"></div><div id="fish-marker"></div></div>
   </div>
 
   <div id="start">

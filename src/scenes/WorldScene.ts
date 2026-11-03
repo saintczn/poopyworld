@@ -3,6 +3,7 @@ import { INTERACT_RANGE } from '../config';
 import { sprites } from '../assets';
 import { Player } from '../entities/Player';
 import { Dialog } from '../ui/dialog';
+import { Fishing } from '../ui/fishing';
 
 type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT', Phaser.Input.Keyboard.Key>;
 
@@ -58,11 +59,14 @@ export abstract class WorldScene extends Phaser.Scene {
 
     this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT') as Keys;
     const kb = this.input.keyboard!;
-    const press = () => { this.interactPressed = true; };
+    const press = () => {
+      if (this.fishing.isOpen) { this.fishing.press(); return; }
+      this.interactPressed = true;
+    };
     kb.on('keydown-E', press);
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
-    kb.on('keydown-ESC', () => { this.escapePressed = true; });
+    kb.on('keydown-ESC', () => { if (this.fishing.isOpen) this.fishing.close(); else this.escapePressed = true; });
     // Sticker emotes on keys 1-6.
     ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.showSticker(i)));
     kb.on('keydown-C', () => {
@@ -100,7 +104,16 @@ export abstract class WorldScene extends Phaser.Scene {
     return img;
   }
 
+  protected fishing = new Fishing();
   private sticker?: Phaser.GameObjects.Image;
+
+  /** Opens the fishing mini-game; the player stands still until it closes. */
+  protected startFishing() {
+    this.player.halt();
+    this.registry.set('started', false);
+    this.fishing.open(() => this.registry.set('started', true));
+  }
+
 
   /** Pops a sticker above the player's head for a moment. */
   protected showSticker(i: number) {
@@ -134,7 +147,7 @@ export abstract class WorldScene extends Phaser.Scene {
 
   update(time: number) {
     this.tick(time);
-    if (!this.registry.get('started') || this.travelling) { this.interactPressed = false; return; }
+    if (!this.registry.get('started') || this.travelling) { this.interactPressed = false; this.hint?.setVisible(false); return; }
     const k = this.keys;
     const interact = this.interactPressed;
     const escape = this.escapePressed;

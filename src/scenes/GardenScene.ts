@@ -38,6 +38,8 @@ export class GardenScene extends WorldScene {
     this.interactables = G.interactables.map((it) => ({ ...it }));
     const door = this.interactables.find((i) => i.id === 'door');
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
+    const pond = this.interactables.find((i) => i.id === 'pond');
+    if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
     this.addKroki();
     this.addGoats();
     this.addVisitor('Gilly', GILLY_LOOK, [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }], gillyRamble);
