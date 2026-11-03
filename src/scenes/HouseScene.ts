@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
+import { Decorator } from '../world/decorator';
+import { DEFAULT_HOUSE, type PlacedItem } from '../content/furniture';
 
 /**
  * Inside the house: one open living room with a kitchen corner.
@@ -13,6 +15,7 @@ const DOOR = { x: 256, w: 64 };
 
 export class HouseScene extends WorldScene {
   private ambient!: Ambient;
+  private decorator!: Decorator;
 
   constructor() {
     super('house');
@@ -39,7 +42,6 @@ export class HouseScene extends WorldScene {
 
     this.interactables.push(
       { id: 'fireplace', at: { x: 160, y: 160 }, who: 'Open haard', lines: ['Het vuur knettert gezellig.', 'Perfect voor een koude avond samen op de bank.'] },
-      { id: 'sofa', at: { x: 160, y: 318 }, who: 'De bank', lines: ['Een zachte groene bank met uitzicht op de open haard.', 'Hier komt straks filmavond. Popcorn of bitterballen?'] },
       {
         id: 'clock', at: { x: 104, y: 156 }, who: 'Staande klok', lines: [],
         action: () => {
@@ -52,16 +54,27 @@ export class HouseScene extends WorldScene {
       { id: 'painting', at: { x: 300, y: 152 }, who: 'Schilderij', lines: ['Een schilderijtje van de bergen.', 'Deze muur wordt straks jullie herinneringsmuur, met foto\'s uit de Hub.'] },
       { id: 'kitchen', at: { x: 356, y: 172 }, who: 'Keuken', lines: ['Een aanrecht met een fornuis en kastjes.', 'Straks kun je hier koken met wat je in de moestuin oogst.'] },
       { id: 'fridge', at: { x: 460, y: 172 }, who: 'Koelkast', lines: ['Je opent de koelkast.', 'Bitterballen. Nog meer bitterballen. En helemaal achterin... een bakje aardbeien. Snel weer dicht.'] },
-      { id: 'dining', at: { x: 370, y: 346 }, who: 'Eettafel', lines: ['Een tafel voor twee, met een kleedje en een kaarsje.'] },
       { id: 'window', at: { x: 64, y: 156 }, who: 'Raam', lines: ['Buiten zie je de tuin, de vijver en de geitenwei.'] },
     );
     return { x: DOOR.x, y: 370, facing: 'up' };
   }
 
+  /** The sofa and the table can be talked to wherever they are placed. */
+  private syncFurnitureTalk(items: PlacedItem[]) {
+    this.interactables = this.interactables.filter((i) => !i.id.startsWith('item-'));
+    for (const it of items) {
+      if (it.key.startsWith('sofa')) {
+        this.interactables.push({ id: `item-${it.id}`, at: { x: it.x, y: it.y + (it.key === 'sofa-back' ? 0 : -28) }, who: 'De bank', lines: ['Een zachte groene bank.', 'Hier komt straks filmavond. Popcorn of bitterballen?'] });
+      } else if (it.key === 'table') {
+        this.interactables.push({ id: `item-${it.id}`, at: { x: it.x, y: it.y + 14 }, who: 'Tafel', lines: ['Een houten tafel. Perfect voor een spelletje of een etentje voor twee.'] });
+      }
+    }
+  }
+
   protected tick(time: number) {
     this.ambient.update(time);
     const p = this.player;
-    if (p && this.registry.get('started') && p.y > ROOM.y + ROOM.h + 8) {
+    if (p && this.registry.get('started') && !this.decorator?.isActive && p.y > ROOM.y + ROOM.h + 8) {
       this.travel('garden', { x: 512, y: 252, facing: 'down' });
     }
   }
@@ -149,19 +162,11 @@ export class HouseScene extends WorldScene {
     this.place('fridge', 460, 150, [30, 18]);
     // fire in the hearth
     this.add.sprite(160, 134, 'campfire').setOrigin(0.5, 1).setScale(0.75).setDepth(145).play('fire');
-    // living area
-    this.add.image(160, 272, 'rug', 'rug-blue').setDepth(-500);
-    this.place('sofa-back', 160, 318, [90, 18]);
-    this.place('endtable', 224, 312, [18, 8]);
-    this.place('floorlamp', 96, 314, [12, 6]);
-    this.place('pot-flowers', 224, 290);
-    // dining corner
-    this.add.image(370, 308, 'rug', 'rug-rose').setDepth(-500);
-    this.place('table', 370, 330, [74, 14]);
-    this.place('stool', 322, 336, [18, 8]);
-    this.place('stool', 418, 336, [18, 8]);
-    this.place('pot-flowers', 370, 312).setDepth(331); // on the table
-    this.place('potted-plant', 462, 372, [22, 8]);
-    this.place('planter-fern', 52, 372, [22, 8]);
+    this.decorator = new Decorator(this, ROOM, 'poopyworld.house.v1', DEFAULT_HOUSE,
+      (x, y, w, h) => this.solid(x, y, w, h), (items) => this.syncFurnitureTalk(items));
+    this.input.keyboard!.on('keydown-B', () => {
+      if (this.registry.get('started')) { this.player.halt(); this.decorator.toggle(); }
+    });
+    this.events.once('shutdown', () => { if (this.decorator.isActive) this.decorator.toggle(); });
   }
 }

@@ -9,7 +9,7 @@ Een privé 2D-pixelart-RPG met een eigen Hub, gemaakt voor twee spelers.
 | 1 | Rondlopen in de tuin: lopen, botsingen, camera, dingen bekijken (met echte pixelart), karaktermaker, dag en nacht | Gebouwd en getest in de browser |
 | 2 | Inloggen voor twee spelers, elkaar live zien bewegen, stickers | Nog niet begonnen |
 | 3 | Villa binnen, Kroki's plekje, Gilly op bezoek | Woonkamer met keuken, Kroki (groen-gele parkiet), en Gilly, Yara en Ben op bezoek gebouwd en getest |
-| 4 | Samen inrichten (bouwen en decoreren) | Nog niet begonnen |
+| 4 | Samen inrichten (bouwen en decoreren) | Inrichten van de woonkamer gebouwd (slepen, draaien, toevoegen, weghalen, ongedaan maken; lokaal bewaard). Samen tegelijk komt met accounts |
 | 5 | Stukje wereld richting Heartwood | Nog niet begonnen |
 | 6 | Hub v0: dashboard, check-in, vraag van de dag, brieven | Begroeting, check-in, vraag van de dag en geschiedenis gebouwd (lokaal); brieven nog niet |
 
@@ -24,6 +24,7 @@ Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC` en `
 - Lopen: WASD of pijltjestoetsen
 - Bekijken / verder: E, spatie of Enter
 - Tekst sluiten: Esc
+- Inrichten (binnen): B, dan meubels slepen met de muis; R draaien, Delete weghalen, Ctrl+Z ongedaan
 - Hub openen: H (of de knop linksboven)
 - Poppetje aanpassen: C
 - Vissen: E bij de vijver, wachten op beet, E als het streepje in het groen is

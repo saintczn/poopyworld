@@ -96,6 +96,7 @@ export abstract class WorldScene extends Phaser.Scene {
     const z = this.add.zone(x + w / 2, y + h / 2, w, h);
     this.physics.add.existing(z, true);
     this.solids.add(z);
+    return z;
   }
 
   /** A named sprite with its feet at (x, y) pixels, sorted by depth, with an optional solid base. */

@@ -125,6 +125,25 @@
   .hist-text em { color: var(--ink-soft); font-style: normal; }
   #hud .hub-btn { pointer-events: auto; cursor: pointer; font-family: var(--font-pixel); font-weight: 700; font-size: 15px; padding: 4px 12px; color: var(--ink); }
 
+  /* ---------- build & decorate ---------- */
+  #build-bar {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    width: min(960px, calc(100% - 32px)); padding: 10px 14px; display: grid; gap: 8px;
+  }
+  .build-top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .build-top strong { font-family: var(--font-pixel); font-size: 18px; color: var(--wood); }
+  .build-top .muted { flex: 1 1 160px; min-width: 0; }
+  .build-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn.small { font-size: 14px; padding: 3px 10px; border-bottom-width: 4px; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .build-catalog { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .cat-item {
+    flex: 0 0 auto; font: 700 13px var(--font-body); color: var(--ink); background: #fffaf0; cursor: pointer;
+    border: 2px solid var(--wood); border-radius: 6px; padding: 5px 10px;
+  }
+  .cat-item:hover { background: #fff1cf; }
+
   /* ---------- fishing ---------- */
   #fishing {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -205,7 +224,7 @@
     <div class="badge panel">Poopy<span>World</span></div>
     <div class="badge panel" id="hud-name" hidden></div>
     <button class="hub-btn panel" type="button" id="hub-open">Hub <kbd>H</kbd></button>
-    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> &middot; Stickers <kbd>1</kbd>-<kbd>6</kbd> &middot; Poppetje <kbd>C</kbd></div>
+    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> &middot; Stickers <kbd>1</kbd>-<kbd>6</kbd> &middot; Inrichten <kbd>B</kbd> (binnen) &middot; Poppetje <kbd>C</kbd></div>
   </div>
 
   <div id="dialog" class="panel" hidden>
@@ -248,6 +267,20 @@
         </section>
       </div>
     </div>
+  </div>
+
+  <div id="build-bar" class="panel" hidden>
+    <div class="build-top">
+      <strong>Inrichten</strong>
+      <span id="build-selected" class="muted"></span>
+      <div class="build-actions">
+        <button class="btn alt small" type="button" id="build-turn">Draaien <kbd>R</kbd></button>
+        <button class="btn alt small" type="button" id="build-remove">Weghalen <kbd>Del</kbd></button>
+        <button class="btn alt small" type="button" id="build-undo">Ongedaan <kbd>Ctrl+Z</kbd></button>
+        <button class="btn small" type="button" id="build-done">Klaar <kbd>B</kbd></button>
+      </div>
+    </div>
+    <div class="build-catalog" id="build-catalog" aria-label="Meubels toevoegen"></div>
   </div>
 
   <div id="fishing" class="panel" hidden>
