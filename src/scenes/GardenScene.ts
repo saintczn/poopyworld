@@ -6,6 +6,7 @@ import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
+import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
 import type { Look } from '../characters/look';
 
 const T = TILE;
@@ -39,7 +40,9 @@ export class GardenScene extends WorldScene {
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
     this.addKroki();
     this.addGoats();
-    this.addGilly();
+    this.addVisitor('Gilly', GILLY_LOOK, [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }], gillyRamble);
+    this.addVisitor('Yara', YARA_LOOK, [{ x: 640, y: 300 }, { x: 700, y: 410 }, { x: 760, y: 330 }, { x: 600, y: 420 }], yaraTalk, 26);
+    this.addVisitor('Ben', BEN_LOOK, [{ x: 300, y: 250 }, { x: 250, y: 290 }, { x: 360, y: 280 }], benTalk, 22);
     return { x: G.spawn.x, y: G.spawn.y };
   }
 
@@ -98,38 +101,41 @@ export class GardenScene extends WorldScene {
     });
   }
 
-  /** Gilly is visiting: she wanders between the pond and the flowers, and talks a lot. */
-  private addGilly() {
+  /** A family member visiting: wanders between a few spots and stops to talk when you press E. */
+  private addVisitor(name: string, look: Look, spots: Array<{ x: number; y: number }>, talk: () => string[], pace = 16) {
     const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
-    const spots = [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }];
-    const it = { id: 'gilly', at: { x: -999, y: -999 }, who: 'Gilly', lines: [] as string[], action: () => {} };
+    const it = { id: name, at: { x: -999, y: -999 }, who: name, lines: [] as string[], action: () => {} };
     this.interactables.push(it);
-    install(GILLY_LOOK).then((key) => {
+    install(look).then((key) => {
       if (!this.sys.isActive()) return;
-      const gilly = this.physics.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64);
-      gilly.play(`${key}-idle-down`);
+      const npc = this.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-down`);
+      this.add.image(0, 0, 'shadow').setOrigin(0.5, 0.6).setName(`${name}-shadow`);
+      const shadow = this.children.getByName(`${name}-shadow`) as Phaser.GameObjects.Image;
       let talking = false;
-      it.action = () => {
-        talking = true;
-        this.tweens.killTweensOf(gilly);
-        const dx = this.player.x - gilly.x, dy = this.player.y - gilly.y;
-        gilly.play(`${key}-idle-${Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down'}`);
-        this.say('Gilly', gillyRamble());
-        this.time.delayedCall(6000, () => { talking = false; walk(); });
-      };
+      const dirTo = (dx: number, dy: number) => (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down');
       const walk = () => {
         if (talking || !this.sys.isActive()) return;
         const to = Phaser.Math.RND.pick(spots);
-        const dx = to.x - gilly.x, dy = to.y - gilly.y;
-        const dir = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down';
-        gilly.play(`${key}-walk-${dir}`);
+        const dx = to.x - npc.x, dy = to.y - npc.y;
+        npc.play(`${key}-walk-${dirTo(dx, dy)}`);
         this.tweens.add({
-          targets: gilly, x: to.x, y: to.y, duration: Math.hypot(dx, dy) * 16,
-          onComplete: () => { gilly.play(`${key}-idle-down`); this.time.delayedCall(Phaser.Math.Between(2500, 6000), walk); },
+          targets: npc, x: to.x, y: to.y, duration: Math.max(200, Math.hypot(dx, dy) * pace),
+          onComplete: () => { npc.play(`${key}-idle-down`); this.time.delayedCall(Phaser.Math.Between(2500, 7000), walk); },
         });
       };
-      this.time.delayedCall(2000, walk);
-      this.events.on('update', () => { gilly.setDepth(gilly.y); it.at.x = gilly.x; it.at.y = gilly.y - 6; });
+      it.action = () => {
+        talking = true;
+        this.tweens.killTweensOf(npc);
+        npc.play(`${key}-idle-${dirTo(this.player.x - npc.x, this.player.y - npc.y)}`);
+        this.say(name, talk());
+        this.time.delayedCall(6000, () => { talking = false; walk(); });
+      };
+      this.time.delayedCall(Phaser.Math.Between(1000, 3000), walk);
+      this.events.on('update', () => {
+        npc.setDepth(npc.y);
+        shadow.setPosition(Math.round(npc.x), Math.round(npc.y)).setDepth(npc.y - 1);
+        it.at.x = npc.x; it.at.y = npc.y - 6;
+      });
     });
   }
 
