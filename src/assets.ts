@@ -21,10 +21,27 @@ import hay from './assets/hay.png';
 import campfire from './assets/campfire.png';
 import buckets from './assets/buckets.png';
 import baskets from './assets/baskets.png';
+import floorwood from './assets/floor_wood.png';
+import walls from './assets/walls.png';
+import sofa from './assets/sofa.png';
+import fireplace from './assets/fireplace.png';
+import rug from './assets/rug.png';
+import shelf from './assets/shelf.png';
+import tv from './assets/tv.png';
+import counter from './assets/counter.png';
+import sink from './assets/sink.png';
+import oven from './assets/oven.png';
+import fridge from './assets/fridge.png';
+import floorlamp from './assets/floorlamp.png';
+import paintings from './assets/paintings.png';
+import clock from './assets/clock.png';
+import window from './assets/window.png';
+import endtable from './assets/endtable.png';
 
 export const sheets = {
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
+  floorwood, walls, sofa, fireplace, rug, shelf, tv, counter, sink, oven, fridge, floorlamp, paintings, clock, window, endtable,
 };
 
 type Rect = [x: number, y: number, w: number, h: number];
@@ -98,4 +115,27 @@ export const sprites: Record<string, [keyof typeof sheets, ...Rect]> = {
   'fire-1': ['campfire', 32, 32, 32, 32],
   'fire-2': ['campfire', 64, 32, 32, 32],
   'fire-3': ['campfire', 96, 32, 32, 32],
+  // indoors
+  'sofa-front': ['sofa', 321, 17, 94, 38],
+  'sofa-back': ['sofa', 321, 65, 94, 31],
+  'armchair-side': ['sofa', 451, 0, 29, 56],
+  'fireplace': ['fireplace', 108, 15, 72, 70],
+  'rug-blue': ['rug', 0, 0, 160, 64],
+  'rug-rose': ['rug', 0, 64, 160, 64],
+  'bookshelf': ['shelf', 112, 11, 32, 85],
+  'bookshelf-b': ['shelf', 176, 0, 32, 96],
+  'low-shelf': ['shelf', 0, 11, 96, 20],
+  'tv': ['tv', 134, 5, 84, 52],
+  'counter-run': ['counter', 16, 160, 170, 50],
+  'sink': ['sink', 3, 0, 61, 29],
+  'oven': ['oven', 0, 9, 32, 41],
+  'fridge': ['fridge', 32, 2, 32, 62],
+  'floorlamp': ['floorlamp', 4, 2, 24, 49],
+  'painting-wide': ['paintings', 7, 69, 81, 25],
+  'painting-small': ['paintings', 13, 33, 39, 31],
+  'painting-tall': ['paintings', 98, 67, 29, 49],
+  'clock': ['clock', 7, 22, 18, 71],
+  'window': ['window', 32, 22, 32, 74],
+  'endtable': ['endtable', 6, 3, 20, 24],
+  'potted-plant': ['planter', 128, 32, 32, 52],
 };

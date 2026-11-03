@@ -48,6 +48,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.play(`${look}-idle-${this.facing}`);
   }
 
+  face(dir: Facing) {
+    this.facing = dir;
+    this.play(`${this.look}-idle-${dir}`, true);
+  }
+
   halt() {
     this.move(0, 0);
   }

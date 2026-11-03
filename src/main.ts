@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { VIEW_WIDTH, VIEW_HEIGHT } from './config';
 import { BootScene } from './scenes/BootScene';
 import { GardenScene } from './scenes/GardenScene';
+import { HouseScene } from './scenes/HouseScene';
 import { DEFAULT_LOOK, paintLook, splitSheet, type Look } from './characters/look';
 import { loadProfile, saveProfile, type Profile } from './characters/profile';
 import { createCharacterAnims } from './entities/Player';
@@ -32,8 +33,9 @@ async function startGame() {
     backgroundColor: '#2d4a2b',
     physics: { default: 'arcade', arcade: { debug: false } },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, GardenScene],
+    scene: [BootScene, GardenScene, HouseScene],
   });
+  (window as unknown as { __game: Phaser.Game }).__game = game; // handy for testing
   // The boot scene waits for the first look before opening the garden.
   game.registry.set('installLook', (look: Look) => installLook(game, look));
   game.registry.set('firstLook', profile?.look ?? DEFAULT_LOOK);
@@ -72,8 +74,7 @@ async function startGame() {
     creator.open(profile, async (p) => {
       profile = p;
       saveProfile(p);
-      const key = await installLook(game, p.look);
-      (game.scene.getScene('garden') as GardenScene).setPlayerLook(key);
+      game.registry.set('lookKey', await installLook(game, p.look));
       refreshStart();
       play();
     });

@@ -95,6 +95,7 @@ export class Ambient {
     lights: LightSpot[],
     flowers: Array<{ x: number; y: number }>,
     water?: { x: number; y: number; w: number; h: number },
+    private indoor = false,
   ) {
     this.overlay = scene.add.rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT, 0xffffff)
       .setOrigin(0).setScrollFactor(0).setDepth(90000).setBlendMode(Phaser.BlendModes.MULTIPLY);
@@ -107,7 +108,7 @@ export class Ambient {
 
     const r = Phaser.Math.RND;
     // fireflies (visible at night)
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < (indoor ? 0 : 26); i++) {
       const f = scene.add.image(r.between(80, area.w - 80), r.between(120, area.h - 60), 'dot')
         .setDepth(90002).setBlendMode(Phaser.BlendModes.ADD).setTint(0xd8ff7a).setAlpha(0);
       this.fireflies.push(f);
@@ -157,6 +158,10 @@ export class Ambient {
     if (time - this.lastPhaseCheck > 5000) {
       this.lastPhaseCheck = time;
       this.phase = phaseAt(currentHour());
+      if (this.indoor) {
+        // Inside, lamps are on: the night only dims things a little.
+        this.phase = { tint: this.phase.tint.map((c) => Math.round(c + (255 - c) * 0.55)) as [number, number, number], night: Math.max(0.35, this.phase.night) };
+      }
       const [r, g, b] = this.phase.tint;
       this.overlay.setFillStyle((r << 16) | (g << 8) | b);
       const n = this.phase.night;

@@ -127,13 +127,14 @@ export const crops: Array<[string, number, number]> = [
   ['leafy-c', 5.5, 21.6], ['leafy-d', 6.5, 21.6], ['leafy-c', 7.5, 21.6],
 ];
 
-/** Things you can look at. `at` is in pixels (where you stand / look). */
-export type Interactable = { id: string; at: { x: number; y: number }; who: string; lines: string[] };
+import type { Interactable } from '../scenes/WorldScene';
+
+/** The top of the front stairs: walking up past this point goes inside. */
+export const doorway = { x: 512, y: 240 };
 
 export const interactables: Interactable[] = [
   {
-    id: 'door', at: { x: 544, y: 248 }, who: 'De voordeur',
-    lines: ['De voordeur van jullie huis. Hij zit nog op slot.', 'Binnen wordt nog verbouwd. In mijlpaal 3 mogen jullie naar binnen.'],
+    id: 'door', at: { x: 512, y: 240 }, who: 'Naar binnen', lines: [],
   },
   { id: 'flag-ng', at: { x: 400, y: 288 }, who: 'Nigeriaanse vlag', lines: ['Groen, wit, groen. De Nigeriaanse vlag wappert trots naast het pad.'] },
   { id: 'flag-nl', at: { x: 694, y: 288 }, who: 'Nederlandse vlag', lines: ['Rood, wit, blauw. De Nederlandse vlag wappert aan de andere kant.'] },

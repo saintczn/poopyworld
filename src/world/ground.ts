@@ -41,6 +41,7 @@ export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) 
   const r = rng(spec.seed ?? 11);
   const { w, h } = spec;
 
+  if (scene.textures.exists(key)) return; // already painted (coming back to this place)
   const tex = scene.textures.createCanvas(key, w * T, h * T)!;
   const c = tex.getContext();
   c.imageSmoothingEnabled = false;
@@ -109,5 +110,4 @@ export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) 
   if (spec.soil) nine(soilImg, 0, 0, spec.soil);
 
   tex.refresh();
-  return grass;
 }

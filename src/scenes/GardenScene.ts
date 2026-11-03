@@ -1,37 +1,24 @@
-import Phaser from 'phaser';
-import { TILE, INTERACT_RANGE } from '../config';
+import { TILE } from '../config';
 import { sprites } from '../assets';
 import * as G from '../content/villaGarden';
 import { paintGround } from '../world/ground';
-import { Player } from '../entities/Player';
-import { Dialog } from '../ui/dialog';
+import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
-
-type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT', Phaser.Input.Keyboard.Key>;
 
 const T = TILE;
 
 /** The villa garden: the first playable area. */
-export class GardenScene extends Phaser.Scene {
-  private player!: Player;
-  private solids!: Phaser.Physics.Arcade.StaticGroup;
-  private keys!: Keys;
-  private hint!: Phaser.GameObjects.Image;
-  private dialog = new Dialog();
-  private nearby: G.Interactable | null = null;
-  /** Set by key presses, so even a very quick tap is never missed. */
-  private interactPressed = false;
-  private escapePressed = false;
+export class GardenScene extends WorldScene {
   private ambient!: Ambient;
 
   constructor() {
     super('garden');
   }
 
-  create() {
+  protected build(): Arrival {
     const worldW = G.MAP_W * T, worldH = G.MAP_H * T;
     this.physics.world.setBounds(0, 0, worldW, worldH);
-    this.solids = this.physics.add.staticGroup();
+    this.cameras.main.setBounds(0, 0, worldW, worldH).setBackgroundColor('#2d4a2b');
 
     paintGround(this, 'garden-ground', { w: G.MAP_W, h: G.MAP_H, dirt: G.dirt, pond: G.pond, soil: G.soil, seed: 21 });
     this.add.image(0, 0, 'garden-ground').setOrigin(0).setDepth(-1000);
@@ -42,60 +29,23 @@ export class GardenScene extends Phaser.Scene {
     this.buildNature();
     this.buildProps();
     this.buildBorders();
-
-    this.player = new Player(this, G.spawn.x, G.spawn.y, this.registry.get('lookKey'));
-    this.physics.add.collider(this.player, this.solids);
-
     this.buildAmbient();
 
-    this.hint = this.add.image(0, 0, 'key-e').setOrigin(0.5, 1).setDepth(100000).setVisible(false);
-
-    const cam = this.cameras.main;
-    cam.setBounds(0, 0, worldW, worldH);
-    cam.startFollow(this.player, true, 0.14, 0.14);
-    cam.setRoundPixels(true);
-    cam.setBackgroundColor('#2d4a2b');
-
-    this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT') as Keys;
-    const kb = this.input.keyboard!;
-    const press = () => { this.interactPressed = true; };
-    kb.on('keydown-E', press);
-    kb.on('keydown-SPACE', press);
-    kb.on('keydown-ENTER', press);
-    kb.on('keydown-ESC', () => { this.escapePressed = true; });
-    kb.on('keydown-C', () => {
-      if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-creator'); }
-    });
-
-    // Debug helper for screenshots: ?at=x,y puts the player there.
-    const at = new URLSearchParams(location.search).get('at');
-    if (at) {
-      const [x, y] = at.split(',').map(Number);
-      this.player.setPosition(x, y);
-      cam.centerOn(x, y);
-    }
+    this.interactables = G.interactables.map((it) => ({ ...it }));
+    const door = this.interactables.find((i) => i.id === 'door');
+    if (door) { door.lines = []; door.action = () => this.enterHouse(); }
+    return { x: G.spawn.x, y: G.spawn.y };
   }
 
-  setPlayerLook(key: string) {
-    this.player.setLook(key);
+  private enterHouse() {
+    this.travel('house', { x: 256, y: 372, facing: 'up' });
   }
 
-  // ---------- helpers ----------
-
-  /** An invisible wall. x, y, w, h in pixels (top-left). */
-  private solid(x: number, y: number, w: number, h: number) {
-    const z = this.add.zone(x + w / 2, y + h / 2, w, h);
-    this.physics.add.existing(z, true);
-    this.solids.add(z);
-  }
-
-  /** A named sprite with its feet at (x, y) pixels, sorted by depth, with an optional solid base. */
-  private place(name: string, x: number, y: number, solid?: [number, number], flip = false) {
-    const def = sprites[name];
-    const img = def ? this.add.image(x, y, def[0], name) : this.add.image(x, y, name);
-    img.setOrigin(0.5, 1).setDepth(y).setFlipX(flip);
-    if (solid) this.solid(x - solid[0] / 2, y - solid[1], solid[0], solid[1]);
-    return img;
+  protected tick(time: number) {
+    this.ambient.update(time);
+    // Walking up the stairs into the doorway also goes inside.
+    const p = this.player;
+    if (p && this.registry.get('started') && Math.abs(p.x - G.doorway.x) < 24 && p.y < G.doorway.y && p.facing === 'up') this.enterHouse();
   }
 
   // ---------- building the garden ----------
@@ -204,54 +154,5 @@ export class GardenScene extends Phaser.Scene {
     this.solid(W - 1.6 * T, 0, 1.6 * T, H);
     // Road to Heartwood is closed for now.
     this.solid(G.bottomFence.gapX * T, H - 0.8 * T, G.bottomFence.gapW * T, 0.8 * T);
-  }
-
-  // ---------- every frame ----------
-
-  update(time: number) {
-    this.ambient.update(time);
-    if (!this.registry.get('started')) { this.interactPressed = false; return; }
-    const k = this.keys;
-    const interact = this.interactPressed;
-    const escape = this.escapePressed;
-    this.interactPressed = false;
-    this.escapePressed = false;
-
-    if (this.dialog.isOpen) {
-      this.player.halt();
-      this.hint.setVisible(false);
-      if (escape) this.dialog.close();
-      else if (interact) this.dialog.advance();
-      return;
-    }
-
-    const dx = (k.LEFT.isDown || k.A.isDown ? -1 : 0) + (k.RIGHT.isDown || k.D.isDown ? 1 : 0);
-    const dy = (k.UP.isDown || k.W.isDown ? -1 : 0) + (k.DOWN.isDown || k.S.isDown ? 1 : 0);
-    this.player.move(dx, dy);
-
-    this.nearby = this.findNearby();
-    const bob = Math.sin(time / 180) > 0 ? -1 : 0;
-    this.hint
-      .setVisible(this.nearby !== null)
-      .setPosition(Math.round(this.player.x), Math.round(this.player.y) - 52 + bob);
-
-    if (interact && this.nearby) {
-      this.player.halt();
-      this.dialog.open(this.nearby.who, this.nearby.lines);
-    }
-  }
-
-  private findNearby(): G.Interactable | null {
-    const look = this.player.lookPoint();
-    let best: G.Interactable | null = null;
-    let bestD = INTERACT_RANGE;
-    for (const it of G.interactables) {
-      const d = Math.min(
-        Phaser.Math.Distance.Between(look.x, look.y, it.at.x, it.at.y),
-        Phaser.Math.Distance.Between(this.player.x, this.player.y - 4, it.at.x, it.at.y) + 6,
-      );
-      if (d < bestD) { bestD = d; best = it; }
-    }
-    return best;
   }
 }
