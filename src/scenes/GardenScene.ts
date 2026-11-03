@@ -5,6 +5,8 @@ import * as G from '../content/villaGarden';
 import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
+import { GILLY_LOOK, gillyRamble } from '../content/gilly';
+import type { Look } from '../characters/look';
 
 const T = TILE;
 
@@ -37,6 +39,7 @@ export class GardenScene extends WorldScene {
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
     this.addKroki();
     this.addGoats();
+    this.addGilly();
     return { x: G.spawn.x, y: G.spawn.y };
   }
 
@@ -92,6 +95,41 @@ export class GardenScene extends WorldScene {
       });
       const it = this.interactables[this.interactables.length - 1];
       this.events.on('update', () => { it.at.x = goat.x; it.at.y = goat.y - 6; });
+    });
+  }
+
+  /** Gilly is visiting: she wanders between the pond and the flowers, and talks a lot. */
+  private addGilly() {
+    const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
+    const spots = [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }];
+    const it = { id: 'gilly', at: { x: -999, y: -999 }, who: 'Gilly', lines: [] as string[], action: () => {} };
+    this.interactables.push(it);
+    install(GILLY_LOOK).then((key) => {
+      if (!this.sys.isActive()) return;
+      const gilly = this.physics.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64);
+      gilly.play(`${key}-idle-down`);
+      let talking = false;
+      it.action = () => {
+        talking = true;
+        this.tweens.killTweensOf(gilly);
+        const dx = this.player.x - gilly.x, dy = this.player.y - gilly.y;
+        gilly.play(`${key}-idle-${Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down'}`);
+        this.say('Gilly', gillyRamble());
+        this.time.delayedCall(6000, () => { talking = false; walk(); });
+      };
+      const walk = () => {
+        if (talking || !this.sys.isActive()) return;
+        const to = Phaser.Math.RND.pick(spots);
+        const dx = to.x - gilly.x, dy = to.y - gilly.y;
+        const dir = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down';
+        gilly.play(`${key}-walk-${dir}`);
+        this.tweens.add({
+          targets: gilly, x: to.x, y: to.y, duration: Math.hypot(dx, dy) * 16,
+          onComplete: () => { gilly.play(`${key}-idle-down`); this.time.delayedCall(Phaser.Math.Between(2500, 6000), walk); },
+        });
+      };
+      this.time.delayedCall(2000, walk);
+      this.events.on('update', () => { gilly.setDepth(gilly.y); it.at.x = gilly.x; it.at.y = gilly.y - 6; });
     });
   }
 
