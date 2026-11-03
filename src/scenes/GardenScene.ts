@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { TILE } from '../config';
 import { sprites } from '../assets';
 import * as G from '../content/villaGarden';
@@ -35,6 +36,7 @@ export class GardenScene extends WorldScene {
     const door = this.interactables.find((i) => i.id === 'door');
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
     this.addKroki();
+    this.addGoats();
     return { x: G.spawn.x, y: G.spawn.y };
   }
 
@@ -63,6 +65,34 @@ export class GardenScene extends WorldScene {
         'Hij kijkt je met zijn kopje scheef aan. Dit is zijn plekje, en hier is hij thuis.',
       ]);
     };
+  }
+
+  /** Three goats wandering around their meadow. */
+  private addGoats() {
+    const g = G.goatPen;
+    const area = { x0: (g.x + 1) * T + 6, x1: (g.x + g.w - 1) * T - 10, y0: (g.y + 1) * T + 20, y1: (g.y + g.h - 1) * T + 4 };
+    const names = ['Sneeuwvlokje', 'Karamel', 'Drop'];
+    names.forEach((name, i) => {
+      const goat = this.add.sprite(Phaser.Math.Between(area.x0, area.x1), Phaser.Math.Between(area.y0, area.y1), 'goat')
+        .setOrigin(0.5, 1).play(`goat-idle-${i}`);
+      goat.setDepth(goat.y);
+      const wander = () => {
+        const tx = Phaser.Math.Between(area.x0, area.x1), ty = Phaser.Math.Between(area.y0, area.y1);
+        const dist = Phaser.Math.Distance.Between(goat.x, goat.y, tx, ty);
+        goat.setFlipX(tx < goat.x).play(`goat-walk-${i}`);
+        this.tweens.add({
+          targets: goat, x: tx, y: ty, duration: dist * 45, onUpdate: () => goat.setDepth(goat.y),
+          onComplete: () => { goat.play(`goat-idle-${i}`); this.time.delayedCall(Phaser.Math.Between(1500, 5000), wander); },
+        });
+      };
+      this.time.delayedCall(Phaser.Math.Between(300, 3000), wander);
+      this.interactables.push({
+        id: `goat-${i}`, at: { x: 0, y: 0 }, who: name, lines: [],
+        action: () => this.say(name, [Phaser.Math.RND.pick(['Mèèèèh!', 'Mèh. (Ze kauwt rustig verder op wat hooi.)', 'Mèèh? (Ze kijkt hoopvol naar je zakken. Heb je iets lekkers?)']), `${name} lijkt het hier prima naar haar zin te hebben.`]),
+      });
+      const it = this.interactables[this.interactables.length - 1];
+      this.events.on('update', () => { it.at.x = goat.x; it.at.y = goat.y - 6; });
+    });
   }
 
   private enterHouse() {

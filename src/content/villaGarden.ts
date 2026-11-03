@@ -154,7 +154,7 @@ export const interactables: Interactable[] = [
   { id: 'veggies', at: { x: 336, y: 690 }, who: 'Moestuin', lines: ['Sla en kool, bijna klaar om te oogsten. Aardbeien groeien hier natuurlijk NIET.'] },
   {
     id: 'goats', at: { x: 812, y: 470 }, who: 'Geitenwei',
-    lines: ['Een wei met hooi en een drinkbak.', 'Hier komen straks de geiten. Volgens de geruchten zijn ze nu al aan het ontsnappen.'],
+    lines: ['De geitenwei van Sneeuwvlokje, Karamel en Drop.', 'Volgens de geruchten oefenen ze al op ontsnappen.'],
   },
   {
     id: 'gate', at: { x: 544, y: 790 }, who: 'Weg naar Heartwood',

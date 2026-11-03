@@ -147,6 +147,36 @@ export function buildHandmade(scene: Phaser.Scene) {
   scene.anims.create({ key: 'kroki-idle', frames: scene.anims.generateFrameNumbers('kroki', { frames: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1] }), frameRate: 4, repeat: -1 });
   scene.anims.create({ key: 'kroki-flap', frames: scene.anims.generateFrameNumbers('kroki', { frames: [2, 0, 2, 0] }), frameRate: 12, repeat: -1 });
 
+  // ---- goats: 3 coats x 2 walk frames, 28 x 24 each, facing right ----
+  canvas(scene, 'goat', 168, 24, (c) => {
+    const coats = [['#f4f1ea', '#d9d2c4', '#b8ad9a'], ['#b07a4a', '#8a5a34', '#6a4226'], ['#4a4440', '#353030', '#25201e']];
+    coats.forEach(([base, mid, dark], ci) => {
+      for (let f = 0; f < 2; f++) {
+        const o = (ci * 2 + f) * 28;
+        // legs (alternate per frame)
+        const l = f === 0 ? [6, 10, 16, 20] : [7, 9, 17, 19];
+        for (const lx of l) { px(c, o + lx, 17, 2, 6, OUT); px(c, o + lx, 17, 1, 5, mid); }
+        // body
+        px(c, o + 4, 9, 19, 10, OUT); px(c, o + 5, 10, 17, 8, base); px(c, o + 5, 15, 17, 3, mid); px(c, o + 6, 10, 8, 1, '#ffffff');
+        // tail
+        px(c, o + 2, 9, 3, 3, OUT); px(c, o + 3, 9, 1, 2, base);
+        // neck + head
+        px(c, o + 18, 4, 8, 9, OUT); px(c, o + 19, 5, 6, 7, base); px(c, o + 23, 8, 3, 3, mid);
+        px(c, o + 22, 6, 1, 1, OUT); // eye
+        // horns + ear
+        px(c, o + 18, 1, 2, 4, dark); px(c, o + 20, 0, 2, 4, dark); px(c, o + 17, 6, 2, 2, mid);
+        // beard
+        px(c, o + 24, 12, 1, 3, mid);
+      }
+    });
+  });
+  const gt = scene.textures.get('goat');
+  for (let i = 0; i < 6; i++) gt.add(i, 0, i * 28, 0, 28, 24);
+  for (let ci = 0; ci < 3; ci++) {
+    scene.anims.create({ key: `goat-walk-${ci}`, frames: scene.anims.generateFrameNumbers('goat', { frames: [ci * 2, ci * 2 + 1] }), frameRate: 6, repeat: -1 });
+    scene.anims.create({ key: `goat-idle-${ci}`, frames: [{ key: 'goat', frame: ci * 2 }], frameRate: 1 });
+  }
+
   // ---- wooden sign: 30 x 36 ----
   canvas(scene, 'sign', 30, 36, (c) => {
     woodPost(c, 13, 16, 18);
