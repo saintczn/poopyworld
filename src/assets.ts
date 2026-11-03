@@ -21,15 +21,11 @@ import hay from './assets/hay.png';
 import campfire from './assets/campfire.png';
 import buckets from './assets/buckets.png';
 import baskets from './assets/baskets.png';
-import playerWalk from './assets/player_walk.png';
-import playerIdle from './assets/player_idle.png';
 
 export const sheets = {
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
 };
-
-export const characterSheets = { playerWalk, playerIdle };
 
 type Rect = [x: number, y: number, w: number, h: number];
 

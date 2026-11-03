@@ -55,23 +55,6 @@ for y in range(h):
             out[y, x, :3] = roof_map[k]
 Image.fromarray(out).save(OUT / 'house.png')
 
-# --- Player placeholder look: layered LPC character (walk + idle) ---
-C = LPC / 'Characters'
-layers = [
-    'Body/Body 02 - Masculine, Thin/Tan',
-    'Clothing/Masculine, Thin/Feet/Shoes 01 - Shoes/Brown',
-    'Clothing/Masculine, Thin/Legs/Pants 03 - Pants/Charcoal',
-    'Clothing/Masculine, Thin/Torso/Shirt 04 - T-shirt/Cerulean',
-    'Head/Head 02 - Masculine/Tan',
-    'Head/Head Overlay - Eyes/Brown',
-    'Hair/Eyebrows 01 - Thin Eyebrows/Chestnut',
-    'Hair/Short 03 - Curly/Chestnut',
-]
-for anim in ['Walk', 'Idle']:
-    ims = [Image.open(C / l / f'{anim}.png').convert('RGBA') for l in layers]
-    img = Image.new('RGBA', ims[0].size, (0, 0, 0, 0))
-    for i in ims:
-        img.alpha_composite(i)
-    img.save(OUT / f'player_{anim.lower()}.png')
+# (Characters are built by tools/build_characters.py)
 
 print('Assets written to', OUT)

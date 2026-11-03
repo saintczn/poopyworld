@@ -14,15 +14,17 @@ Een privé 2D-pixelart-RPG met een eigen Hub, gemaakt voor twee spelers.
 | 6 | Hub v0: dashboard, check-in, vraag van de dag, brieven | Nog niet begonnen |
 
 De pixelart komt uit LPC Revised (gratis te gebruiken met naamsvermelding, zie `CREDITS.md`).
-Het huidige poppetje is tijdelijk; de karaktermaker volgt.
+Bij de eerste start maak je je eigen poppetje (naam + uiterlijk); met **C** pas je het later aan.
+Het poppetje wordt nu nog alleen in deze browser bewaard; met accounts (mijlpaal 2) gaat het naar de gedeelde opslag.
 
-Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC`
+Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC` en `python3 tools/build_characters.py /pad/naar/LPC`
 
 ## Besturing
 
 - Lopen: WASD of pijltjestoetsen
 - Bekijken / verder: E, spatie of Enter
 - Tekst sluiten: Esc
+- Poppetje aanpassen: C
 
 ## Techniek
 

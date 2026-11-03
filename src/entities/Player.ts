@@ -41,6 +41,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  /** Switches to another painted look (after using the character creator). */
+  setLook(look: string) {
+    this.look = look;
+    this.anims.stop();
+    this.play(`${look}-idle-${this.facing}`);
+  }
+
   halt() {
     this.move(0, 0);
   }

@@ -41,7 +41,7 @@ export class GardenScene extends Phaser.Scene {
     this.buildProps();
     this.buildBorders();
 
-    this.player = new Player(this, G.spawn.x, G.spawn.y, 'player');
+    this.player = new Player(this, G.spawn.x, G.spawn.y, this.registry.get('lookKey'));
     this.physics.add.collider(this.player, this.solids);
 
     this.hint = this.add.image(0, 0, 'key-e').setOrigin(0.5, 1).setDepth(100000).setVisible(false);
@@ -59,6 +59,9 @@ export class GardenScene extends Phaser.Scene {
     kb.on('keydown-SPACE', press);
     kb.on('keydown-ENTER', press);
     kb.on('keydown-ESC', () => { this.escapePressed = true; });
+    kb.on('keydown-C', () => {
+      if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-creator'); }
+    });
 
     // Debug helper for screenshots: ?at=x,y puts the player there.
     const at = new URLSearchParams(location.search).get('at');
@@ -67,6 +70,10 @@ export class GardenScene extends Phaser.Scene {
       this.player.setPosition(x, y);
       cam.centerOn(x, y);
     }
+  }
+
+  setPlayerLook(key: string) {
+    this.player.setLook(key);
   }
 
   // ---------- helpers ----------
