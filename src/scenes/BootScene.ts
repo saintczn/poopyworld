@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { sheets, sprites } from '../assets';
 import { buildHandmade } from '../art/handmade';
+import { buildAmbientTextures } from '../world/ambient';
 import type { Look } from '../characters/look';
 
 /** Loads all graphics, cuts them into named pieces, then opens the garden. */
@@ -19,6 +20,7 @@ export class BootScene extends Phaser.Scene {
       this.textures.get(sheet).add(name, 0, x, y, w, h);
     }
     buildHandmade(this);
+    buildAmbientTextures(this);
 
     const fire = ['fire-0', 'fire-1', 'fire-2', 'fire-3'].map((f) => ({ key: 'campfire', frame: f }));
     this.anims.create({ key: 'fire', frames: fire, frameRate: 8, repeat: -1 });

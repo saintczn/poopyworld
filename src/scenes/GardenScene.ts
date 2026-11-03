@@ -5,6 +5,7 @@ import * as G from '../content/villaGarden';
 import { paintGround } from '../world/ground';
 import { Player } from '../entities/Player';
 import { Dialog } from '../ui/dialog';
+import { Ambient, type LightSpot } from '../world/ambient';
 
 type Keys = Record<'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT', Phaser.Input.Keyboard.Key>;
 
@@ -21,6 +22,7 @@ export class GardenScene extends Phaser.Scene {
   /** Set by key presses, so even a very quick tap is never missed. */
   private interactPressed = false;
   private escapePressed = false;
+  private ambient!: Ambient;
 
   constructor() {
     super('garden');
@@ -43,6 +45,8 @@ export class GardenScene extends Phaser.Scene {
 
     this.player = new Player(this, G.spawn.x, G.spawn.y, this.registry.get('lookKey'));
     this.physics.add.collider(this.player, this.solids);
+
+    this.buildAmbient();
 
     this.hint = this.add.image(0, 0, 'key-e').setOrigin(0.5, 1).setDepth(100000).setVisible(false);
 
@@ -178,6 +182,20 @@ export class GardenScene extends Phaser.Scene {
     }
   }
 
+  private buildAmbient() {
+    const lights: LightSpot[] = [];
+    for (const p of G.props) {
+      if (p.key === 'lamp') lights.push({ x: p.x * T, y: p.y * T - 68, size: 170 });
+      if (p.anim === 'fire') lights.push({ x: p.x * T, y: p.y * T - 12, size: 200, flicker: true, colour: 0xff9a40, always: 0.12 });
+    }
+    const { x, y } = G.house;
+    lights.push({ x: x + 128, y: y + 143, size: 90 }, { x: x + 192, y: y + 112, size: 90 }, { x: x + 80, y: y + 150, size: 70 });
+    const flowers = G.flowers.filter(([k]) => k.startsWith('flowers')).map(([, fx, fy]) => ({ x: fx * T, y: fy * T }));
+    const p = G.pond;
+    this.ambient = new Ambient(this, { w: G.MAP_W * T, h: G.MAP_H * T }, lights, flowers,
+      { x: (p.x + 0.8) * T, y: (p.y + 0.9) * T, w: (p.w - 1.6) * T, h: (p.h - 1.8) * T });
+  }
+
   /** Keeps the player out of the forest edges. */
   private buildBorders() {
     const W = G.MAP_W * T, H = G.MAP_H * T;
@@ -191,6 +209,7 @@ export class GardenScene extends Phaser.Scene {
   // ---------- every frame ----------
 
   update(time: number) {
+    this.ambient.update(time);
     if (!this.registry.get('started')) { this.interactPressed = false; return; }
     const k = this.keys;
     const interact = this.interactPressed;
