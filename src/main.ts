@@ -7,6 +7,7 @@ import { DEFAULT_LOOK, paintLook, splitSheet, type Look } from './characters/loo
 import { loadProfile, saveProfile, type Profile } from './characters/profile';
 import { createCharacterAnims } from './entities/Player';
 import { Creator } from './ui/creator';
+import { Hub } from './ui/hub';
 
 const $ = (id: string) => document.getElementById(id)!;
 let profile: Profile | null = loadProfile();
@@ -80,6 +81,24 @@ async function startGame() {
     });
     if (fromGame) hud.hidden = true;
   };
+
+  // While typing in a text field, the game must not swallow keys like W, A, S, D, E or space.
+  const isField = (t: EventTarget | null) => t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement;
+  document.addEventListener('focusin', (e) => { if (isField(e.target)) game.input.keyboard!.enabled = false; });
+  document.addEventListener('focusout', (e) => { if (isField(e.target) && !hub.isOpen) game.input.keyboard!.enabled = true; });
+
+  const hub = new Hub();
+  const openHub = () => {
+    if (!profile || hub.isOpen || !game.registry.get('started')) return;
+    game.registry.set('started', false);
+    game.input.keyboard!.enabled = false;
+    hub.open(profile.name, () => { game.input.keyboard!.enabled = true; play(); });
+  };
+  $('hub-open').addEventListener('click', openHub);
+  game.events.on('open-hub', openHub);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && hub.isOpen) hub.close();
+  });
 
   startBtn.addEventListener('click', () => (profile ? play() : openCreator(false)));
   restyle.addEventListener('click', () => openCreator(false));

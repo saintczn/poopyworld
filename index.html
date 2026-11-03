@@ -87,6 +87,44 @@
   #start button:focus-visible { outline: 3px solid var(--panel); outline-offset: 3px; }
   #start .small { font-size: 12px; font-weight: 600; }
 
+  /* ---------- hub ---------- */
+  #hub {
+    position: fixed; inset: 0; overflow-y: auto; background: rgba(20, 30, 14, .6);
+    padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: grid; place-items: start center;
+  }
+  .hub-card { width: min(900px, 100%); padding: 18px 20px; display: grid; gap: 14px; }
+  .hub-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+  .hub-head h2 { margin: 0; font-family: var(--font-pixel); font-size: 28px; color: var(--wood); }
+  .hub-head p { margin: 2px 0 0; text-transform: capitalize; }
+  .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+  .hub-box { background: #fffaf0; border: 3px solid var(--wood); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .hub-box.wide { grid-column: 1 / -1; }
+  .hub-box h3 { margin: 0; font-family: var(--font-pixel); font-size: 18px; color: var(--wood); }
+  .hub-box .label { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 4px 0 0; }
+  .hub-box input, .hub-box textarea {
+    font: 600 15px var(--font-body); color: var(--ink); background: #fff; border: 2px solid var(--panel-deep);
+    border-radius: 6px; padding: 7px 9px; min-width: 0; width: 100%; box-sizing: border-box; resize: vertical;
+  }
+  .hub-box input:focus-visible, .hub-box textarea:focus-visible { outline: 3px solid var(--leaf); outline-offset: 1px; }
+  .question { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.4; text-wrap: balance; }
+  .moods { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mood {
+    font: 700 13px var(--font-body); color: var(--ink); cursor: pointer; padding: 4px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--mood) 30%, #fff); border: 2px solid color-mix(in srgb, var(--mood) 70%, #000);
+  }
+  .mood[aria-pressed="true"] { background: var(--mood); outline: 3px solid var(--ink); outline-offset: 1px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .note { font-size: 13px; font-weight: 700; color: var(--leaf); }
+  .muted { color: var(--ink-soft); font-size: 14px; margin: 0; }
+  .hist-row { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px dashed var(--panel-deep); flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--mood); color: var(--ink); }
+  .hist-date { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .hist-text { font-size: 14px; color: var(--ink); min-width: 0; }
+  .hist-text em { color: var(--ink-soft); font-style: normal; }
+  #hud .hub-btn { pointer-events: auto; cursor: pointer; font-family: var(--font-pixel); font-weight: 700; font-size: 15px; padding: 4px 12px; color: var(--ink); }
+
   /* ---------- fishing ---------- */
   #fishing {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -166,6 +204,7 @@
   <div id="hud" hidden>
     <div class="badge panel">Poopy<span>World</span></div>
     <div class="badge panel" id="hud-name" hidden></div>
+    <button class="hub-btn panel" type="button" id="hub-open">Hub <kbd>H</kbd></button>
     <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> &middot; Stickers <kbd>1</kbd>-<kbd>6</kbd> &middot; Poppetje <kbd>C</kbd></div>
   </div>
 
@@ -173,6 +212,42 @@
     <div class="who" id="dialog-who"></div>
     <div class="text" id="dialog-text"></div>
     <div class="next">verder met <kbd>E</kbd></div>
+  </div>
+
+  <div id="hub" hidden>
+    <div class="hub-card panel">
+      <header class="hub-head">
+        <div>
+          <h2 id="hub-hello">Hallo!</h2>
+          <p id="hub-date" class="muted"></p>
+        </div>
+        <button class="btn" type="button" id="hub-close">Terug naar de wereld</button>
+      </header>
+      <div class="hub-grid">
+        <section class="hub-box">
+          <h3>Check-in van vandaag</h3>
+          <p class="label">Hoe voel je je?</p>
+          <div class="moods" id="moods"></div>
+          <label class="label" for="checkin-day">Hoe was je dag, in één zin?</label>
+          <input id="checkin-day" maxlength="140" placeholder="Bijvoorbeeld: druk, maar de lunch was top">
+          <label class="label" for="checkin-thanks">Wat waardeer je vandaag aan de ander?</label>
+          <input id="checkin-thanks" maxlength="140" placeholder="Iets kleins mag ook">
+          <div class="row"><button class="btn" type="button" id="checkin-save">Opslaan</button><span class="note" id="checkin-note"></span></div>
+        </section>
+        <section class="hub-box">
+          <h3>Vraag van de dag</h3>
+          <p class="question" id="hub-question"></p>
+          <label class="label" for="answer-text">Jouw antwoord</label>
+          <textarea id="answer-text" rows="3" maxlength="400"></textarea>
+          <div class="row"><button class="btn" type="button" id="answer-save">Opslaan</button><span class="note" id="answer-note"></span></div>
+        </section>
+        <section class="hub-box wide">
+          <h3>Laatste check-ins</h3>
+          <div id="hub-history"></div>
+          <p class="muted" id="hub-stats"></p>
+        </section>
+      </div>
+    </div>
   </div>
 
   <div id="fishing" class="panel" hidden>

@@ -69,6 +69,9 @@ export abstract class WorldScene extends Phaser.Scene {
     kb.on('keydown-ESC', () => { if (this.fishing.isOpen) this.fishing.close(); else this.escapePressed = true; });
     // Sticker emotes on keys 1-6.
     ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.showSticker(i)));
+    kb.on('keydown-H', () => {
+      if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-hub'); }
+    });
     kb.on('keydown-C', () => {
       if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-creator'); }
     });
