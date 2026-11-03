@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { sheets, sprites } from '../assets';
+import { sheets, sprites, animalSheets } from '../assets';
+import { createCritterAnims } from '../world/critters';
 import { buildHandmade } from '../art/handmade';
 import { buildAmbientTextures } from '../world/ambient';
 import type { Look } from '../characters/look';
@@ -12,6 +13,7 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     for (const [key, url] of Object.entries(sheets)) this.load.image(key, url);
+    for (const [key, [url, size]] of Object.entries(animalSheets)) this.load.spritesheet(key, url, { frameWidth: size, frameHeight: size });
   }
 
   create() {
@@ -21,6 +23,8 @@ export class BootScene extends Phaser.Scene {
     }
     buildHandmade(this);
     buildAmbientTextures(this);
+    for (const coat of ['white', 'brown', 'black']) createCritterAnims(this, `goat-${coat}`);
+    createCritterAnims(this, 'chicken-walk', 'chicken-eat');
 
     const fire = ['fire-0', 'fire-1', 'fire-2', 'fire-3'].map((f) => ({ key: 'campfire', frame: f }));
     this.anims.create({ key: 'fire', frames: fire, frameRate: 8, repeat: -1 });

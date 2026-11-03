@@ -38,6 +38,18 @@ import clock from './assets/clock.png';
 import window from './assets/window.png';
 import endtable from './assets/endtable.png';
 
+import goatWhite from './assets/goat-white.png';
+import goatBrown from './assets/goat-brown.png';
+import goatBlack from './assets/goat-black.png';
+import chickenWalk from './assets/chicken-walk.png';
+import chickenEat from './assets/chicken-eat.png';
+
+/** Animal sheets: [url, frame size]. */
+export const animalSheets: Record<string, [string, number]> = {
+  'goat-white': [goatWhite, 128], 'goat-brown': [goatBrown, 128], 'goat-black': [goatBlack, 128],
+  'chicken-walk': [chickenWalk, 32], 'chicken-eat': [chickenEat, 32],
+};
+
 export const sheets = {
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,

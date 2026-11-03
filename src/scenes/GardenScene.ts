@@ -7,6 +7,7 @@ import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
+import { addCritter, GOAT, CHICKEN } from '../world/critters';
 import type { Look } from '../characters/look';
 
 const T = TILE;
@@ -75,32 +76,31 @@ export class GardenScene extends WorldScene {
     };
   }
 
-  /** Three goats wandering around their meadow. */
+  /** Three goats in their meadow and a few chickens around the vegetable patch. */
   private addGoats() {
     const g = G.goatPen;
-    const area = { x0: (g.x + 1) * T + 6, x1: (g.x + g.w - 1) * T - 10, y0: (g.y + 1) * T + 20, y1: (g.y + g.h - 1) * T + 4 };
-    const names = ['Sneeuwvlokje', 'Karamel', 'Drop'];
-    names.forEach((name, i) => {
-      const goat = this.add.sprite(Phaser.Math.Between(area.x0, area.x1), Phaser.Math.Between(area.y0, area.y1), 'goat')
-        .setOrigin(0.5, 1).play(`goat-idle-${i}`);
-      goat.setDepth(goat.y);
-      const wander = () => {
-        const tx = Phaser.Math.Between(area.x0, area.x1), ty = Phaser.Math.Between(area.y0, area.y1);
-        const dist = Phaser.Math.Distance.Between(goat.x, goat.y, tx, ty);
-        goat.setFlipX(tx < goat.x).play(`goat-walk-${i}`);
-        this.tweens.add({
-          targets: goat, x: tx, y: ty, duration: dist * 45, onUpdate: () => goat.setDepth(goat.y),
-          onComplete: () => { goat.play(`goat-idle-${i}`); this.time.delayedCall(Phaser.Math.Between(1500, 5000), wander); },
-        });
-      };
-      this.time.delayedCall(Phaser.Math.Between(300, 3000), wander);
-      this.interactables.push({
-        id: `goat-${i}`, at: { x: 0, y: 0 }, who: name, lines: [],
-        action: () => this.say(name, [Phaser.Math.RND.pick(['Mèèèèh!', 'Mèh. (Ze kauwt rustig verder op wat hooi.)', 'Mèèh? (Ze kijkt hoopvol naar je zakken. Heb je iets lekkers?)']), `${name} lijkt het hier prima naar haar zin te hebben.`]),
+    const area = { x0: (g.x + 1) * T + 16, x1: (g.x + g.w - 1) * T - 16, y0: (g.y + 1) * T + 24, y1: (g.y + g.h - 1) * T + 4 };
+    const goats: Array<[string, string]> = [['Sneeuwvlokje', 'white'], ['Karamel', 'brown'], ['Drop', 'black']];
+    for (const [name, coat] of goats) {
+      const goat = addCritter(this, GOAT, `goat-${coat}`, area, 26);
+      this.follow(goat, {
+        id: `goat-${name}`, who: name, lines: [],
+        action: () => this.say(name, [Phaser.Math.RND.pick(['Mèèèèh!', 'Mèh. (Ze kauwt rustig verder op wat hooi.)', 'Mèèh? (Ze kijkt hoopvol naar je zakken. Heb je iets lekkers?)', 'MÈÈÈH! (Ze springt op van enthousiasme.)']), `${name} lijkt het hier prima naar haar zin te hebben.`]),
       });
-      const it = this.interactables[this.interactables.length - 1];
-      this.events.on('update', () => { it.at.x = goat.x; it.at.y = goat.y - 6; });
-    });
+    }
+    const coop = { x0: 3 * T, x1: 12 * T, y0: 18.6 * T, y1: 23.4 * T };
+    const chickens = ['Tokkie', 'Kakel', 'Pip', 'Henny'];
+    for (const name of chickens) {
+      const c = addCritter(this, CHICKEN, 'chicken-walk', coop, 34);
+      this.follow(c, { id: `chicken-${name}`, who: name, lines: [], action: () => this.say(name, [Phaser.Math.RND.pick(['Tok tok tok!', 'Tok? (Ze pikt naar je schoenveter.)', 'Kakelkakel! (Ze rent weg en komt meteen weer terug.)'])]) });
+    }
+  }
+
+  /** Keeps an interactable on top of a moving sprite. */
+  private follow(sprite: Phaser.GameObjects.Sprite, it: { id: string; who: string; lines: string[]; action: () => void }) {
+    const entry = { ...it, at: { x: sprite.x, y: sprite.y } };
+    this.interactables.push(entry);
+    this.events.on('update', () => { entry.at.x = sprite.x; entry.at.y = sprite.y - 4; });
   }
 
   /** A family member visiting: wanders between a few spots and stops to talk when you press E. */
