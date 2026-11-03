@@ -120,6 +120,33 @@ export function buildHandmade(scene: Phaser.Scene) {
     for (const [y, col] of [[4, '#f06a8a'], [7, '#f2c94c'], [10, '#5aa9d6']] as const) { px(c, 10, y, 5, 3, OUT); px(c, 11, y, 3, 2, col); }
   });
 
+  // ---- Kroki: small green-and-yellow parakeet, 3 frames of 16 x 18 (sit, blink/tilt, wings up) ----
+  canvas(scene, 'kroki', 48, 18, (c) => {
+    const G = '#4caf3a', GL = '#82d65c', GD = '#2f7a2a', Y = '#f4d83c', YL = '#fff08a', B = '#e9a23b', K = '#1d1a12';
+    for (let f = 0; f < 3; f++) {
+      const o = f * 16;
+      // tail
+      px(c, o + 3, 12, 3, 5, OUT); px(c, o + 4, 12, 2, 5, GD); px(c, o + 4, 16, 1, 2, '#2a5fa8');
+      // body
+      px(c, o + 4, 6, 9, 9, OUT); px(c, o + 5, 7, 7, 7, G); px(c, o + 5, 7, 3, 2, GL); px(c, o + 6, 12, 5, 2, GD);
+      // head (yellow face)
+      const hy = f === 1 ? 1 : 0;
+      px(c, o + 7, 1 + hy, 7, 7, OUT); px(c, o + 8, 2 + hy, 5, 5, Y); px(c, o + 8, 2 + hy, 3, 1, YL);
+      // beak and eye
+      px(c, o + 13, 4 + hy, 2, 3, OUT); px(c, o + 13, 4 + hy, 1, 2, B);
+      px(c, o + 11, 3 + hy, 1, f === 1 ? 1 : 2, K);
+      // wing
+      if (f === 2) { px(c, o + 1, 3, 7, 6, OUT); px(c, o + 2, 4, 5, 4, GL); px(c, o + 2, 7, 5, 1, GD); }
+      else { px(c, o + 5, 8, 5, 5, GD); px(c, o + 6, 9, 3, 3, G); }
+      // feet
+      px(c, o + 7, 15, 1, 2, '#c98a5a'); px(c, o + 10, 15, 1, 2, '#c98a5a');
+    }
+  });
+  const kt = scene.textures.get('kroki');
+  for (let f = 0; f < 3; f++) kt.add(f, 0, f * 16, 0, 16, 18);
+  scene.anims.create({ key: 'kroki-idle', frames: scene.anims.generateFrameNumbers('kroki', { frames: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1] }), frameRate: 4, repeat: -1 });
+  scene.anims.create({ key: 'kroki-flap', frames: scene.anims.generateFrameNumbers('kroki', { frames: [2, 0, 2, 0] }), frameRate: 12, repeat: -1 });
+
   // ---- wooden sign: 30 x 36 ----
   canvas(scene, 'sign', 30, 36, (c) => {
     woodPost(c, 13, 16, 18);

@@ -34,7 +34,35 @@ export class GardenScene extends WorldScene {
     this.interactables = G.interactables.map((it) => ({ ...it }));
     const door = this.interactables.find((i) => i.id === 'door');
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
+    this.addKroki();
     return { x: G.spawn.x, y: G.spawn.y };
+  }
+
+  /** Kroki on his perch: hops and blinks, and does a happy little flight when you visit. */
+  private addKroki() {
+    const perch = G.handmade.find((h) => h.key === 'perch')!;
+    const home = { x: perch.x * T - 9, y: perch.y * T - 50 };
+    const kroki = this.add.sprite(home.x, home.y, 'kroki').setOrigin(0.5, 1).setDepth(perch.y * T + 1).play('kroki-idle');
+    const it = this.interactables.find((i) => i.id === 'kroki');
+    if (!it) return;
+    it.lines = [];
+    it.action = () => {
+      if (kroki.getData('flying')) return;
+      kroki.setData('flying', true).play('kroki-flap').setDepth(100000);
+      this.tweens.chain({
+        targets: kroki,
+        tweens: [
+          { x: home.x - 30, y: home.y - 34, duration: 380, ease: 'Sine.easeOut', onStart: () => kroki.setFlipX(true) },
+          { x: home.x + 34, y: home.y - 46, duration: 520, ease: 'Sine.easeInOut', onStart: () => kroki.setFlipX(false) },
+          { x: home.x, y: home.y, duration: 420, ease: 'Sine.easeIn', onStart: () => kroki.setFlipX(true) },
+        ],
+        onComplete: () => { kroki.setFlipX(false).setDepth(perch.y * T + 1).play('kroki-idle').setData('flying', false); },
+      });
+      this.say('Kroki', [
+        'Kroki fladdert een vrolijk rondje en landt weer op zijn stokje.',
+        'Hij kijkt je met zijn kopje scheef aan. Dit is zijn plekje, en hier is hij thuis.',
+      ]);
+    };
   }
 
   private enterHouse() {
