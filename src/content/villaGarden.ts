@@ -12,7 +12,7 @@ type Rect = { x: number; y: number; w: number; h: number };
 
 /** Dirt paths and the front yard (everything else is grass). */
 export const dirt: Rect[] = [
-  { x: 12, y: 8, w: 10, h: 2 },   // front yard
+  { x: 12, y: 8, w: 12, h: 2 },   // front yard
   { x: 16, y: 10, w: 2, h: 16 },  // main path down to the road
   { x: 9, y: 15, w: 7, h: 2 },    // to the pond
   { x: 10, y: 17, w: 2, h: 4 },   // down to the vegetable patch
@@ -41,7 +41,7 @@ export type Prop = { key: string; x: number; y: number; solid?: [w: number, h: n
 export const trees: Array<[key: string, x: number, y: number]> = [
   // back forest (top)
   ['tree-b', 1.2, 2.2], ['tree-a', 3.6, 1.6], ['pine-b', 5.8, 2.4], ['tree-c', 8.2, 1.8], ['tree-a', 10.6, 2.6],
-  ['pine-a', 12.6, 1.4], ['tree-b', 24.6, 2.0], ['tree-a', 26.8, 2.8], ['pine-b', 29.0, 1.8], ['tree-c', 31.2, 2.4],
+  ['pine-a', 12.6, 1.4], ['tree-b', 26.6, 2.0], ['tree-a', 26.8, 2.8], ['pine-b', 29.0, 1.8], ['tree-c', 31.2, 2.4],
   ['tree-a', 33.4, 1.6], ['pine-a', 35.2, 2.6], ['tree-d', 22.4, 1.0], ['tree-e', 6.8, 0.6], ['tree-d', 27.8, 0.6],
   // left edge
   ['tree-e', 0.6, 5.0], ['pine-c', 1.2, 8.2], ['tree-d', 0.4, 11.2], ['tree-a', 1.0, 14.6], ['pine-b', 0.6, 18.0],
@@ -53,7 +53,7 @@ export const trees: Array<[key: string, x: number, y: number]> = [
   ['tree-a', 3.0, 26.4], ['pine-b', 6.4, 26.6], ['tree-d', 9.6, 26.2], ['tree-b', 12.8, 26.6],
   ['tree-e', 21.6, 26.4], ['pine-a', 24.8, 26.6], ['tree-a', 28.0, 26.2], ['tree-d', 31.4, 26.6],
   // inside the garden
-  ['tree-a', 13.4, 20.6], ['tree-b', 22.6, 21.2], ['pine-c', 28.6, 22.4], ['tree-c', 26.8, 7.4], ['tree-a', 31.6, 7.8],
+  ['tree-a', 13.4, 20.6], ['tree-b', 22.6, 21.2], ['pine-c', 28.6, 22.4], ['tree-c', 29.4, 7.0], ['tree-a', 31.6, 7.8],
   ['tree-e', 6.2, 10.4],
 ];
 
@@ -69,9 +69,11 @@ export const props: Prop[] = [
   { key: 'planter-tree', x: 15.3, y: 7.9, solid: [22, 10] },
   { key: 'planter-tree', x: 18.7, y: 7.9, solid: [22, 10] },
   { key: 'pot-flowers', x: 20.7, y: 7.85 },
+  { key: 'planter-tree', x: 22.7, y: 7.9, solid: [22, 10] },
+  { key: 'pot-flowers', x: 21.7, y: 7.85 },
   { key: 'pot-flowers', x: 13.2, y: 7.85 },
-  { key: 'crates', x: 23.3, y: 7.9, solid: [56, 14] },
-  { key: 'bucket', x: 24.6, y: 8.4 },
+  { key: 'crates', x: 26.6, y: 8.4, solid: [56, 14] },
+  { key: 'bucket', x: 27.9, y: 8.8 },
   // lamps along the path
   { key: 'lamp', x: 15.6, y: 12.6, solid: [10, 6] },
   { key: 'lamp', x: 18.4, y: 12.6, solid: [10, 6] },
@@ -94,26 +96,26 @@ export const props: Prop[] = [
   { key: 'fern', x: 2.6, y: 11.6 },
   { key: 'fern', x: 21.0, y: 4.2 },
   { key: 'cypress-a', x: 14.0, y: 4.6, solid: [16, 8] },
-  { key: 'cypress-b', x: 23.0, y: 4.6, solid: [16, 8] },
+  { key: 'cypress-b', x: 25.0, y: 4.6, solid: [16, 8] },
 ];
 
 /** Flower bushes and small plants (no collision). [key, x, y] */
 export const flowers: Array<[string, number, number]> = [
   // along the front of the house
   ['flowers-big-1', 13.9, 8.0], ['flowers-mid-5', 14.5, 8.05], ['flowers-big-0', 19.5, 8.0], ['flowers-mid-1', 20.1, 8.05],
-  ['flowers-big-6', 21.6, 8.0],
+  ['flowers-big-6', 23.0, 8.0], ['flowers-mid-3', 21.2, 8.05], ['flowers-big-1', 22.2, 8.0],
   // along the main path
   ['flowers-mid-3', 15.4, 11.4], ['flowers-small-5', 15.5, 13.8], ['flowers-mid-0', 18.6, 11.4], ['flowers-small-1', 18.5, 13.6],
   ['flowers-small-3', 15.5, 17.6], ['flowers-small-6', 18.5, 18.4], ['flowers-mid-5', 15.4, 22.6], ['flowers-mid-1', 18.6, 22.8],
   // around the pond
   ['flowers-big-8', 3.0, 11.4], ['flowers-mid-3', 8.8, 12.0], ['flowers-small-0', 9.0, 17.8], ['flowers-big-4', 2.4, 17.0],
   // bushes
-  ['bush-a', 12.6, 11.2], ['bush-b', 21.4, 11.4], ['bush-a', 24.4, 12.2], ['bush-b', 6.0, 23.8], ['bush-a', 12.4, 23.6],
+  ['bush-a', 12.6, 11.2], ['bush-b', 21.4, 11.4], ['bush-a', 25.0, 12.0], ['bush-b', 6.0, 23.8], ['bush-a', 12.4, 23.6],
   ['bush-b', 20.6, 23.4], ['bush-a', 25.2, 23.8], ['bush-a', 2.4, 15.4],
   // wild corners
   ['flowers-big-2', 21.2, 17.8], ['flowers-mid-7', 13.4, 16.0], ['flowers-big-5', 30.6, 21.4], ['flowers-mid-8', 33.2, 21.0],
   ['tall-grass-c', 2.2, 20.6], ['tall-grass-a', 12.0, 13.6], ['tall-grass-b', 22.8, 12.8], ['tall-grass-c', 33.4, 10.0],
-  ['tall-grass-a', 27.6, 9.6], ['tall-grass-b', 9.8, 10.6], ['tall-grass-a', 26.0, 22.6],
+  ['tall-grass-a', 28.4, 10.2], ['tall-grass-b', 9.8, 10.6], ['tall-grass-a', 26.0, 22.6],
 ];
 
 /** Things on the pond (no collision). */
@@ -137,13 +139,13 @@ export const interactables: Interactable[] = [
     id: 'door', at: { x: 512, y: 240 }, who: 'Naar binnen', lines: [],
   },
   { id: 'flag-ng', at: { x: 400, y: 288 }, who: 'Nigeriaanse vlag', lines: ['Groen, wit, groen. De Nigeriaanse vlag wappert trots naast het pad.'] },
-  { id: 'flag-nl', at: { x: 694, y: 288 }, who: 'Nederlandse vlag', lines: ['Rood, wit, blauw. De Nederlandse vlag wappert aan de andere kant.'] },
+  { id: 'flag-nl', at: { x: 758, y: 288 }, who: 'Nederlandse vlag', lines: ['Rood, wit, blauw. De Nederlandse vlag wappert aan de andere kant.'] },
   {
     id: 'mailbox', at: { x: 600, y: 300 }, who: 'Brievenbus',
     lines: ['De brievenbus is leeg.', 'Nog wel. Hier komen straks brieven en verrassingen van elkaar in.'],
   },
   {
-    id: 'kroki', at: { x: 790, y: 210 }, who: "Kroki's plekje",
+    id: 'kroki', at: { x: 854, y: 210 }, who: "Kroki's plekje",
     lines: ['Een houten zitstok met een bakje zaad en een schommeltje.', 'Dit is het plekje van Kroki. Hier komt Kroki straks te wonen.'],
   },
   { id: 'dining', at: { x: 320, y: 235 }, who: 'Buitenkeuken', lines: ['Een tafel, een kampvuur en een paar tonnen. Hier wordt later gekookt en gegeten.'] },
@@ -165,9 +167,9 @@ export const interactables: Interactable[] = [
 /** Handmade pieces (flags, mailbox, perch, signs), position in tiles. */
 export const handmade: Array<{ key: string; x: number; y: number; solid?: [number, number]; anim?: string }> = [
   { key: 'flag-ng', x: 12.5, y: 9.1, solid: [8, 6], anim: 'wave-ng' },
-  { key: 'flag-nl', x: 21.6, y: 9.1, solid: [8, 6], anim: 'wave-nl' },
+  { key: 'flag-nl', x: 23.6, y: 9.1, solid: [8, 6], anim: 'wave-nl' },
   { key: 'mailbox', x: 18.8, y: 9.6, solid: [14, 6] },
-  { key: 'perch', x: 24.8, y: 6.6, solid: [30, 8] },
+  { key: 'perch', x: 26.8, y: 6.6, solid: [30, 8] },
   { key: 'sign', x: 25.4, y: 13.6, solid: [10, 6] },
   { key: 'sign', x: 18.8, y: 24.6, solid: [10, 6] },
 ];

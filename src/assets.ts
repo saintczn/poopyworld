@@ -57,9 +57,10 @@ import cottage from './assets/cottage.png';
 import cottageBlue from './assets/cottage-blue.png';
 import houseB from './assets/house-b.png';
 import fountain from './assets/fountain.png';
+import villa from './assets/villa.png';
 
 export const sheets = {
-  'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain,
+  'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
   floorwood, walls, sofa, fireplace, rug, shelf, tv, counter, sink, oven, fridge, floorlamp, paintings, clock, window, endtable,

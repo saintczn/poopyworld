@@ -72,6 +72,12 @@ for y in range(h):
             out[y, x, :3] = roof_map[k]
 Image.fromarray(out).save(OUT / 'house.png')
 
+# Our own villa: the same house made wider (longer roof, a second window).
+strip = out[:, 104:112]
+villa = np.concatenate([out[:, :112]] + [strip] * 8 + [out[:, 112:]], axis=1)
+villa[104:176, 124:156] = out[104:176, 112:144]
+Image.fromarray(villa).save(OUT / 'villa.png')
+
 # Village variants of the same house: other roof colours.
 import colorsys
 def roof_variant(hue_shift, sat_mul, name):

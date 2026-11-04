@@ -124,12 +124,13 @@ export class GardenScene extends WorldScene {
 
   private buildHouse() {
     const { x, y } = G.house;
-    this.add.image(x, y, 'house', 'house').setOrigin(0).setDepth(y + 192);
+    // The villa: the brick house made 64 px wider (see tools/build_assets.py).
+    this.add.image(x, y, 'villa').setOrigin(0).setDepth(y + 192);
     // Walls (the stairs at the front door stay walkable).
-    this.solid(x + 32, y + 100, 128, 76);
+    this.solid(x + 32, y + 100, 192, 76);
     this.solid(x + 32, y + 176, 32, 16);
-    this.solid(x + 96, y + 176, 64, 16);
-    this.solid(x + 160, y + 70, 64, 90);
+    this.solid(x + 96, y + 176, 128, 16);
+    this.solid(x + 224, y + 70, 64, 90);
     this.solid(x + 22, y + 60, 10, 120);
   }
 
@@ -201,7 +202,7 @@ export class GardenScene extends WorldScene {
       if (p.anim === 'fire') lights.push({ x: p.x * T, y: p.y * T - 12, size: 200, flicker: true, colour: 0xff9a40, always: 0.12 });
     }
     const { x, y } = G.house;
-    lights.push({ x: x + 128, y: y + 143, size: 90 }, { x: x + 192, y: y + 112, size: 90 }, { x: x + 80, y: y + 150, size: 70 });
+    lights.push({ x: x + 140, y: y + 143, size: 90 }, { x: x + 192, y: y + 143, size: 90 }, { x: x + 256, y: y + 112, size: 90 }, { x: x + 80, y: y + 150, size: 70 });
     const flowers = G.flowers.filter(([k]) => k.startsWith('flowers')).map(([, fx, fy]) => ({ x: fx * T, y: fy * T }));
     const p = G.pond;
     this.ambient = new Ambient(this, { w: G.MAP_W * T, h: G.MAP_H * T }, lights, flowers,
