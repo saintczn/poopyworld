@@ -5,6 +5,7 @@ import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { randomLook } from '../characters/look';
 import { rng } from '../world/ground';
+import { loadMystery } from '../content/mystery';
 
 const T = TILE;
 
@@ -56,7 +57,16 @@ export class VillageScene extends WorldScene {
     this.solid(0, 0, 19.6 * T, 2.6 * T);
     this.solid(24.4 * T, 0, W, 2.6 * T);
     this.solid(0, 0, 1.8 * T, H);
-    this.solid(W - 1.6 * T, 0, 1.6 * T, H);
+    this.solid(W - 1.6 * T, 0, 1.6 * T, 24 * T);
+    this.solid(W - 1.6 * T, 27 * T, 1.6 * T, H);
+    // the overgrown path up the hill: open once the strange letter has been read
+    if (!loadMystery().letter) this.solid(W - 1.2 * T, 24 * T, 1.2 * T, 3 * T);
+    this.interactables.push({
+      id: 'hill-sign', at: { x: 41.4 * T, y: 24.2 * T }, who: 'Bordje', lines: [],
+      action: () => this.say('Bordje', loadMystery().letter
+        ? ['"Naar Hollowmere". Het pad loopt de heuvel op, het donker in.']
+        : ['De letters zijn bijna onleesbaar: "...ollowm..." Het pad erachter is overwoekerd met braamstruiken.', 'Je hebt geen reden om daarheen te gaan. Nog niet.']),
+    });
     this.solid(0, H - 2.4 * T, W, 2.4 * T);
 
     // villagers
@@ -103,6 +113,9 @@ export class VillageScene extends WorldScene {
   protected tick(time: number) {
     this.ambient.update(time);
     const p = this.player;
+    if (p && this.registry.get('started') && p.x > V.MAP_W * T - 10 && p.y > 24 * T && p.y < 27 * T) {
+      this.travel('manor-grounds', { x: 9 * T, y: 15.2 * T, facing: 'up' });
+    }
     if (p && this.registry.get('started') && p.y < 2.0 * T && p.x > 19.6 * T && p.x < 24.4 * T) {
       this.travel('garden', { x: 544, y: 760, facing: 'up' });
     }

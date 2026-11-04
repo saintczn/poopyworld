@@ -8,6 +8,7 @@ import { Ambient, type LightSpot } from '../world/ambient';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
+import { loadMystery, saveMystery, LETTER } from '../content/mystery';
 
 const T = TILE;
 
@@ -42,6 +43,16 @@ export class GardenScene extends WorldScene {
     if (gate) { gate.who = 'Naar Heartwood'; gate.lines = []; gate.action = () => this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' }); }
     const pond = this.interactables.find((i) => i.id === 'pond');
     if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
+    const mailbox = this.interactables.find((i) => i.id === 'mailbox');
+    if (mailbox) {
+      const normal = mailbox.lines;
+      mailbox.lines = [];
+      mailbox.action = () => {
+        const m = loadMystery();
+        if (!m.letter) { m.letter = true; saveMystery(m); this.say('Brievenbus', LETTER); }
+        else this.say('Brievenbus', m.seal1 ? ['Leeg. Maar je hebt het gevoel dat er binnenkort weer iets in komt...'] : ['De brief van O. H. heb je al gelezen.', 'Het pad naar de heuvel begint aan het eind van de onderste straat in Heartwood.', ...normal.slice(0, 0)]);
+      };
+    }
     this.addKroki();
     this.addGoats();
     this.addVisitor('Gilly', GILLY_LOOK, [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }], gillyRamble);

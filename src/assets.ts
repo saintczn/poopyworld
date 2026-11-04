@@ -58,9 +58,16 @@ import cottageBlue from './assets/cottage-blue.png';
 import houseB from './assets/house-b.png';
 import fountain from './assets/fountain.png';
 import villa from './assets/villa.png';
+import manor from './assets/manor.png';
+import portraits from './assets/portraits.png';
+import candles from './assets/candles.png';
+import floorlights from './assets/floorlights.png';
+import seals from './assets/seals.png';
+import slab from './assets/slab.png';
+import desk from './assets/desk.png';
 
 export const sheets = {
-  'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa,
+  'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa, manor, portraits, candles, floorlights, seals, slab, desk,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
   floorwood, walls, sofa, fireplace, rug, shelf, tv, counter, sink, oven, fridge, floorlamp, paintings, clock, window, endtable,
@@ -76,6 +83,7 @@ export const sprites: Record<string, [keyof typeof sheets, ...Rect]> = {
   'tree-c': ['trees', 321, 16, 94, 125],
   'tree-d': ['trees', 129, 272, 94, 100],
   'tree-e': ['trees', 225, 272, 94, 110],
+  'tree-bare': ['trees', 3, 274, 90, 123],
   'pine-a': ['trees', 132, 389, 85, 104],
   'pine-b': ['trees', 228, 389, 85, 111],
   'pine-c': ['trees', 324, 421, 85, 91],
@@ -137,6 +145,17 @@ export const sprites: Record<string, [keyof typeof sheets, ...Rect]> = {
   'fire-1': ['campfire', 32, 32, 32, 32],
   'fire-2': ['campfire', 64, 32, 32, 32],
   'fire-3': ['campfire', 96, 32, 32, 32],
+  // Hollowmere Manor
+  'portrait-a': ['portraits', 2, 8, 29, 49],
+  'portrait-b': ['portraits', 34, 8, 29, 49],
+  'portrait-c': ['portraits', 66, 8, 29, 49],
+  'portrait-small': ['portraits', 102, 1, 17, 25],
+  'candle': ['candles', 139, 2, 10, 20],
+  'candelabra': ['floorlights', 64, 0, 32, 57],
+  'seal-gold': ['seals', 0, 0, 64, 63],
+  'seal-dark': ['seals', 64, 64, 64, 63],
+  'slab': ['slab', 0, 16, 64, 16],
+  'desk': ['desk', 0, 12, 96, 40],
   // indoors
   'sofa-front': ['sofa', 321, 17, 94, 38],
   'sofa-back': ['sofa', 321, 65, 94, 31],

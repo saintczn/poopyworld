@@ -193,6 +193,45 @@ export function buildHandmade(scene: Phaser.Scene) {
     for (const [x, y] of [[1, 3], [8, 0], [14, 4]] as const) { px(c, x + 1, y, 1, 3, '#ffe27a'); px(c, x, y + 1, 3, 1, '#ffe27a'); }
   });
 
+  // ---- Hollowmere: iron gate (open/closed are the same sprite, raised when open), iron fence, plate, journal, book glow ----
+  canvas(scene, 'iron-gate', 32, 64, (c) => {
+    px(c, 0, 0, 32, 4, OUT); px(c, 1, 1, 30, 2, '#4a4458');
+    for (let x = 2; x < 32; x += 6) { px(c, x, 0, 3, 64, OUT); px(c, x + 1, 2, 1, 62, '#6a6478'); px(c, x, 0, 3, 2, '#8a849a'); }
+    px(c, 0, 30, 32, 4, OUT); px(c, 1, 31, 30, 2, '#4a4458');
+    px(c, 10, 22, 12, 12, OUT); px(c, 11, 23, 10, 10, '#c9a444'); px(c, 14, 25, 4, 6, '#7a5a1a'); px(c, 13, 27, 6, 2, '#7a5a1a');
+  });
+  canvas(scene, 'iron-fence', 32, 32, (c) => {
+    px(c, 0, 10, 32, 3, OUT); px(c, 0, 22, 32, 3, OUT); px(c, 0, 11, 32, 1, '#4a4458');
+    for (let x = 2; x < 32; x += 8) { px(c, x, 4, 3, 28, OUT); px(c, x + 1, 6, 1, 26, '#5a5468'); px(c, x, 2, 3, 3, OUT); px(c, x + 1, 1, 1, 2, '#8a849a'); }
+  });
+  canvas(scene, 'plate', 64, 32, (c) => {
+    for (let f = 0; f < 2; f++) {
+      const o = f * 32, d = f;
+      px(c, o + 2, 6 + d, 28, 22 - d, OUT); px(c, o + 3, 7 + d, 26, 20 - d, f ? '#6a6670' : '#8a8690');
+      px(c, o + 3, 7 + d, 26, 2, f ? '#7a7680' : '#a8a4ae');
+      px(c, o + 12, 12 + d, 8, 8, f ? '#c9a444' : '#5a5660'); px(c, o + 14, 14 + d, 4, 4, f ? '#ffe27a' : '#4a4650');
+    }
+  });
+  const pt = scene.textures.get('plate'); pt.add(0, 0, 0, 0, 32, 32); pt.add(1, 0, 32, 0, 32, 32);
+  canvas(scene, 'journal', 14, 12, (c) => {
+    px(c, 0, 0, 14, 12, OUT); px(c, 1, 1, 12, 10, '#efe2c0'); px(c, 1, 9, 12, 2, '#d8c8a0');
+    for (let y = 3; y < 9; y += 2) px(c, 3, y, 8, 1, '#8a7a5a');
+    px(c, 10, 1, 2, 4, '#c8433a');
+  });
+  canvas(scene, 'book-glow', 8, 14, (c) => { px(c, 0, 0, 8, 14, OUT); px(c, 1, 1, 6, 12, '#f2c94c'); px(c, 1, 1, 2, 12, '#fff0a0'); px(c, 2, 5, 4, 2, '#8a5a10'); });
+  canvas(scene, 'alcove', 36, 70, (c) => {
+    px(c, 0, 6, 36, 64, '#120c14'); px(c, 2, 2, 32, 4, '#120c14'); px(c, 6, 0, 24, 2, '#120c14');
+    px(c, 0, 66, 36, 4, '#2a2030');
+  });
+  canvas(scene, 'telescope', 30, 44, (c) => {
+    // tripod
+    px(c, 14, 20, 2, 22, OUT); px(c, 6, 40, 2, 4, OUT); px(c, 22, 40, 2, 4, OUT);
+    for (let i = 0; i < 10; i++) { px(c, 14 - i * 0.8, 22 + i * 2, 2, 2, OUT); px(c, 15 + i * 0.8, 22 + i * 2, 2, 2, OUT); }
+    // tube
+    for (let i = 0; i < 22; i++) { const y = 18 - i * 0.6; px(c, 4 + i, y - 2, 2, 6, OUT); px(c, 4 + i, y - 1, 2, 4, i % 6 < 2 ? '#e8c060' : '#b08a3a'); }
+    px(c, 24, 2, 5, 8, OUT); px(c, 25, 3, 3, 6, '#9be3ff');
+  });
+
   // ---- wooden sign: 30 x 36 ----
   canvas(scene, 'sign', 30, 36, (c) => {
     woodPost(c, 13, 16, 18);

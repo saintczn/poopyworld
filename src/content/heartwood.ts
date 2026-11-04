@@ -12,7 +12,7 @@ export const dirt: Rect[] = [
   { x: 10, y: 10, w: 24, h: 8 },  // the square
   { x: 10, y: 18, w: 3, h: 6 },   // west lane
   { x: 31, y: 18, w: 3, h: 6 },   // east lane
-  { x: 4, y: 24, w: 36, h: 3 },   // lower street
+  { x: 4, y: 24, w: 40, h: 3 },   // lower street (east end: the path up the hill)
 ];
 
 export type Building = {
@@ -84,6 +84,7 @@ export const props: Array<{ key: string; x: number; y: number; solid?: [number, 
   { key: 'planter-tree', x: 24.6, y: 9.9, solid: [22, 10] },
   { key: 'barrels', x: 34.0, y: 9.8, solid: [40, 14] },
   { key: 'crate', x: 9.5, y: 9.6, solid: [20, 10] },
+  { key: 'sign', x: 41.4, y: 23.7, solid: [10, 6] },
 ];
 
 export const trees: Array<[string, number, number]> = [

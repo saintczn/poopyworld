@@ -7,7 +7,7 @@ import { VIEW_WIDTH, VIEW_HEIGHT } from '../config';
 
 export type LightSpot = { x: number; y: number; size: number; flicker?: boolean; colour?: number; always?: number };
 
-type Phase = { tint: [number, number, number]; night: number };
+export type Phase = { tint: [number, number, number]; night: number };
 
 /** The light at a given hour (0-24). tint is multiplied over the world; night is 0..1. */
 export function phaseAt(hour: number): Phase {
@@ -96,6 +96,7 @@ export class Ambient {
     flowers: Array<{ x: number; y: number }>,
     water?: { x: number; y: number; w: number; h: number },
     private indoor = false,
+    private fixed?: Phase,
   ) {
     this.overlay = scene.add.rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT, 0xffffff)
       .setOrigin(0).setScrollFactor(0).setDepth(90000).setBlendMode(Phaser.BlendModes.MULTIPLY);
@@ -157,7 +158,7 @@ export class Ambient {
   update(time: number) {
     if (time - this.lastPhaseCheck > 5000) {
       this.lastPhaseCheck = time;
-      this.phase = phaseAt(currentHour());
+      this.phase = this.fixed ?? phaseAt(currentHour());
       if (this.indoor) {
         // Inside, lamps are on: the night only dims things a little.
         this.phase = { tint: this.phase.tint.map((c) => Math.round(c + (255 - c) * 0.55)) as [number, number, number], night: Math.max(0.35, this.phase.night) };

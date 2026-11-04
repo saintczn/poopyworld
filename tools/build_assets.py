@@ -113,6 +113,22 @@ for y in range(cot.shape[0]):
             cb[y, x, :3] = [int(r2 * 255), int(g2 * 255), int(b2 * 255)]
 Image.fromarray(cb).save(OUT / 'cottage-blue.png')
 copy('Structure/Structures/Brick House B.png', 'house-b.png')
+
+# Hollowmere Manor: the original slate-roofed house, much wider, a little darker.
+slate = a.copy()
+st = slate[:, 104:112]
+manor = np.concatenate([slate[:, :112]] + [st] * 16 + [slate[:, 112:]], axis=1)
+for x0 in (132, 186):
+    manor[104:176, x0:x0 + 32] = slate[104:176, 112:144]
+m = manor.astype(float)
+m[:, :, :3] *= 0.82
+Image.fromarray(m.astype(np.uint8)).save(OUT / 'manor.png')
+copy('Objects/Wall Items/Paintings, Portraits.png', 'portraits.png')
+copy('Objects/Small Items/Lighting, Table.png', 'candles.png')
+copy('Objects/Furniture/Lighting, Floor.png', 'floorlights.png')
+copy('Objects/Furniture/Wolf Stone.png', 'seals.png')
+copy('Objects/Furniture/Stone Slab.png', 'slab.png')
+copy('Objects/Furniture/Desk, Office.png', 'desk.png')
 copy('Structure/Misc/Fountain A.png', 'fountain.png')
 
 # (Characters are built by tools/build_characters.py)

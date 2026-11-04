@@ -8,6 +8,7 @@ export type RoomSpec = {
   wallTop: number;
   door: { x: number; w: number };
   floorCol: number;       // column in Wood Floor A (0 dark ... 4 light)
+  floorRow?: number;      // 0 = warm planks, 3 = dark/grey planks
   wallBlock: number;      // x of the 3-tile wall block in Painted Walls
   band: [number, number, number]; // wall-top colours: base, light, shadow
 };
@@ -22,9 +23,9 @@ export function paintRoom(scene: Phaser.Scene, s: RoomSpec) {
     const rnd = new Phaser.Math.RandomDataGenerator([s.key]);
     const R = s.room;
     for (let y = R.y; y < R.y + R.h; y += 32) for (let x = R.x; x < R.x + R.w; x += 32) {
-      c.drawImage(floor, s.floorCol * 32, rnd.pick([0, 0, 1, 2]) * 32, 32, 32, x, y, 32, 32);
+      c.drawImage(floor, s.floorCol * 32, ((s.floorRow ?? 0) + rnd.pick([0, 0, 1, 2])) * 32, 32, 32, x, y, 32, 32);
     }
-    for (let x = s.door.x - s.door.w / 2; x < s.door.x + s.door.w / 2; x += 32) c.drawImage(floor, s.floorCol * 32, 0, 32, 16, x, R.y + R.h, 32, 16);
+    for (let x = s.door.x - s.door.w / 2; x < s.door.x + s.door.w / 2; x += 32) c.drawImage(floor, s.floorCol * 32, (s.floorRow ?? 0) * 32, 32, 16, x, R.y + R.h, 32, 16);
     for (let x = R.x; x < R.x + R.w; x += 32) {
       const sx = s.wallBlock + (x === R.x ? 0 : x === R.x + R.w - 32 ? 64 : 32);
       c.drawImage(walls, sx, 0, 32, 96, x, s.wallTop, 32, 96);

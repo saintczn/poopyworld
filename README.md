@@ -23,6 +23,10 @@ Pixelart opnieuw klaarzetten: `python3 tools/build_assets.py /pad/naar/LPC` en `
 
 In Heartwood Village kun je PUCK binnengaan. De rode kast speelt **Bitterbal Rush**: 45 seconden bitterballen vangen tegen Femke, Ricardo en Lotte (elk met eigen snelheid en tactiek). Goud = 3 punten, mosterd = even duizelig. Je verdient tickets en een record. De andere kasten komen later.
 
+## Het mysterie van Hollowmere (hoofdstuk 1)
+
+In de brievenbus bij de villa ligt een oude brief. Daarna gaat het pad aan de oostkant van de onderste straat in Heartwood open, naar het spookachtige landhuis Hollowmere. Binnen: dagboekbladzijden, een kist die je op een drukplaat duwt om het ijzeren hek te openen, een boekenkast die opzij schuift, en het eerste zegel (het Wolfzegel). Wordt vervolgd: De Lantaarnkring.
+
 ## Besturing
 
 - Lopen: WASD of pijltjestoetsen
