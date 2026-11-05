@@ -7,7 +7,15 @@ import Phaser from 'phaser';
 import { TILE } from '../config';
 
 type Rect = { x: number; y: number; w: number; h: number };
-export type GroundSpec = { w: number; h: number; dirt: Rect[]; pond?: Rect; soil?: Rect; seed?: number };
+export type GroundSpec = {
+  w: number; h: number; dirt: Rect[]; pond?: Rect; soil?: Rect; seed?: number;
+  /** What lies under the grass: dirt (default) or beach sand. */
+  base?: 'dirt' | 'sand';
+  /** Darker sand paths, painted under the grass. */
+  paths?: Rect[];
+  /** Row where the sea begins (it fills the map below, with a foamy shore). */
+  sea?: number;
+};
 
 const T = TILE;
 const H = T / 2;
@@ -33,6 +41,8 @@ const GRASS_EDGE: Record<number, [number, number]> = {
 };
 const GRASS_HOLE: [number, number] = [1, 4]; // its quarters hold the inside-corner fringes
 const POND: [number, number] = [0, 10]; // 3x3 block, nine-slice
+export const SAND_LIGHT: Array<[number, number]> = [[3, 5], [4, 5], [5, 5]];
+const SAND_DARK: Array<[number, number]> = [[3, 6], [4, 6], [5, 6]];
 
 export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) {
   const terrain = scene.textures.get('terrain').getSourceImage() as HTMLImageElement;
@@ -56,9 +66,14 @@ export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) 
   }
   const g = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? true : grass[y][x]);
 
-  // 1. Dirt everywhere.
+  // 1. Dirt (or sand) everywhere, then the paths.
+  const fill = spec.base === 'sand' ? SAND_DARK : DIRT_FILL;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const [sx, sy] = pick(DIRT_FILL);
+    const [sx, sy] = pick(fill);
+    tile(terrain, sx * T, sy * T, x * T, y * T);
+  }
+  for (const p of spec.paths ?? []) for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) {
+    const [sx, sy] = pick(spec.base === 'sand' ? SAND_LIGHT : SAND_DARK);
     tile(terrain, sx * T, sy * T, x * T, y * T);
   }
 
@@ -108,6 +123,15 @@ export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) 
   };
   if (spec.pond) nine(terrain, POND[0], POND[1], spec.pond, () => [1, 11]);
   if (spec.soil) nine(soilImg, 0, 0, spec.soil);
+
+  // 5. The sea: foamy shore, shallow water, then deep blue.
+  if (spec.sea !== undefined) {
+    for (let y = spec.sea; y < h; y++) for (let x = 0; x < w; x++) {
+      const d = y - spec.sea;
+      const [sx, sy] = d === 0 ? [1, 20] : d < 4 ? [1, 21] : d === 4 ? [1, 23] : [1, 24];
+      tile(terrain, sx * T, sy * T, x * T, y * T);
+    }
+  }
 
   tex.refresh();
 }

@@ -69,6 +69,17 @@ export class VillageScene extends WorldScene {
     });
     this.solid(0, H - 2.4 * T, W, 2.4 * T);
 
+    // the bus to the airport (and from there: Bali)
+    this.place('busstop', 28.6 * T, 23.9 * T, [8, 6]);
+    this.interactables.push({
+      id: 'bus', at: { x: 28.6 * T, y: 24.3 * T }, who: 'Bushalte', lines: [],
+      action: () => this.say('Bushalte', ['Lijn 69: Heartwood – Vliegveld. Vandaar elke dag een vlucht naar Bali.', 'De bus komt eraan. Instappen!'], () => {
+        this.registry.set('flightTo', 'bali');
+        this.registry.set('flightArrive', null);
+        this.goTo('flight', { x: 0, y: 0 });
+      }),
+    });
+
     // villagers
     const r = rng(42);
     const spots = [

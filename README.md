@@ -27,12 +27,26 @@ In Heartwood Village kun je PUCK binnengaan. De rode kast speelt **Bitterbal Rus
 
 In de brievenbus bij de villa ligt een oude brief. Daarna gaat het pad aan de oostkant van de onderste straat in Heartwood open, naar het spookachtige landhuis Hollowmere. Binnen: dagboekbladzijden, een kist die je op een drukplaat duwt om het ijzeren hek te openen, een boekenkast die opzij schuift, en het eerste zegel (het Wolfzegel). Wordt vervolgd: De Lantaarnkring.
 
+## Bali
+
+In de onderste straat van Heartwood staat een bushalte naar het vliegveld. Na een korte vlucht over de kaart kom je op Bali:
+een strand met palmen, parasols en vissersbootjes, een steiger om te vissen, **Casa Umalas** (met zwembad en een
+gespleten poort van lavasteen) en **Warung Bitterbal** van Bram uit Zaandam. Zijn quest: een aap heeft zijn mosterdpot,
+frituurmandje en geheime receptkaart gestolen. Vind ze alle drie en hij maakt de Bitterbal Sambal Special.
+Dag en nacht volgen op Bali de echte Bali-tijd (een paar uur later dan thuis). Met de taxi vlieg je weer naar huis.
+
+## Kaart
+
+Met **M** open je de wereldkaart: waar je bent, wat je volgende doel is (met een uitroepteken op de kaart)
+en snel reizen naar plekken die je al kent. Klik op een plek, of kies met pijltjes en druk Enter.
+
 ## Besturing
 
 - Lopen: WASD of pijltjestoetsen
 - Bekijken / verder: E, spatie of Enter
 - Tekst sluiten: Esc
 - Inrichten (binnen): B, dan meubels slepen met de muis; R draaien, Delete weghalen, Ctrl+Z ongedaan
+- Kaart: M
 - Hub openen: H (of de knop linksboven)
 - Poppetje aanpassen: C
 - Vissen: E bij de vijver, wachten op beet, E als het streepje in het groen is

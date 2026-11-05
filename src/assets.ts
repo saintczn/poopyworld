@@ -66,7 +66,17 @@ import seals from './assets/seals.png';
 import slab from './assets/slab.png';
 import desk from './assets/desk.png';
 
+import worldmap from './assets/worldmap.png';
+import busstop from './assets/busstop.png';
+import plane from './assets/plane.png';
+import barstools from './assets/barstools.png';
+
+/** Bali art drawn by tools/build_bali.py: bali-palm-a.png becomes the texture 'bali-palm-a'. */
+const baliFiles = import.meta.glob('./assets/bali-*.png', { eager: true, import: 'default' }) as Record<string, string>;
+const bali = Object.fromEntries(Object.entries(baliFiles).map(([path, url]) => [path.split('/').pop()!.replace('.png', ''), url]));
+
 export const sheets = {
+  ...bali, worldmap, busstop, plane, barstools,
   'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa, manor, portraits, candles, floorlights, seals, slab, desk,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,
@@ -138,6 +148,7 @@ export const sprites: Record<string, [keyof typeof sheets, ...Rect]> = {
   'barrel': ['barrel', 2, 10, 28, 37],
   'barrels': ['barrel', 96, 2, 48, 61],
   'crate': ['crate', 4, 0, 24, 32],
+  ...Object.fromEntries(Array.from({ length: 8 }, (_, i) => [`barstool-${i}`, ['barstools', i * 32, 0, 32, 32]])),
   'crates': ['crate', 0, 32, 64, 32],
   'bucket': ['buckets', 5, 37, 21, 24],
   'basket': ['baskets', 32, 0, 32, 26],

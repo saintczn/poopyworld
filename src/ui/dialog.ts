@@ -5,12 +5,15 @@ export class Dialog {
   private text = document.getElementById('dialog-text')!;
   private lines: string[] = [];
   private index = 0;
+  private then?: () => void;
 
   get isOpen() {
     return !this.box.hidden;
   }
 
-  open(who: string, lines: string[]) {
+  /** `then` runs once the last line has been read (or the box is closed). */
+  open(who: string, lines: string[], then?: () => void) {
+    this.then = then;
     this.lines = lines;
     this.index = 0;
     this.who.textContent = who;
@@ -27,6 +30,9 @@ export class Dialog {
 
   close() {
     this.box.hidden = true;
+    const then = this.then;
+    this.then = undefined;
+    then?.();
   }
 
   private show() {

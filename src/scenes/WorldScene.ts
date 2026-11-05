@@ -73,6 +73,7 @@ export abstract class WorldScene extends Phaser.Scene {
     kb.on('keydown-H', () => {
       if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-hub'); }
     });
+    kb.on('keydown-M', () => this.openMap());
     kb.on('keydown-C', () => {
       if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-creator'); }
     });
@@ -88,6 +89,19 @@ export abstract class WorldScene extends Phaser.Scene {
       this.player.setPosition(x, y);
       cam.centerOn(x, y);
     }
+  }
+
+  /** Opens the world map on top of this place. */
+  openMap() {
+    if (!this.registry.get('started') || this.dialog.isOpen || this.travelling) return;
+    this.player.halt();
+    this.scene.pause();
+    this.scene.launch('worldmap', { from: this.scene.key });
+  }
+
+  /** Travel from outside (the world map uses this). */
+  goTo(scene: string, arrive: Arrival) {
+    this.travel(scene, arrive);
   }
 
   // ---------- helpers for building ----------
@@ -134,9 +148,9 @@ export abstract class WorldScene extends Phaser.Scene {
   }
 
   /** Shows a text box. */
-  protected say(who: string, lines: string[]) {
+  protected say(who: string, lines: string[], then?: () => void) {
     this.player.halt();
-    this.dialog.open(who, lines);
+    this.dialog.open(who, lines, then);
   }
 
   /** Fades out and opens another place. */
@@ -184,6 +198,35 @@ export abstract class WorldScene extends Phaser.Scene {
         it.at.x = npc.x; it.at.y = npc.y - 6;
       });
     });
+  }
+
+  /** Someone who stays in one spot (like a shopkeeper). Resolves with the sprite once their look is painted. */
+  protected addNPC(look: Look, x: number, y: number, facing: 'up' | 'down' | 'left' | 'right' = 'down') {
+    const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
+    return install(look).then((key) => {
+      const npc = this.add.sprite(x, y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-${facing}`).setDepth(y);
+      this.add.image(x, y, 'shadow').setOrigin(0.5, 0.6).setDepth(y - 1);
+      return npc;
+    });
+  }
+
+  /** A big title across the screen for a moment (chapter done, quest done). */
+  protected banner(title: string, sub: string, colour = '#ffe27a') {
+    const cam = this.cameras.main;
+    const font = '"Pixelify Sans", "Courier New", monospace';
+    const t = this.add.text(cam.width / 2, 70, title, { fontFamily: font, fontSize: '20px', color: colour, align: 'center', stroke: '#1a1018', strokeThickness: 5 })
+      .setOrigin(0.5).setScrollFactor(0).setDepth(200000).setResolution(2).setAlpha(0);
+    const t2 = this.add.text(cam.width / 2, 70 + t.height / 2 + 16, sub, { fontFamily: font, fontSize: '12px', color: '#f4ecd8', align: 'center', stroke: '#1a1018', strokeThickness: 4 })
+      .setOrigin(0.5).setScrollFactor(0).setDepth(200000).setResolution(2).setAlpha(0);
+    this.tweens.add({ targets: [t, t2], alpha: 1, duration: 800, hold: 4500, yoyo: true, onComplete: () => { t.destroy(); t2.destroy(); } });
+  }
+
+  /** A twinkle that says "something here". Returns a function that removes it. */
+  protected sparkle(x: number, y: number) {
+    const s = this.add.image(x, y, 'glow').setScale(0.28).setTint(0xfff2a0).setBlendMode(Phaser.BlendModes.ADD).setDepth(y + 2);
+    const d = this.add.image(x, y - 2, 'dot').setScale(2).setDepth(y + 3);
+    const tw = this.tweens.add({ targets: [s, d], alpha: { from: 0.25, to: 1 }, duration: 600, yoyo: true, repeat: -1 });
+    return () => { tw.remove(); s.destroy(); d.destroy(); };
   }
 
   /** Keeps an interactable on top of a moving sprite. */

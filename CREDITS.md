@@ -27,3 +27,12 @@ and character layers were stacked into one sheet (see `tools/build_assets.py`).
   https://opengameart.org/content/lpc-style-farm-animals. CC-BY 3.0 / GPL 2.0+.
 
 The flags, mailbox, Kroki's perch, signs and UI bubbles are drawn in code (`src/art/handmade.ts`).
+
+## Bali and the world map
+
+- Bar stools: Lanea Zimmerman (Sharm), BlueCarrot16, Eliza Wyatt (DeathsDarling), https://opengameart.org/content/lpc-upholstery (OGA-BY 3.0).
+- Pool tiles: from the LPC Revised pack (Structure/Misc/Pool A), placed as a nine-slice with a stone deck.
+- Sand and sea tiles: LPC Revised terrain.
+- Palm trees, Warung Bitterbal, Casa Umalas, the split gate, boats, sun beds, parasols, torches, offerings,
+  frangipani, the pier, the bus stop, the plane and the world map are original, drawn in code (`tools/build_bali.py`).
+
