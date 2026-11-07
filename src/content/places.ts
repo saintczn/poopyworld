@@ -30,7 +30,7 @@ export function placeOf(scene: string): PlaceId {
   if (scene === 'garden' || scene === 'house') return 'villa';
   if (scene === 'puck' || scene === 'bitterbal-rush') return 'puck';
   if (scene === 'manor-grounds' || scene === 'manor') return 'hollowmere';
-  if (scene === 'bali') return 'bali';
+  if (scene === 'bali' || scene === 'casa' || scene === 'surf') return 'bali';
   return 'heartwood';
 }
 
