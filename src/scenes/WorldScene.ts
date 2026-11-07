@@ -30,7 +30,7 @@ export abstract class WorldScene extends Phaser.Scene {
   protected interactables: Interactable[] = [];
   private keys!: Keys;
   private hint!: Phaser.GameObjects.Image;
-  private dialog = new Dialog();
+  protected dialog = new Dialog();
   private nearby: Interactable | null = null;
   private interactPressed = false;
   private escapePressed = false;

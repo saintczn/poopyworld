@@ -501,6 +501,296 @@ def basket():
     d.rectangle([15, 6, 19, 7], fill=hexc('#2a2a2a'))
     return outline(img)
 
+
+# ---------------------------------------------------------------- Casa Umalas inside
+def bed():
+    W, H = 120, 132
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    teak, teak_l, teak_d = hexc('#6b4226'), hexc('#8c5a36'), hexc('#4a2c18')
+    # headboard (carved)
+    d.rectangle([8, 30, 111, 56], fill=teak)
+    d.line([(8, 30), (111, 30)], fill=teak_l)
+    for x in range(16, 106, 12): d.ellipse([x, 38, x + 7, 46], outline=teak_d)
+    # mattress and sheets
+    d.rectangle([12, 54, 107, 118], fill=hexc('#f4f1ea'))
+    d.rectangle([12, 54, 107, 57], fill=hexc('#ffffff'))
+    for x in (22, 64):
+        d.rounded_rectangle([x, 60, x + 34, 74], 4, fill=hexc('#ffffff')); d.line([(x + 2, 72), (x + 32, 72)], fill=hexc('#d9d3c6'))
+    d.rectangle([12, 84, 107, 118], fill=hexc('#e9dcc4'))
+    d.line([(12, 84), (107, 84)], fill=hexc('#fffaf0'))
+    for x in range(16, 106, 8): d.point((x, 100), fill=hexc('#c9a46a')); d.point((x + 4, 108), fill=hexc('#c9a46a'))
+    # frangipani flowers on the bed
+    for cx, cy in [(52, 90), (60, 94)]:
+        for dx, dy in [(0, -2), (2, 0), (0, 2), (-2, 0)]: d.point((cx + dx, cy + dy), fill=hexc('#ffffff'))
+        d.point((cx, cy), fill=hexc('#f5c400'))
+    d.rectangle([10, 118, 109, 124], fill=teak); d.line([(10, 124), (109, 124)], fill=teak_d)
+    # four posts
+    for x in (6, 108):
+        d.rectangle([x, 2, x + 5, 128], fill=teak); d.line([(x, 2), (x, 128)], fill=teak_l)
+    d.rectangle([4, 0, 115, 4], fill=teak)
+    # the mosquito net: see-through white
+    net = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    nd = ImageDraw.Draw(net)
+    nd.polygon([(6, 4), (114, 4), (118, 126), (2, 126)], fill=(255, 255, 255, 58))
+    for x in range(8, 114, 9): nd.line([(x, 5), (x - 3 if x < 60 else x + 3, 125)], fill=(255, 255, 255, 90))
+    nd.line([(2, 126), (118, 126)], fill=(255, 255, 255, 140))
+    # tied back at the front corners
+    nd.polygon([(2, 60), (14, 70), (2, 126)], fill=(255, 255, 255, 120))
+    nd.polygon([(118, 60), (106, 70), (118, 126)], fill=(255, 255, 255, 120))
+    img = outline(img)
+    img.alpha_composite(net)
+    return img
+
+def daybed():
+    W, H = 104, 56
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    rattan, rattan_l, rattan_d = hexc('#c99a52'), hexc('#e0b874'), hexc('#9a6c2e')
+    d.rectangle([2, 4, 101, 30], fill=rattan)
+    for y in range(6, 30, 3):
+        for x in range(4, 100, 4): d.point((x + (y // 3) % 2 * 2, y), fill=rattan_d)
+    d.line([(2, 4), (101, 4)], fill=rattan_l)
+    d.rectangle([2, 26, 101, 46], fill=rattan); d.line([(2, 46), (101, 46)], fill=rattan_d)
+    for x in (4, 96): d.rectangle([x, 46, x + 3, 53], fill=rattan_d)
+    # cushions: ocean blue and white
+    d.rounded_rectangle([8, 22, 95, 38], 3, fill=hexc('#f4f1ea'))
+    for x, c in [(12, '#2f7fc1'), (40, '#e8c040'), (70, '#2f7fc1')]:
+        d.rounded_rectangle([x, 10, x + 20, 26], 3, fill=hexc(c)); d.line([(x + 3, 13), (x + 17, 13)], fill=hexc('#ffffff', 120))
+    return outline(img)
+
+def ikat_rug():
+    W, H = 144, 88
+    img = Image.new('RGBA', (W, H), hexc('#a8432f'))
+    d = ImageDraw.Draw(img)
+    d.rectangle([4, 4, W - 5, H - 5], outline=hexc('#f1d9a6'), width=2)
+    d.rectangle([9, 9, W - 10, H - 10], outline=hexc('#2c3e5a'), width=2)
+    for cx in range(24, W - 10, 24):
+        for cy in (30, 58):
+            d.polygon([(cx, cy - 10), (cx + 9, cy), (cx, cy + 10), (cx - 9, cy)], fill=hexc('#f1d9a6'))
+            d.polygon([(cx, cy - 5), (cx + 4, cy), (cx, cy + 5), (cx - 4, cy)], fill=hexc('#2c3e5a'))
+    for x in range(0, W, 3):
+        d.line([(x, 0), (x, 2)], fill=hexc('#f1d9a6')); d.line([(x, H - 3), (x, H - 1)], fill=hexc('#f1d9a6'))
+    return img
+
+def frog():
+    img = Image.new('RGBA', (30, 28), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    st, st_l, st_d = hexc('#8e8a80'), hexc('#aaa69a'), hexc('#6c685f')
+    d.ellipse([3, 10, 26, 27], fill=st)
+    d.ellipse([6, 4, 23, 18], fill=st)
+    d.ellipse([5, 2, 12, 9], fill=st_l); d.ellipse([17, 2, 24, 9], fill=st_l)
+    d.point((8, 5), fill=hexc('#2a2a2a')); d.point((20, 5), fill=hexc('#2a2a2a'))
+    d.line([(10, 14), (19, 14)], fill=st_d)
+    d.ellipse([10, 18, 19, 26], fill=st_l)
+    # little umbrella (they always have one)
+    d.line([(24, 2), (24, 14)], fill=hexc('#6b4226'))
+    d.pieslice([16, -6, 32, 8], 180, 360, fill=hexc('#e8584a'))
+    for x in range(18, 31, 2): d.point((x, 0), fill=hexc('#f5c400'))
+    for _ in range(20):
+        x, y = random.randint(5, 24), random.randint(10, 25)
+        d.point((x, y), fill=hexc('#5e7d3a'))
+    return outline(img)
+
+def view():
+    """The big open doors at the back of the villa: garden, pool, palms and the sea."""
+    W, H = 160, 72
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for y in range(H):
+        t = y / H
+        c = (int(140 + 90 * t), int(200 + 30 * t), int(235 - 10 * t), 255)
+        d.line([(0, y), (W, y)], fill=c)
+    d.rectangle([0, 30, W, 40], fill=hexc('#3f9ab8'))
+    d.line([(0, 30), (W, 30)], fill=hexc('#9ad0de'))
+    d.rectangle([0, 40, W, H], fill=hexc('#5aa040'))
+    d.rectangle([30, 46, 120, 60], fill=hexc('#7fd0e8')); d.rectangle([30, 46, 120, 47], fill=hexc('#d8cfbd'))
+    for px in (14, 140, 100):
+        d.line([(px, 44), (px + 3, 12)], fill=hexc('#7a5634'))
+        for dx in (-12, -6, 6, 12): d.line([(px + 3, 12), (px + 3 + dx, 18 + abs(dx) // 3)], fill=hexc('#3c7a30'))
+    d.ellipse([118, 6, 130, 18], fill=hexc('#fff2a0'))
+    # door frames
+    frame = hexc('#4a2c18')
+    d.rectangle([0, 0, W - 1, H - 1], outline=frame, width=3)
+    for x in (40, 80, 120): d.rectangle([x - 1, 0, x + 1, H], fill=frame)
+    for x in range(3, W - 3, 40): d.line([(x + 6, 4), (x + 18, 40)], fill=(255, 255, 255, 70))
+    return img
+
+def gecko():
+    img = Image.new('RGBA', (40, 12), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for f, legs in ((0, [(5, 2), (5, 9), (12, 1), (12, 10)]), (20, [(6, 1), (6, 10), (11, 2), (11, 9)])):
+        d.line([(f + 1, 6), (f + 16, 6)], fill=hexc('#7a9a4a'))
+        d.line([(f + 3, 5), (f + 14, 5)], fill=hexc('#93b45a'))
+        d.ellipse([f + 13, 3, f + 19, 8], fill=hexc('#93b45a'))
+        d.point((f + 17, 4), fill=hexc('#1a1a1a'))
+        for lx, ly in legs: d.line([(f + lx, 6), (f + lx + (1 if ly < 6 else 1), ly)], fill=hexc('#7a9a4a'))
+        for x in range(f + 4, f + 13, 3): d.point((x, 5), fill=hexc('#c8a050'))
+    return img
+
+def mosquito():
+    img = Image.new('RGBA', (16, 8), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for f in (0, 8):
+        d.line([(f + 2, 5), (f + 6, 5)], fill=hexc('#2a2a2a'))
+        d.point((f + 1, 6), fill=hexc('#2a2a2a'))
+        wy = 2 if f == 0 else 4
+        d.line([(f + 3, wy), (f + 5, wy)], fill=(220, 230, 240, 200))
+    return img
+
+def monkey():
+    """A long-tailed macaque, 4 frames of 28x28: walk 1, walk 2, sit, jump."""
+    img = Image.new('RGBA', (112, 28), (0, 0, 0, 0))
+    fur, fur_l, fur_d, face = hexc('#8a7a5c'), hexc('#a8987a'), hexc('#6a5a40'), hexc('#d8b49a')
+    for i in range(4):
+        f = Image.new('RGBA', (28, 28), (0, 0, 0, 0))
+        d = ImageDraw.Draw(f)
+        sit = i == 2; jump = i == 3
+        by = 12 if not jump else 8
+        # tail
+        d.line([(6, by + 6), (2, by - 2), (4, by - 8)], fill=fur_d, width=2)
+        # body
+        if sit: d.ellipse([7, by - 2, 20, by + 12], fill=fur)
+        else: d.ellipse([6, by + 1, 22, by + 10], fill=fur)
+        d.ellipse([8, by + 2, 18, by + 6], fill=fur_l)
+        # legs
+        if not sit:
+            a, b = ((0, 2) if i == 0 else (2, 0)) if not jump else (3, 3)
+            for x, off in ((8, a), (11, b), (17, b), (20, a)):
+                d.line([(x, by + 8), (x - (2 if jump else 0), by + 12 + off - (3 if jump else 0))], fill=fur_d, width=2)
+        else:
+            d.line([(9, by + 11), (12, by + 13)], fill=fur_d, width=2); d.line([(18, by + 11), (15, by + 13)], fill=fur_d, width=2)
+        # head
+        hx, hy = (19, by - 4) if not sit else (13, by - 7)
+        d.ellipse([hx - 1, hy - 1, hx + 9, hy + 8], fill=fur)
+        d.ellipse([hx + 1, hy + 2, hx + 8, hy + 8], fill=face)
+        d.point((hx + 3, hy + 3), fill=hexc('#1a1a1a')); d.point((hx + 6, hy + 3), fill=hexc('#1a1a1a'))
+        d.point((hx + 4, hy + 6), fill=hexc('#8a4a3a'))
+        d.point((hx - 1, hy + 2), fill=face); d.point((hx + 9, hy + 2), fill=face)
+        # sunglasses on its head (stolen)
+        d.line([(hx, hy), (hx + 8, hy)], fill=hexc('#1a1a1a')); d.rectangle([hx + 1, hy - 1, hx + 3, hy + 1], fill=hexc('#1a1a1a')); d.rectangle([hx + 5, hy - 1, hx + 7, hy + 1], fill=hexc('#1a1a1a'))
+        img.alpha_composite(outline(f), (i * 28, 0))
+    return img
+
+def coconut():
+    img = Image.new('RGBA', (12, 12), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse([1, 1, 10, 10], fill=hexc('#6a8a2a')); d.ellipse([2, 2, 6, 6], fill=hexc('#8ab04a'))
+    d.point((7, 7), fill=hexc('#4a6a1a'))
+    return outline(img)
+
+def surf_assets():
+    out = {}
+    # board seen from the side
+    b = Image.new('RGBA', (52, 8), (0, 0, 0, 0)); d = ImageDraw.Draw(b)
+    d.ellipse([0, 1, 51, 7], fill=hexc('#f5c400')); d.line([(4, 4), (47, 4)], fill=hexc('#e8584a'))
+    out['surf-board'] = outline(b)
+    # rock sticking out of the water
+    r = Image.new('RGBA', (34, 24), (0, 0, 0, 0)); d = ImageDraw.Draw(r)
+    d.polygon([(2, 23), (8, 8), (16, 2), (26, 6), (32, 23)], fill=hexc('#6c685f'))
+    d.polygon([(8, 8), (16, 2), (20, 4), (12, 14)], fill=hexc('#8e8a80'))
+    d.line([(4, 22), (30, 22)], fill=hexc('#ffffff'))
+    out['surf-rock'] = outline(r)
+    # jellyfish, 2 frames
+    j = Image.new('RGBA', (32, 18), (0, 0, 0, 0)); d = ImageDraw.Draw(j)
+    for f, sq in ((0, 0), (16, 2)):
+        d.pieslice([f + 1 + sq // 2, 1, f + 14 - sq // 2, 14], 180, 360, fill=hexc('#e89ad8', 230))
+        d.pieslice([f + 4, 3, f + 9, 9], 180, 360, fill=hexc('#ffd0f0', 230))
+        for x in range(f + 3, f + 13, 3): d.line([(x, 8), (x + (1 if sq else -1), 16)], fill=hexc('#e89ad8', 200))
+    out['surf-jelly'] = j
+    # shell: a scallop fan
+    s = Image.new('RGBA', (14, 13), (0, 0, 0, 0)); d = ImageDraw.Draw(s)
+    pts = [(7, 12)] + [(7 + 7 * math.cos(math.radians(a)), 7 - 7 * math.sin(math.radians(a))) for a in range(0, 181, 15)]
+    d.polygon(pts, fill=hexc('#fbe3ef'))
+    for a in range(15, 180, 30):
+        d.line([(7, 12), (7 + 6 * math.cos(math.radians(a)), 7 - 6 * math.sin(math.radians(a)))], fill=hexc('#e39abb'))
+    d.rectangle([5, 10, 9, 12], fill=hexc('#e39abb'))
+    out['surf-shell'] = outline(s)
+    return out
+
+# ---------------------------------------------------------------- turtles and dolphins
+def sea_turtle():
+    """Top-down sea turtle, 2 frames of 36x32 (flippers forward / back)."""
+    img = Image.new('RGBA', (72, 32), (0, 0, 0, 0))
+    shell, shell_l, shell_d, skin = hexc('#6b7a3a'), hexc('#8a9a4a'), hexc('#4a5a2a'), hexc('#9aa878')
+    for i in range(2):
+        f = Image.new('RGBA', (36, 32), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        a = 0 if i == 0 else 4
+        # flippers
+        d.polygon([(10, 12 - a), (2, 4 - a), (6, 14 - a)], fill=skin); d.polygon([(26, 12 - a), (34, 4 - a), (30, 14 - a)], fill=skin)
+        d.polygon([(11, 22 + a), (5, 28 + a), (13, 25)], fill=skin); d.polygon([(25, 22 + a), (31, 28 + a), (23, 25)], fill=skin)
+        # head
+        d.ellipse([14, 1, 22, 9], fill=skin); d.point((15, 4), fill=hexc('#1a1a1a')); d.point((21, 4), fill=hexc('#1a1a1a'))
+        # shell with plates
+        d.ellipse([8, 7, 28, 29], fill=shell)
+        d.ellipse([11, 9, 25, 26], fill=shell_l)
+        for cx, cy in [(18, 12), (14, 17), (22, 17), (18, 22)]:
+            d.polygon([(cx, cy - 3), (cx + 3, cy), (cx, cy + 3), (cx - 3, cy)], fill=shell_d)
+        d.line([(18, 26), (18, 30)], fill=skin)
+        img.alpha_composite(outline(f), (i * 36, 0))
+    return img
+
+def baby_turtle():
+    img = Image.new('RGBA', (28, 14), (0, 0, 0, 0))
+    for i in range(2):
+        f = Image.new('RGBA', (14, 14), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        a = i
+        d.point((3, 4 - a), fill=hexc('#5a5a4a')); d.point((10, 4 - a), fill=hexc('#5a5a4a'))
+        d.point((3, 10 + a), fill=hexc('#5a5a4a')); d.point((10, 10 + a), fill=hexc('#5a5a4a'))
+        d.ellipse([5, 1, 8, 4], fill=hexc('#6a6a58'))
+        d.ellipse([3, 4, 10, 12], fill=hexc('#4a4a3a')); d.point((6, 7), fill=hexc('#6a6a58'))
+        img.alpha_composite(outline(f), (i * 14, 0))
+    return img
+
+def turtle_side():
+    """Swimming turtle seen from the side (for surfing), 2 frames of 40x22."""
+    img = Image.new('RGBA', (80, 22), (0, 0, 0, 0))
+    for i in range(2):
+        f = Image.new('RGBA', (40, 22), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([30, 7, 39, 14], fill=hexc('#9aa878')); d.point((36, 9), fill=hexc('#1a1a1a'))
+        fl = [(22, 14), (30, 21 if i else 17), (18, 16)]
+        d.polygon(fl, fill=hexc('#8a9868'))
+        d.polygon([(6, 13), (0, 19 if i else 15), (10, 15)], fill=hexc('#8a9868'))
+        d.pieslice([4, 2, 32, 26], 180, 360, fill=hexc('#6b7a3a'))
+        d.rectangle([5, 13, 31, 15], fill=hexc('#c8c09a'))
+        for x in (11, 18, 25): d.polygon([(x, 6), (x + 3, 9), (x, 12), (x - 3, 9)], fill=hexc('#4a5a2a'))
+        img.alpha_composite(outline(f), (i * 40, 0))
+    return img
+
+def dolphin():
+    """Dolphin jumping, side view, 48x26."""
+    img = Image.new('RGBA', (48, 26), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    body, light = hexc('#6f8fa8'), hexc('#c8d8e4')
+    d.polygon([(2, 16), (10, 9), (24, 6), (38, 8), (46, 12), (38, 14), (24, 17), (10, 18)], fill=body)
+    d.polygon([(10, 17), (24, 16), (38, 13), (24, 18)], fill=light)
+    d.polygon([(22, 7), (26, 0), (30, 7)], fill=body)               # dorsal fin
+    d.polygon([(2, 16), (0, 10), (6, 14)], fill=body); d.polygon([(2, 16), (0, 22), (6, 18)], fill=body)  # tail
+    d.polygon([(26, 16), (24, 22), (30, 16)], fill=body)            # flipper
+    d.point((38, 10), fill=hexc('#1a1a1a'))
+    d.line([(40, 12), (45, 12)], fill=hexc('#4f6f88'))
+    return outline(img)
+
+def hatchery():
+    """A little turtle nursery on the beach: bamboo fence around a sand bed, with a sign."""
+    W, H = 104, 72
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([6, 26, 97, 66], fill=hexc('#e6b878'))
+    for _ in range(14):
+        x, y = random.randint(12, 90), random.randint(32, 60)
+        d.ellipse([x, y, x + 5, y + 4], fill=hexc('#f4ecd8')); d.point((x + 1, y + 1), fill=hexc('#ffffff'))
+    for x in (30, 54, 78):
+        d.line([(x, 28), (x, 64)], fill=hexc('#c8945a'))
+    for x in range(4, 100, 6):
+        d.rectangle([x, 22, x + 2, 34], fill=hexc('#c8a060')); d.rectangle([x, 60, x + 2, 70], fill=hexc('#c8a060'))
+    d.rectangle([4, 24, 99, 25], fill=hexc('#8a6a3a')); d.rectangle([4, 62, 99, 63], fill=hexc('#8a6a3a'))
+    for y in range(24, 70, 6):
+        d.rectangle([2, y, 4, y + 3], fill=hexc('#c8a060')); d.rectangle([99, y, 101, y + 3], fill=hexc('#c8a060'))
+    # sign with a turtle on it
+    d.rectangle([40, 0, 64, 16], fill=hexc('#2f7fc1')); d.rectangle([51, 16, 53, 24], fill=hexc('#6b4226'))
+    d.ellipse([46, 4, 58, 13], fill=hexc('#8ad06a')); d.ellipse([56, 6, 61, 11], fill=hexc('#8ad06a'))
+    for x, y in [(46, 4), (56, 4), (46, 12), (56, 12)]: d.point((x, y), fill=hexc('#8ad06a'))
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -530,3 +820,18 @@ if __name__ == '__main__':
     save(busstop(), 'busstop.png')
     save(plane(), 'plane.png')
     save(basket(), 'bali-basket.png')
+    save(bed(), 'bali-bed.png')
+    save(daybed(), 'bali-daybed.png')
+    save(ikat_rug(), 'bali-rug.png')
+    save(frog(), 'bali-frog.png')
+    save(view(), 'bali-view.png')
+    save(gecko(), 'bali-gecko.png')
+    save(mosquito(), 'bali-mosquito.png')
+    save(monkey(), 'bali-monkey.png')
+    save(coconut(), 'bali-coconut.png')
+    for k, im in surf_assets().items(): save(im, 'bali-' + k + '.png')
+    save(sea_turtle(), 'bali-turtle.png')
+    save(baby_turtle(), 'bali-turtle-baby.png')
+    save(turtle_side(), 'bali-turtle-side.png')
+    save(dolphin(), 'bali-dolphin.png')
+    save(hatchery(), 'bali-hatchery.png')

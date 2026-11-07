@@ -12,6 +12,13 @@ const FONT = '"Pixelify Sans", "Courier New", monospace';
 export class BaliScene extends WorldScene {
   private ambient!: Ambient;
   private itemMarks = new Map<string, () => void>();
+  private monkey!: Phaser.GameObjects.Sprite;
+  private monkeyMode: 'wander' | 'angry' | 'chase' | 'flee' | 'sit' = 'wander';
+  private monkeyUntil = 0;
+  private monkeyTarget = new Phaser.Math.Vector2();
+  private releasing = false;
+  private nextDolphin = 0;
+  private shaken = new Set<number>();
   private afterIndex = 0;
 
   constructor() {
@@ -35,6 +42,7 @@ export class BaliScene extends WorldScene {
     this.buildWarung(lights);
     this.buildBeach(lights);
     this.buildItems();
+    this.buildFun();
 
     // edges: jungle at the top and sides, the sea below (except the pier)
     this.solid(0, 0, W, 1.4 * T);
@@ -65,7 +73,11 @@ export class BaliScene extends WorldScene {
     this.solid(cx, cy + 60, 336, 40);
     lights.push({ x: cx + 68, y: cy + 146, size: 90 }, { x: cx + 268, y: cy + 146, size: 90 }, { x: cx + 168, y: cy + 160, size: 130 });
     this.nameplate(cx + 168, cy + 109, 'Casa Umalas', '#4a2c18', '#c99a52', casa.depth + 1);
-    this.interactables.push({ id: 'casa', at: { x: cx + 168, y: cy + 226 }, who: 'Casa Umalas', lines: B.CASA_LINES });
+    this.interactables.push({
+      id: 'casa', at: { x: cx + 168, y: cy + 226 }, who: 'Casa Umalas', lines: [],
+      action: () => this.travel('casa', { x: 448, y: 370, facing: 'up' }),
+    });
+    this.interactables.push({ id: 'casa-sign', at: { x: cx + 100, y: cy + 226 }, who: 'Casa Umalas', lines: B.CASA_LINES });
 
     // the pool with its deck
     const px = B.pool.x * T, py = B.pool.y * T;
@@ -222,7 +234,212 @@ export class BaliScene extends WorldScene {
     this.goTo('flight', { x: 0, y: 0 });
   }
 
+  // ================================================================ fun things on the beach
+  private buildFun() {
+    const a = this.anims;
+    if (!a.exists('turtle-crawl')) {
+      a.create({ key: 'turtle-crawl', frames: a.generateFrameNumbers('bali-turtle', { start: 0, end: 1 }), frameRate: 2, repeat: -1 });
+      a.create({ key: 'baby-crawl', frames: a.generateFrameNumbers('bali-turtle-baby', { start: 0, end: 1 }), frameRate: 6, repeat: -1 });
+      a.create({ key: 'monkey-walk', frames: a.generateFrameNumbers('bali-monkey', { start: 0, end: 1 }), frameRate: 8, repeat: -1 });
+      a.create({ key: 'monkey-run', frames: a.generateFrameNumbers('bali-monkey', { start: 0, end: 1 }), frameRate: 14, repeat: -1 });
+    }
+
+    // sea turtles: one on the beach, a few swimming in the shallow water
+    const beachTurtle = this.add.sprite(38 * T, 21.5 * T, 'bali-turtle', 0).setDepth(21.5 * T).play('turtle-crawl');
+    this.wanderTurtle(beachTurtle, { x0: 32, x1: 46, y0: 20, y1: 23.5 }, 9000, false);
+    const talk = { id: 'turtle-beach', at: { x: beachTurtle.x, y: beachTurtle.y + 10 }, who: 'Zeeschildpad', lines: [] as string[],
+      action: () => this.say('Zeeschildpad', B.TURTLE_LINES[Math.floor(Math.random() * B.TURTLE_LINES.length)]) };
+    this.interactables.push(talk);
+    this.events.on('update', () => { talk.at.x = beachTurtle.x; talk.at.y = beachTurtle.y + 14; });
+    for (let i = 0; i < 4; i++) {
+      const t = this.add.sprite(Phaser.Math.Between(4, 46) * T, Phaser.Math.Between(26, 31) * T, 'bali-turtle', 0)
+        .setDepth(-470).setAlpha(0.75).setTint(0xb8e0d8).setScale(1.1).play({ key: 'turtle-crawl', frameRate: 3 });
+      this.wanderTurtle(t, { x0: 2, x1: 48, y0: 26, y1: 32 }, 6000, true);
+    }
+
+    // the turtle nursery
+    const hx = B.hatchery.x * T, hy = B.hatchery.y * T;
+    this.place('bali-hatchery', hx, hy, [96, 30]);
+    this.interactables.push({ id: 'hatchery', at: { x: hx, y: hy + 10 }, who: 'Schildpaddenopvang', lines: [], action: () => this.hatchery(hx, hy) });
+
+    // the monkey
+    this.monkey = this.add.sprite(B.monkeyHome.x * T, B.monkeyHome.y * T, 'bali-monkey', 2).setOrigin(0.5, 0.9).setScale(1.35);
+    this.monkeyTarget.set(this.monkey.x, this.monkey.y);
+    this.interactables.push({ id: 'monkey', at: { x: 0, y: -9999 }, who: 'Aapje', lines: [], action: () => this.say('Aapje', B.MONKEY.calm[Math.floor(Math.random() * B.MONKEY.calm.length)]) });
+
+    // coconuts: shake a palm on the beach
+    B.palms.forEach(([key, x, y], i) => {
+      if (y < 15) return;
+      this.interactables.push({ id: `palm-${i}`, at: { x: x * T, y: y * T + 10 }, who: 'Palmboom', lines: [], action: () => this.shakePalm(i, key, x * T, y * T) });
+    });
+
+    // surfing
+    this.interactables.push({
+      id: 'surf', at: { x: 20.6 * T, y: 19.9 * T }, who: 'Surfplanken', lines: [],
+      action: () => this.say('Surfplanken', ['Twee surfplanken in het zand. De golven zijn perfect vandaag.', 'Gaan surfen!'], () => this.goTo('surf', { x: 0, y: 0 })),
+    });
+  }
+
+  /** Let a turtle wander slowly around inside an area (in tiles). */
+  private wanderTurtle(t: Phaser.GameObjects.Sprite, area: { x0: number; x1: number; y0: number; y1: number }, ms: number, swim: boolean) {
+    const go = () => {
+      if (!t.active) return;
+      const tx = Phaser.Math.FloatBetween(area.x0, area.x1) * T, ty = Phaser.Math.FloatBetween(area.y0, area.y1) * T;
+      t.setRotation(Phaser.Math.Angle.Between(t.x, t.y, tx, ty) + Math.PI / 2);
+      this.tweens.add({
+        targets: t, x: tx, y: ty, duration: ms + Phaser.Math.Distance.Between(t.x, t.y, tx, ty) * (swim ? 20 : 60),
+        ease: 'Sine.easeInOut', onUpdate: () => { if (!swim) t.setDepth(t.y); },
+        onComplete: () => this.time.delayedCall(Phaser.Math.Between(800, 3000), go),
+      });
+    };
+    go();
+  }
+
+  /** Help a batch of baby turtles to the sea. */
+  private hatchery(hx: number, hy: number) {
+    if (this.releasing) { this.say('Schildpaddenopvang', ['Sssst... ze zijn nog onderweg naar zee!']); return; }
+    const s = B.loadBali();
+    this.say('Schildpaddenopvang', s.turtles ? B.HATCHERY.again : B.HATCHERY.first, () => {
+      this.releasing = true;
+      const n = 6;
+      let home = 0;
+      for (let i = 0; i < n; i++) {
+        const b = this.add.sprite(hx - 36 + i * 14, hy + 4, 'bali-turtle-baby', 0).play({ key: 'baby-crawl', startFrame: i % 2 });
+        const tx = b.x + Phaser.Math.Between(-30, 30);
+        const dur = Phaser.Math.Between(5000, 8000);
+        b.setRotation(Phaser.Math.Angle.Between(b.x, b.y, tx, (B.SEA + 0.4) * T) + Math.PI / 2);
+        this.tweens.add({
+          targets: b, x: tx, y: (B.SEA + 0.4) * T, duration: dur, delay: i * 250,
+          onUpdate: () => b.setDepth(b.y + 2),
+          onComplete: () => {
+            for (let k = 0; k < 5; k++) {
+              const d = this.add.image(b.x + Phaser.Math.Between(-6, 6), b.y, 'dot').setTint(0xe8f8ff).setDepth(b.y + 3);
+              this.tweens.add({ targets: d, y: d.y - 10, alpha: 0, duration: 400, onComplete: () => d.destroy() });
+            }
+            b.destroy();
+            if (++home === n) {
+              this.releasing = false;
+              const now = B.loadBali(); now.turtles = (now.turtles ?? 0) + n; B.saveBali(now);
+              this.banner('Alle babyschildpadjes zijn in zee!', `Samen al ${now.turtles} schildpadjes op weg geholpen.`, '#c8ff9a');
+            }
+          },
+        });
+      }
+    });
+  }
+
+  private shakePalm(i: number, key: string, x: number, y: number) {
+    const palm = this.children.list.find((o) => o instanceof Phaser.GameObjects.Image && o.texture.key === key && Math.abs(o.x - x) < 2 && Math.abs(o.y - y) < 2) as Phaser.GameObjects.Image | undefined;
+    if (palm) this.tweens.add({ targets: palm, angle: { from: -3, to: 3 }, duration: 90, yoyo: true, repeat: 3, onComplete: () => palm.setAngle(0) });
+    if (this.shaken.has(i)) { this.say('Palmboom', ['Je schudt nog eens. Er valt alleen een blaadje.']); return; }
+    this.shaken.add(i);
+    const c = this.add.image(x + 6, y - 90, 'bali-coconut').setDepth(y + 20);
+    this.tweens.add({
+      targets: c, y: y + 18, duration: 520, ease: 'Bounce.easeOut',
+      onComplete: () => {
+        const s = B.loadBali(); s.coconuts = (s.coconuts ?? 0) + 1; B.saveBali(s);
+        this.time.delayedCall(250, () => {
+          c.destroy();
+          this.say('Kokosnoot', [`BONK. Een kokosnoot! Je tikt hem open en drinkt het kokoswater.`, `Verfrissend. (Kokosnoten gedronken: ${s.coconuts})`]);
+        });
+      },
+    });
+  }
+
+  /** The monkey: wanders about, and if you come too close... */
+  private updateMonkey(time: number) {
+    const m = this.monkey, p = this.player;
+    if (!m || !p) return;
+    const dist = Phaser.Math.Distance.Between(m.x, m.y, p.x, p.y);
+    const playing = this.registry.get('started') && !this.dialog.isOpen;
+    const step = (tx: number, ty: number, speed: number) => {
+      const a = Phaser.Math.Angle.Between(m.x, m.y, tx, ty);
+      const d = Math.min(speed * this.game.loop.delta / 1000, Phaser.Math.Distance.Between(m.x, m.y, tx, ty));
+      m.x += Math.cos(a) * d; m.y += Math.sin(a) * d;
+      m.setFlipX(Math.cos(a) < 0);
+      return Phaser.Math.Distance.Between(m.x, m.y, tx, ty) < 2;
+    };
+    switch (this.monkeyMode) {
+      case 'wander':
+        if (step(this.monkeyTarget.x, this.monkeyTarget.y, 40)) {
+          m.stop().setFrame(2);
+          if (time > this.monkeyUntil) {
+            this.monkeyTarget.set(Phaser.Math.FloatBetween(2, 19) * T, Phaser.Math.FloatBetween(17.5, 23) * T);
+            this.monkeyUntil = time + Phaser.Math.Between(1500, 4000);
+          }
+        } else if (!m.anims.isPlaying) m.play('monkey-walk');
+        if (playing && dist < 70) {
+          this.monkeyMode = 'angry'; this.monkeyUntil = time + 700;
+          m.stop().setFrame(3);
+          this.popText(m.x, m.y - 24, '!!', '#ff6a5a');
+          this.tweens.add({ targets: m, y: m.y - 6, duration: 90, yoyo: true, repeat: 2 });
+        }
+        break;
+      case 'angry':
+        if (time > this.monkeyUntil) { this.monkeyMode = 'chase'; this.monkeyUntil = time + 4000; m.play('monkey-run'); }
+        break;
+      case 'chase':
+        step(p.x, p.y - 4, 150);
+        if (dist < 16 && playing) {
+          this.monkeyMode = 'flee';
+          this.cameras.main.shake(260, 0.012);
+          this.cameras.main.flash(120, 255, 255, 255);
+          const s = B.loadBali(); s.monkeyAttacks = (s.monkeyAttacks ?? 0) + 1; B.saveBali(s);
+          const lines = B.MONKEY.attack[(s.monkeyAttacks - 1) % B.MONKEY.attack.length];
+          this.say('AAP!', [...lines, `(Aap-aanvallen overleefd: ${s.monkeyAttacks})`]);
+          this.monkeyTarget.set(Phaser.Math.FloatBetween(2, 8) * T, Phaser.Math.FloatBetween(17.5, 19) * T);
+        } else if (time > this.monkeyUntil) {
+          this.monkeyMode = 'flee';
+          this.popText(m.x, m.y - 24, 'pfff', '#fff6dc');
+          this.monkeyTarget.set(Phaser.Math.FloatBetween(2, 19) * T, Phaser.Math.FloatBetween(17.5, 23) * T);
+        }
+        break;
+      case 'flee':
+        if (step(this.monkeyTarget.x, this.monkeyTarget.y, 160)) { this.monkeyMode = 'sit'; this.monkeyUntil = time + 15000; m.stop().setFrame(2); }
+        break;
+      case 'sit':
+        if (time > this.monkeyUntil) { this.monkeyMode = 'wander'; this.monkeyTarget.set(m.x, m.y); }
+        break;
+    }
+    m.setDepth(m.y);
+    // you can only talk to it when it has calmed down
+    const entry = this.interactables.find((i) => i.id === 'monkey')!;
+    entry.at.x = m.x; entry.at.y = this.monkeyMode === 'sit' ? m.y + 6 : -9999;
+  }
+
+  private popText(x: number, y: number, text: string, colour: string) {
+    const t = this.add.text(x, y, text, { fontFamily: FONT, fontSize: '14px', color: colour, stroke: '#2a1a14', strokeThickness: 4 })
+      .setOrigin(0.5, 1).setResolution(2).setDepth(9000);
+    this.tweens.add({ targets: t, y: y - 16, alpha: 0, duration: 900, delay: 300, onComplete: () => t.destroy() });
+  }
+
+  /** Every now and then a dolphin jumps out of the sea, somewhere you can see it. */
+  private updateDolphins(time: number) {
+    if (time < this.nextDolphin) return;
+    this.nextDolphin = time + Phaser.Math.Between(5000, 11000);
+    const cam = this.cameras.main.worldView;
+    const seaTop = (B.SEA + 2) * T;
+    if (cam.bottom < seaTop + 40) { this.nextDolphin = time + 1500; return; }
+    const x0 = Phaser.Math.Between(cam.x + 60, cam.right - 60), y0 = Phaser.Math.Between(seaTop + 20, Math.min(cam.bottom - 20, B.MAP_H * T - 30));
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const d = this.add.image(x0, y0, 'bali-dolphin').setDepth(-300).setFlipX(dir < 0);
+    const st = { k: 0 };
+    this.tweens.add({
+      targets: st, k: 1, duration: 1200,
+      onUpdate: () => d.setPosition(x0 + dir * 80 * st.k, y0 - Math.sin(st.k * Math.PI) * 38).setRotation(dir * (st.k - 0.5) * 1.4),
+      onComplete: () => d.destroy(),
+    });
+    for (const [at, dx] of [[0, 0], [1150, 80]] as const) this.time.delayedCall(at, () => {
+      for (let i = 0; i < 6; i++) {
+        const s = this.add.image(x0 + dir * dx + Phaser.Math.Between(-8, 8), y0, 'dot').setTint(0xe8f8ff).setDepth(-299);
+        this.tweens.add({ targets: s, y: y0 - Phaser.Math.Between(6, 14), alpha: 0, duration: 420, onComplete: () => s.destroy() });
+      }
+    });
+  }
+
   protected tick(time: number) {
     this.ambient.update(time);
+    this.updateMonkey(time);
+    this.updateDolphins(time);
   }
 }

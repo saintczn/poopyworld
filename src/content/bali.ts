@@ -53,14 +53,14 @@ export const beach: Array<{ key: string; x: number; y: number; solid?: [number, 
   { key: 'bali-parasol', x: 17.0, y: 20.4, solid: [6, 4] }, { key: 'bali-sunbed', x: 17.6, y: 20.9, solid: [44, 8] },
   { key: 'bali-surf-a', x: 20.4, y: 19.4, solid: [10, 4] }, { key: 'bali-surf-b', x: 20.9, y: 19.6, solid: [10, 4] },
   { key: 'bali-canang', x: 11.0, y: 14.9 }, { key: 'bali-canang', x: 13.0, y: 14.9 }, { key: 'bali-canang', x: 33.6, y: 12.5 },
-  { key: 'rock-big', x: 2.4, y: 23.4, solid: [50, 18] }, { key: 'rock-mid', x: 46.0, y: 22.6 }, { key: 'rock-small', x: 30.4, y: 22.4 },
+  { key: 'rock-big', x: 2.4, y: 23.4, solid: [50, 18] }, { key: 'rock-mid', x: 46.0, y: 22.6 },
 ];
 
 export const torches: Array<[number, number]> = [[28.6, 12.8], [40.4, 12.8], [10.4, 15.0], [13.6, 15.0], [22.0, 22.6], [26.0, 22.6], [36.0, 19.0]];
 export const boats: Array<[number, number, boolean]> = [[36.0, 25.6, false], [43.0, 26.2, true]];
 
 // ---------------------------------------------------------------- the quest
-export type BaliSave = { visited: boolean; started: boolean; found: string[]; done: boolean };
+export type BaliSave = { visited: boolean; started: boolean; found: string[]; done: boolean; turtles?: number; coconuts?: number; monkeyAttacks?: number };
 const K = 'poopyworld.bali.v1';
 export function loadBali(): BaliSave {
   const empty: BaliSave = { visited: false, started: false, found: [], done: false };
@@ -99,6 +99,7 @@ export const BRAM = {
     ['Nog een portie? Ze zijn net uit het vet.', 'O, en voor de duidelijkheid: aardbeiensambal bestaat niet. Gaat ook nooit bestaan.'],
     ['Wist je dat het hier op Bali altijd een paar uur later is dan thuis? Kijk maar naar de lucht.'],
     ['Ik hoorde van Femke dat jullie haar verslagen hebben bij Bitterbal Rush. Ze is er nog steeds boos over.'],
+    ['Pas op voor dat aapje bij het strand. Hij valt alleen mensen aan die hij leuk vindt. Zegt hij.'],
   ],
 };
 
@@ -107,3 +108,37 @@ export const CASA_LINES = [
   'De deuren staan open, de ventilator draait en binnen ruikt het naar zonnebrand en kokos.',
   'Hier zou je zo weer twee weken kunnen blijven.',
 ];
+
+export const hatchery = { x: 29.2, y: 21.6 };      // feet of the turtle nursery
+export const monkeyHome = { x: 9, y: 18.4 };
+
+export const TURTLE_LINES = [
+  ['Een zeeschildpad sjokt langzaam over het zand.', 'Ze kijkt je even aan, knippert heel traag, en sjokt verder. Geen haast. Nooit haast.'],
+  ['De schildpad heeft zand op haar neus.', 'Ze vindt het prima zo.'],
+  ['Zeeschildpadden komen altijd terug naar het strand waar ze zelf geboren zijn.', 'Net als jullie naar Bali, eigenlijk.'],
+  ['Je mag haar niet aanraken, maar je mag wel heel zachtjes "hoi" zeggen.', '"Hoi."', 'Ze zegt niks terug. Maar ze vond het fijn, dat zag je.'],
+];
+
+export const HATCHERY = {
+  first: [
+    'Een schildpaddenopvang. Hier worden eieren van zeeschildpadden veilig bewaard tot ze uitkomen.',
+    'Er zijn net zes kleintjes uit het ei gekropen! Ze moeten zelf naar zee lopen, dan onthouden ze dit strand voor altijd.',
+    'Jullie mogen helpen: hou de meeuwen weg en moedig ze aan. Daar gaan ze!',
+  ],
+  again: ['Er zijn weer nieuwe kleintjes uitgekomen! Daar gaan ze, wiebelend naar zee.'],
+};
+
+export const MONKEY = {
+  attack: [
+    ['HÉ! Het aapje stormt krijsend op je af!', 'Je rent gillend over het strand. Het aapje heeft de tijd van zijn leven.', 'Iemand die dit zag ligt nu in een deuk.'],
+    ['NEE NEE NEE. Daar is hij weer!', 'Het aapje springt, grijpt naar je haar en rent er weer vandoor. Missie geslaagd, voor hem dan.'],
+    ['Het aapje valt opnieuw aan!', 'Je probeert stoer te kijken. Het aapje is niet onder de indruk.'],
+    ['Weer die aap. Hij heeft jou echt uitgekozen.', 'Misschien is het liefde. Misschien is het oorlog.'],
+  ],
+  calm: [
+    ['Het aapje zit rustig in het zand en kijkt de andere kant op.', 'Alsof er helemaal niks gebeurd is.'],
+    ['Het aapje peutert in zijn oor en kijkt je dan heel lang aan.', 'Je loopt maar beter niet te dichtbij.'],
+    ['Het aapje heeft een zonnebril op zijn hoofd. Van wie die is weet niemand.'],
+  ],
+};
+

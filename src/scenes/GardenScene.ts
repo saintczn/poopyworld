@@ -9,6 +9,7 @@ import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
 import { loadMystery, saveMystery, LETTER } from '../content/mystery';
+import { askText } from '../ui/memories';
 
 const T = TILE;
 
@@ -41,6 +42,7 @@ export class GardenScene extends WorldScene {
     if (door) { door.lines = []; door.action = () => this.enterHouse(); }
     const gate = this.interactables.find((i) => i.id === 'gate');
     if (gate) { gate.who = 'Naar Heartwood'; gate.lines = []; gate.action = () => this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' }); }
+    this.addPetTurtle();
     const pond = this.interactables.find((i) => i.id === 'pond');
     if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
     const mailbox = this.interactables.find((i) => i.id === 'mailbox');
@@ -111,6 +113,55 @@ export class GardenScene extends WorldScene {
 
   private enterHouse() {
     this.travel('house', { x: 256, y: 372, facing: 'up' });
+  }
+
+  /** A little turtle that lives by the pond. You can give it a name. */
+  private addPetTurtle() {
+    const KEY = 'poopyworld.pet.v1';
+    const load = (): { name?: string; pets?: number } => { try { return JSON.parse(localStorage.getItem(KEY) ?? '{}'); } catch { return {}; } };
+    const save = (v: { name?: string; pets?: number }) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch { /* fine */ } };
+    if (!this.anims.exists('turtle-crawl')) this.anims.create({ key: 'turtle-crawl', frames: this.anims.generateFrameNumbers('bali-turtle', { start: 0, end: 1 }), frameRate: 2, repeat: -1 });
+    const t = this.add.sprite(10.5 * T, 14 * T, 'bali-turtle', 0).setScale(0.7).play('turtle-crawl');
+    const go = () => {
+      if (!t.active) return;
+      const tx = Phaser.Math.FloatBetween(9.4, 12.6) * T, ty = Phaser.Math.FloatBetween(12.6, 17.4) * T;
+      t.setRotation(Phaser.Math.Angle.Between(t.x, t.y, tx, ty) + Math.PI / 2).play('turtle-crawl');
+      this.tweens.add({
+        targets: t, x: tx, y: ty, duration: 4000 + Phaser.Math.Distance.Between(t.x, t.y, tx, ty) * 70, ease: 'Sine.easeInOut',
+        onUpdate: () => { t.setDepth(t.y); entry.at.x = t.x; entry.at.y = t.y + 10; },
+        onComplete: () => { t.stop(); this.time.delayedCall(Phaser.Math.Between(2000, 6000), go); },
+      });
+    };
+    const entry = {
+      id: 'pet-turtle', at: { x: t.x, y: t.y + 10 }, who: load().name ?? 'Schildpadje', lines: [] as string[],
+      action: () => {
+        const pet = load();
+        if (!pet.name) {
+          this.say('Schildpadje', ['Een klein schildpadje! Het woont bij de vijver en eet het liefst blaadjes sla.', 'Het heeft nog geen naam. Wil jij er een bedenken?'], () => {
+            this.player.halt();
+            askText({ title: 'Hoe heet het schildpadje?', text: 'Kies een naam. Het schildpadje luistert er vanaf nu naar (een beetje).', placeholder: 'Bijvoorbeeld: Turbo', ok: 'Dat is de naam!', max: 20 }, (name) => {
+              if (!name) return;
+              save({ ...load(), name });
+              entry.who = name;
+              this.say(name, [`Welkom in de familie, ${name}!`, `${name} knippert heel langzaam. Dat betekent ja.`]);
+            });
+          });
+          return;
+        }
+        pet.pets = (pet.pets ?? 0) + 1; save(pet);
+        const n = pet.name;
+        const lines = [
+          [`${n} knabbelt aan een blaadje sla.`, 'Heel. Erg. Langzaam.'],
+          [`Je aait ${n} over het schild.`, `${n} steekt het koppie iets verder uit. Dat vindt hij fijn.`],
+          [`${n} probeert een race te houden met een kip.`, 'De kip weet nog van niks.'],
+          [`${n} kijkt naar de vijver en denkt na over het leven.`],
+          [`${n} heeft van Kroki gehoord dat er op Bali zeeschildpadden wonen.`, 'Familie, zegt hij.'],
+        ];
+        this.say(n, [...lines[pet.pets % lines.length], `(${n} is al ${pet.pets} keer geaaid)`]);
+      },
+    };
+    this.interactables.push(entry);
+    go();
   }
 
   protected tick(time: number) {

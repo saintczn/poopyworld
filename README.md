@@ -35,6 +35,19 @@ gespleten poort van lavasteen) en **Warung Bitterbal** van Bram uit Zaandam. Zij
 frituurmandje en geheime receptkaart gestolen. Vind ze alle drie en hij maakt de Bitterbal Sambal Special.
 Dag en nacht volgen op Bali de echte Bali-tijd (een paar uur later dan thuis). Met de taxi vlieg je weer naar huis.
 
+### Meer Bali
+
+- **Casa Umalas van binnen** (E bij de deur): hemelbed met klamboe (middagdutje), een mug die je kunt doodslaan,
+  een gekko die "tokèh" roept, rattan bank, keuken, en een **herinneringsmuur** waar jullie zelf Bali-herinneringen opschrijven.
+- **Het aapje**: kom te dichtbij en hij valt aan. Rennen! Het spel telt hoe vaak je het overleefd hebt.
+- **Schildpadden**: een zeeschildpad op het strand, schildpadden die in zee zwemmen, en een **schildpaddenopvang**
+  waar jullie babyschildpadjes naar zee helpen (met teller).
+- **Dolfijnen** springen voor de kust (loop de steiger op).
+- **Kokosnoten**: schud aan de palmen op het strand.
+- **Surf Bali** (E bij de surfplanken): spring over rotsen en kwallen, pak schelpjes, geef schildpadden een high five.
+
+Thuis woont er nu ook een **schildpadje bij de vijver**. De eerste keer mag je hem een naam geven.
+
 ## Kaart
 
 Met **M** open je de wereldkaart: waar je bent, wat je volgende doel is (met een uitroepteken op de kaart)
