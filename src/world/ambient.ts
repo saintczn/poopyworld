@@ -184,3 +184,11 @@ export class Ambient {
     }
   }
 }
+
+/** Winter (December to February), or ?season=winter to try it out. */
+export function isWinter() {
+  const forced = new URLSearchParams(location.search).get('season');
+  if (forced) return forced === 'winter';
+  return [11, 0, 1].includes(new Date().getMonth());
+}
+

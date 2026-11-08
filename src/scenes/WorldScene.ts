@@ -163,13 +163,20 @@ export abstract class WorldScene extends Phaser.Scene {
   }
 
   /** A family member visiting: wanders between a few spots and stops to talk when you press E. */
-  protected addVisitor(name: string, look: Look, spots: Array<{ x: number; y: number }>, talk: () => string[], pace = 16) {
+  /**
+   * `look` is either a character look (painted from LPC layers) or a ready-made sprite key whose
+   * animations are `<key>-walk-<dir>` and `<key>-idle-<dir>` (like Buurman Mol).
+   */
+  protected addVisitor(name: string, look: Look | { sprite: string; feet: number }, spots: Array<{ x: number; y: number }>, talk: () => string[], pace = 16) {
     const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
     const it = { id: name, at: { x: -999, y: -999 }, who: name, lines: [] as string[], action: () => {} };
     this.interactables.push(it);
-    install(look).then((key) => {
+    const ready = 'sprite' in look ? Promise.resolve(look.sprite) : install(look);
+    ready.then((key) => {
       if (!this.sys.isActive()) return;
-      const npc = this.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-down`);
+      const npc = 'sprite' in look
+        ? this.add.sprite(spots[0].x, spots[0].y, key, 0).setOrigin(0.5, look.feet).play(`${key}-idle-down`)
+        : this.add.sprite(spots[0].x, spots[0].y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-down`);
       this.add.image(0, 0, 'shadow').setOrigin(0.5, 0.6).setName(`${name}-shadow`);
       const shadow = this.children.getByName(`${name}-shadow`) as Phaser.GameObjects.Image;
       let talking = false;

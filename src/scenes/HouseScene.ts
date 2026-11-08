@@ -41,6 +41,10 @@ export class HouseScene extends WorldScene {
     this.ambient = new Ambient(this, MAP, lights, [], undefined, true);
 
     this.interactables.push(
+      {
+        id: 'snowglobe', at: { x: 216, y: 158 }, who: 'Sneeuwbol', lines: [],
+        action: () => this.say('Sneeuwbol', ['Een sneeuwbol met een klein zwart katje erin.', 'Je schudt hem... de sneeuw dwarrelt... en alles om je heen wordt wit.'], () => this.travel('snow', { x: 480, y: 506, facing: 'up' })),
+      },
       { id: 'fireplace', at: { x: 160, y: 160 }, who: 'Open haard', lines: ['Het vuur knettert gezellig.', 'Perfect voor een koude avond samen op de bank.'] },
       {
         id: 'clock', at: { x: 104, y: 156 }, who: 'Staande klok', lines: [],
@@ -157,6 +161,7 @@ export class HouseScene extends WorldScene {
     this.place('clock', 104, 142, [18, 10]);
     this.place('fireplace', 160, 144, [70, 16]);
     this.place('bookshelf', 216, 142, [30, 10]);
+    this.add.image(216, 84, 'snowglobe').setOrigin(0.5, 1).setDepth(150);
     this.place('potted-plant', 250, 146, [24, 8]);
     this.place('counter-run', 357, 156, [168, 26]);
     this.place('fridge', 460, 150, [30, 18]);

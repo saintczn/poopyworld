@@ -61,7 +61,7 @@ export class CasaScene extends WorldScene {
     this.place('bali-bed', 136, 268, [104, 92]);
     this.place('endtable', 60, 160, [16, 10]);
     this.place('endtable', 212, 160, [16, 10]);
-    this.add.image(60, 138, 'candle').setDepth(161);
+    this.add.image(60, 138, 'candles', 'candle').setDepth(161);
     lights.push({ x: 60, y: 130, size: 90, flicker: true, colour: 0xffb060 }, { x: 212, y: 130, size: 90, flicker: true, colour: 0xffb060 });
     this.add.image(212, 140, 'bali-frangipani').setScale(0.35).setOrigin(0.5, 1).setDepth(161);
     this.place('painting-small', 136, 96).setDepth(50);

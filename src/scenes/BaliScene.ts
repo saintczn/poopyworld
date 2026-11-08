@@ -273,6 +273,22 @@ export class BaliScene extends WorldScene {
       this.interactables.push({ id: `palm-${i}`, at: { x: x * T, y: y * T + 10 }, who: 'Palmboom', lines: [], action: () => this.shakePalm(i, key, x * T, y * T) });
     });
 
+    // the kots monument, with flies
+    const kx = B.kots.x * T, ky = B.kots.y * T;
+    this.add.image(kx, ky, 'bali-kots').setOrigin(0.5, 1).setDepth(ky - 20);
+    for (let i = 0; i < 3; i++) {
+      const fly = this.add.image(kx - 10, ky - 14, 'dot').setTint(0x1a1a1a).setScale(0.8).setDepth(ky + 10);
+      this.events.on('update', (time: number) => fly.setPosition(kx - 10 + Math.sin(time / (120 + i * 30) + i) * 12, ky - 18 + Math.cos(time / (90 + i * 20) + i * 2) * 6));
+    }
+    this.interactables.push({
+      id: 'kots', at: { x: kx + 4, y: ky + 4 }, who: 'Kotsmonument', lines: [],
+      action: () => {
+        let n = 0;
+        try { n = Number(localStorage.getItem('poopyworld.kots.v1') ?? '0') + 1; localStorage.setItem('poopyworld.kots.v1', String(n)); } catch { /* fine */ }
+        this.say('Kotsmonument', B.KOTS_LINES(n));
+      },
+    });
+
     // surfing
     this.interactables.push({
       id: 'surf', at: { x: 20.6 * T, y: 19.9 * T }, who: 'Surfplanken', lines: [],

@@ -4,9 +4,10 @@ import { sprites } from '../assets';
 import * as G from '../content/villaGarden';
 import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
-import { Ambient, type LightSpot } from '../world/ambient';
+import { Ambient, isWinter, type LightSpot } from '../world/ambient';
+import { snowfall } from './SnowScene';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
-import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk } from '../content/family';
+import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk, molTalk, simbaTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
 import { loadMystery, saveMystery, LETTER } from '../content/mystery';
 import { askText } from '../ui/memories';
@@ -59,6 +60,9 @@ export class GardenScene extends WorldScene {
     this.addGoats();
     this.addVisitor('Gilly', GILLY_LOOK, [{ x: 300, y: 380 }, { x: 330, y: 560 }, { x: 140, y: 360 }, { x: 420, y: 500 }], gillyRamble);
     this.addVisitor('Yara', YARA_LOOK, [{ x: 640, y: 300 }, { x: 700, y: 410 }, { x: 760, y: 330 }, { x: 600, y: 420 }], yaraTalk, 26);
+    this.addVisitor('Buurman Mol', { sprite: 'mole', feet: 46 / 48 }, [{ x: 400, y: 252 }, { x: 560, y: 262 }, { x: 740, y: 252 }, { x: 800, y: 196 }, { x: 470, y: 300 }], molTalk, 30);
+    this.addVisitor('Simba', { sprite: 'cat', feet: 30 / 32 }, [{ x: 620, y: 470 }, { x: 520, y: 380 }, { x: 700, y: 560 }, { x: 860, y: 420 }, { x: 460, y: 520 }], simbaTalk, 20);
+    if (isWinter()) this.winter();
     this.addVisitor('Ben', BEN_LOOK, [{ x: 300, y: 250 }, { x: 250, y: 290 }, { x: 360, y: 280 }], benTalk, 22);
     return { x: G.spawn.x, y: G.spawn.y };
   }
@@ -162,6 +166,13 @@ export class GardenScene extends WorldScene {
     };
     this.interactables.push(entry);
     go();
+  }
+
+  /** December to February: snow on the garden. */
+  private winter() {
+    this.add.rectangle(0, 0, G.MAP_W * T, G.MAP_H * T, 0xf4f8ff, 0.62).setOrigin(0).setDepth(-900);
+    for (const [x, y] of [[620, 600], [860, 520], [300, 640], [980, 300], [180, 300]]) this.add.image(x, y, 'snow-pile').setOrigin(0.5, 0.8).setDepth(y);
+    snowfall(this, 60);
   }
 
   protected tick(time: number) {

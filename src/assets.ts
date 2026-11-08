@@ -70,13 +70,21 @@ import worldmap from './assets/worldmap.png';
 import busstop from './assets/busstop.png';
 import plane from './assets/plane.png';
 import barstools from './assets/barstools.png';
+import mole from './assets/mole.png';
+import cat from './assets/cat.png';
+import snowPile from './assets/snow-pile.png';
+import snowman1 from './assets/snowman-1.png';
+import snowman2 from './assets/snowman-2.png';
+import snowman3 from './assets/snowman-3.png';
+import snowglobe from './assets/snowglobe.png';
 
 /** Bali art drawn by tools/build_bali.py: bali-palm-a.png becomes the texture 'bali-palm-a'. */
 const baliFiles = import.meta.glob('./assets/bali-*.png', { eager: true, import: 'default' }) as Record<string, string>;
 const bali = Object.fromEntries(Object.entries(baliFiles).map(([path, url]) => [path.split('/').pop()!.replace('.png', ''), url]));
 
 export const sheets = {
-  ...bali, worldmap, busstop, plane, barstools,
+  ...bali, worldmap, busstop, plane, barstools, mole, cat, snowglobe,
+  'snow-pile': snowPile, 'snowman-1': snowman1, 'snowman-2': snowman2, 'snowman-3': snowman3,
   'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa, manor, portraits, candles, floorlights, seals, slab, desk,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,
   lamp, planter, barrel, crate, hay, campfire, buckets, baskets,

@@ -791,6 +791,198 @@ def hatchery():
     for x, y in [(46, 4), (56, 4), (46, 12), (56, 12)]: d.point((x, y), fill=hexc('#8ad06a'))
     return outline(img)
 
+# ---------------------------------------------------------------- Buurman Mol
+def mole():
+    """Neighbour Mole: 4 rows (down, up, left, right) x 4 walk frames of 48x48. Feet at y = 46."""
+    FW = 48
+    img = Image.new('RGBA', (FW * 4, FW * 4), (0, 0, 0, 0))
+    fur, fur_l, fur_d = hexc('#4a3f3a'), hexc('#655852'), hexc('#2f2724')
+    pink, pink_d = hexc('#f2a6b4'), hexc('#d07a8c')
+    vest, vest_d = hexc('#4f8a3a'), hexc('#3a6a2a')
+    glass = hexc('#d8c070')
+    for row, facing in enumerate(['down', 'up', 'left', 'right']):
+        for fr in range(4):
+            f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+            step = [0, 1, 0, -1][fr]
+            bob = 0 if fr % 2 == 0 else -1
+            cx = 24
+            # feet
+            if facing in ('down', 'up'):
+                d.ellipse([cx - 10, 42 - max(0, step) * 2, cx - 3, 46 - max(0, step) * 2], fill=pink)
+                d.ellipse([cx + 3, 42 - max(0, -step) * 2, cx + 10, 46 - max(0, -step) * 2], fill=pink)
+            else:
+                d.ellipse([cx - 6 + step * 4, 42, cx + 1 + step * 4, 46], fill=pink)
+                d.ellipse([cx - 1 - step * 4, 42, cx + 6 - step * 4, 46], fill=pink_d)
+            y0 = 12 + bob
+            # body (a round velvet bean)
+            d.ellipse([cx - 13, y0, cx + 13, 44 + bob], fill=fur)
+            d.ellipse([cx - 11, y0 + 2, cx + 7, 40 + bob], fill=fur_l if facing != 'up' else fur)
+            if facing == 'down':
+                d.ellipse([cx - 7, y0 + 14, cx + 7, 40 + bob], fill=hexc('#7a6a62'))
+                # vest
+                d.polygon([(cx - 12, y0 + 16), (cx - 3, y0 + 16), (cx - 2, 38 + bob), (cx - 11, 36 + bob)], fill=vest)
+                d.polygon([(cx + 12, y0 + 16), (cx + 3, y0 + 16), (cx + 2, 38 + bob), (cx + 11, 36 + bob)], fill=vest)
+                for by in (y0 + 20, y0 + 25): d.point((cx - 4, by), fill=hexc('#e8c040'))
+                # snout + nose
+                d.ellipse([cx - 4, y0 + 8, cx + 4, y0 + 15], fill=pink)
+                d.ellipse([cx - 2, y0 + 12, cx + 2, y0 + 16], fill=pink_d)
+                # glasses
+                for gx in (cx - 7, cx + 2):
+                    d.ellipse([gx, y0 + 4, gx + 5, y0 + 9], outline=glass); d.point((gx + 2, y0 + 6), fill=hexc('#1a1a1a'))
+                d.line([(cx - 2, y0 + 6), (cx + 2, y0 + 6)], fill=glass)
+                # big pink digging paws, swinging
+                d.ellipse([cx - 19, y0 + 16 + step * 2, cx - 11, y0 + 24 + step * 2], fill=pink)
+                d.ellipse([cx + 11, y0 + 16 - step * 2, cx + 19, y0 + 24 - step * 2], fill=pink)
+                for k in range(3):
+                    d.point((cx - 18 + k * 3, y0 + 24 + step * 2), fill=hexc('#fff0e0')); d.point((cx + 12 + k * 3, y0 + 24 - step * 2), fill=hexc('#fff0e0'))
+            elif facing == 'up':
+                d.ellipse([cx - 9, y0 + 2, cx + 9, y0 + 14], fill=fur_l)
+                d.polygon([(cx - 12, y0 + 16), (cx + 12, y0 + 16), (cx + 11, 36 + bob), (cx - 11, 36 + bob)], fill=vest_d)
+                d.line([(cx, y0 + 17), (cx, 35 + bob)], fill=vest)
+                d.ellipse([cx - 1, 40 + bob, cx + 2, 44 + bob], fill=pink)  # tiny tail
+                d.ellipse([cx - 19, y0 + 16 - step * 2, cx - 11, y0 + 24 - step * 2], fill=pink)
+                d.ellipse([cx + 11, y0 + 16 + step * 2, cx + 19, y0 + 24 + step * 2], fill=pink)
+            else:
+                sgn = -1 if facing == 'left' else 1
+                d.polygon([(cx - 8 * sgn, y0 + 16), (cx + 10 * sgn, y0 + 16), (cx + 11 * sgn, 36 + bob), (cx - 9 * sgn, 36 + bob)], fill=vest)
+                # snout sticking out
+                sx = cx + 12 * sgn
+                d.ellipse([min(sx, sx + 9 * sgn), y0 + 8, max(sx, sx + 9 * sgn), y0 + 14], fill=pink)
+                d.ellipse([min(sx + 7 * sgn, sx + 11 * sgn), y0 + 9, max(sx + 7 * sgn, sx + 11 * sgn), y0 + 13], fill=pink_d)
+                gx = cx + 5 * sgn
+                d.ellipse([gx - 3, y0 + 4, gx + 3, y0 + 9], outline=glass); d.point((gx + sgn, y0 + 6), fill=hexc('#1a1a1a'))
+                d.line([(gx - 3 * sgn, y0 + 6), (cx - 6 * sgn, y0 + 5)], fill=glass)
+                d.ellipse([cx + 2 * sgn - 4 + step * 3, y0 + 18, cx + 2 * sgn + 4 + step * 3, y0 + 26], fill=pink)
+            img.alpha_composite(outline(f), (fr * FW, row * FW))
+    return img
+
+# ---------------------------------------------------------------- Simba, the black cat
+def cat():
+    """4 rows (down, up, left, right) x 4 walk frames of 32x32, plus a 5th row: sit, pounce-up, dive, pop-out."""
+    FW = 32
+    img = Image.new('RGBA', (FW * 4, FW * 5), (0, 0, 0, 0))
+    blk, blk_l, blk_d = hexc('#1e1c22'), hexc('#38343e'), hexc('#121016')
+    eye = hexc('#c8e04a'); nose = hexc('#d07a8c')
+    def side(d, sgn, fr, pose='walk'):
+        cx = 16
+        step = [0, 1, 0, -1][fr] if pose == 'walk' else 0
+        by = 20 if pose != 'jump' else 14
+        # tail curling up behind
+        tx = cx - 9 * sgn
+        d.line([(tx, by), (tx - 3 * sgn, by - 6), (tx - 1 * sgn, by - 11)], fill=blk, width=2)
+        # legs
+        for lx, off in ((cx - 6 * sgn, step), (cx + 5 * sgn, -step)):
+            if pose == 'jump':
+                d.line([(lx, by + 4), (lx - 4 * sgn, by + 8)], fill=blk, width=2)
+            else:
+                d.line([(lx, by + 4), (lx + off * sgn, 29)], fill=blk, width=2)
+        d.ellipse([cx - 9, by - 3, cx + 9, by + 6], fill=blk)
+        d.line([(cx - 6, by - 2), (cx + 4, by - 2)], fill=blk_l)
+        hx = cx + 9 * sgn
+        d.ellipse([hx - 5, by - 9, hx + 5, by + 1], fill=blk)
+        d.polygon([(hx - 4, by - 7), (hx - 3, by - 13), (hx, by - 8)], fill=blk)
+        d.polygon([(hx + 4, by - 7), (hx + 3, by - 13), (hx, by - 8)], fill=blk)
+        d.point((hx + 2 * sgn, by - 5), fill=eye); d.point((hx + 2 * sgn, by - 4), fill=eye)
+        d.point((hx + 5 * sgn, by - 3), fill=nose)
+    for row, facing in enumerate(['down', 'up', 'left', 'right']):
+        for fr in range(4):
+            f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+            step = [0, 1, 0, -1][fr]
+            if facing in ('left', 'right'):
+                side(d, -1 if facing == 'left' else 1, fr)
+            else:
+                cx = 16
+                d.ellipse([cx - 7, 14, cx + 7, 29], fill=blk)                      # body
+                for lx, off in ((cx - 4, step), (cx + 4, -step)):
+                    d.line([(lx, 24), (lx, 29 - max(0, off))], fill=blk_d, width=2)
+                if facing == 'down':
+                    d.line([(cx + 7, 26), (cx + 11, 22), (cx + 10, 16)], fill=blk, width=2)   # tail to the side
+                    d.ellipse([cx - 7, 4, cx + 7, 16], fill=blk)                       # head
+                    d.polygon([(cx - 7, 8), (cx - 6, 1), (cx - 2, 5)], fill=blk); d.polygon([(cx + 7, 8), (cx + 6, 1), (cx + 2, 5)], fill=blk)
+                    d.point((cx - 5, 3), fill=nose); d.point((cx + 5, 3), fill=nose)
+                    for ex in (cx - 4, cx + 3):
+                        d.rectangle([ex, 8, ex + 1, 10], fill=eye); d.point((ex, 9), fill=blk_d)
+                    d.point((cx, 12), fill=nose)
+                    d.line([(cx - 10, 11), (cx - 6, 12)], fill=blk_l); d.line([(cx + 10, 11), (cx + 6, 12)], fill=blk_l)
+                else:
+                    d.ellipse([cx - 7, 4, cx + 7, 16], fill=blk)
+                    d.polygon([(cx - 7, 8), (cx - 6, 1), (cx - 2, 5)], fill=blk); d.polygon([(cx + 7, 8), (cx + 6, 1), (cx + 2, 5)], fill=blk)
+                    d.line([(cx, 26), (cx + 2 * step, 31)], fill=blk, width=2)
+                    d.line([(cx - 3, 6), (cx + 3, 6)], fill=blk_l)
+            img.alpha_composite(outline(f, hexc('#000000')), (fr * FW, row * FW))
+    # row 5: sit (front), jump (side, right), dive (only tail + bum sticking out of snow), pop out (head + snow)
+    poses = []
+    f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+    cx = 16
+    d.ellipse([cx - 8, 13, cx + 8, 30], fill=blk); d.line([(cx + 8, 28), (cx + 12, 26), (cx + 13, 21)], fill=blk, width=2)
+    d.ellipse([cx - 7, 4, cx + 7, 16], fill=blk)
+    d.polygon([(cx - 7, 8), (cx - 6, 1), (cx - 2, 5)], fill=blk); d.polygon([(cx + 7, 8), (cx + 6, 1), (cx + 2, 5)], fill=blk)
+    for ex in (cx - 4, cx + 3): d.rectangle([ex, 8, ex + 1, 10], fill=eye)
+    d.point((cx, 12), fill=nose)
+    poses.append(f)
+    f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); side(ImageDraw.Draw(f), 1, 0, 'jump'); poses.append(f)
+    f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+    d.ellipse([10, 18, 22, 28], fill=blk); d.line([(16, 19), (18, 12), (15, 7)], fill=blk, width=2)
+    d.line([(12, 26), (10, 30)], fill=blk, width=2); d.line([(20, 26), (22, 30)], fill=blk, width=2)
+    poses.append(f)
+    f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+    d.ellipse([cx - 7, 14, cx + 7, 26], fill=blk)
+    d.polygon([(cx - 7, 18), (cx - 6, 11), (cx - 2, 15)], fill=blk); d.polygon([(cx + 7, 18), (cx + 6, 11), (cx + 2, 15)], fill=blk)
+    for ex in (cx - 4, cx + 3): d.rectangle([ex, 18, ex + 1, 20], fill=eye)
+    for x in range(cx - 6, cx + 7, 3): d.point((x, 14 + (x % 2)), fill=hexc('#ffffff'))
+    d.ellipse([cx - 3, 12, cx + 3, 15], fill=hexc('#f4f8ff'))
+    poses.append(f)
+    for i, p in enumerate(poses): img.alpha_composite(outline(p, hexc('#000000')), (i * FW, 4 * FW))
+    return img
+
+def snow_assets():
+    out = {}
+    # a snow pile
+    p = Image.new('RGBA', (48, 24), (0, 0, 0, 0)); d = ImageDraw.Draw(p)
+    d.ellipse([0, 6, 47, 30], fill=hexc('#e6eef8')); d.ellipse([4, 4, 36, 24], fill=hexc('#f6faff')); d.ellipse([20, 2, 44, 22], fill=hexc('#ffffff'))
+    d.arc([0, 6, 47, 30], 200, 340, fill=hexc('#b8c8dc'))
+    out['snow-pile'] = outline(p, hexc('#8aa0bc'))
+    # snowman in 3 stages (one more ball each time)
+    for n in (1, 2, 3):
+        sm = Image.new('RGBA', (32, 52), (0, 0, 0, 0)); d = ImageDraw.Draw(sm)
+        d.ellipse([3, 30, 28, 51], fill=hexc('#f6faff'))
+        if n >= 2: d.ellipse([7, 16, 24, 33], fill=hexc('#ffffff'))
+        if n >= 3:
+            d.ellipse([10, 4, 21, 17], fill=hexc('#ffffff'))
+            d.point((13, 9), fill=hexc('#1a1a1a')); d.point((18, 9), fill=hexc('#1a1a1a'))
+            d.polygon([(15, 11), (16, 12), (22, 12)], fill=hexc('#f08a2a'))
+            d.rectangle([9, 15, 22, 17], fill=hexc('#c0392b')); d.rectangle([19, 17, 21, 23], fill=hexc('#c0392b'))
+            d.rectangle([10, 0, 21, 4], fill=hexc('#2a2a2a')); d.rectangle([8, 4, 23, 5], fill=hexc('#2a2a2a'))
+            for y in (21, 26): d.point((15, y), fill=hexc('#2a2a2a'))
+        out[f'snowman-{n}'] = outline(sm, hexc('#8aa0bc'))
+    # snow globe for the house
+    g = Image.new('RGBA', (24, 28), (0, 0, 0, 0)); d = ImageDraw.Draw(g)
+    d.rectangle([3, 21, 20, 27], fill=hexc('#6b4226')); d.line([(3, 21), (20, 21)], fill=hexc('#8c5a36'))
+    d.ellipse([1, 1, 22, 23], fill=hexc('#bfe0f4')); d.ellipse([3, 14, 20, 23], fill=hexc('#ffffff'))
+    d.ellipse([9, 11, 14, 16], fill=hexc('#1e1c22')); d.polygon([(9, 12), (9, 9), (11, 11)], fill=hexc('#1e1c22')); d.polygon([(14, 12), (14, 9), (12, 11)], fill=hexc('#1e1c22'))
+    for x, y in [(6, 6), (15, 4), (18, 10), (8, 3), (12, 7)]: d.point((x, y), fill=hexc('#ffffff'))
+    d.arc([3, 3, 12, 12], 180, 260, fill=hexc('#ffffff'))
+    out['snowglobe'] = outline(g)
+    return out
+
+def kots():
+    """A historic puddle and its memorial plaque."""
+    img = Image.new('RGBA', (64, 40), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    rnd = random.Random(13)
+    # the puddle
+    d.ellipse([4, 22, 44, 38], fill=hexc('#c8c25a', 230))
+    d.ellipse([10, 20, 30, 33], fill=hexc('#d6d06a', 230))
+    d.ellipse([26, 26, 40, 36], fill=hexc('#b8b24a', 230))
+    for _ in range(14):
+        x, y = rnd.randint(8, 40), rnd.randint(23, 35)
+        d.rectangle([x, y, x + 1, y + 1], fill=hexc(rnd.choice(['#e8a040', '#8a9a3a', '#f0e090', '#c87830'])))
+    d.point((14, 24), fill=hexc('#ffffff')); d.point((15, 24), fill=hexc('#ffffff'))
+    # plaque on a post
+    d.rectangle([49, 18, 51, 39], fill=hexc('#6b4226'))
+    d.rectangle([42, 4, 61, 19], fill=hexc('#c9a040')); d.rectangle([44, 6, 59, 17], fill=hexc('#e0bc5a'))
+    for y in (9, 12, 15): d.line([(46, y), (57, y)], fill=hexc('#8a6a20'))
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -835,3 +1027,7 @@ if __name__ == '__main__':
     save(turtle_side(), 'bali-turtle-side.png')
     save(dolphin(), 'bali-dolphin.png')
     save(hatchery(), 'bali-hatchery.png')
+    save(mole(), 'mole.png')
+    save(cat(), 'cat.png')
+    save(kots(), 'bali-kots.png')
+    for k, im in snow_assets().items(): save(im, k + '.png')

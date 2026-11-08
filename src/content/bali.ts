@@ -99,6 +99,7 @@ export const BRAM = {
     ['Nog een portie? Ze zijn net uit het vet.', 'O, en voor de duidelijkheid: aardbeiensambal bestaat niet. Gaat ook nooit bestaan.'],
     ['Wist je dat het hier op Bali altijd een paar uur later is dan thuis? Kijk maar naar de lucht.'],
     ['Ik hoorde van Femke dat jullie haar verslagen hebben bij Bitterbal Rush. Ze is er nog steeds boos over.'],
+    ['Hebben jullie het monument bij de taxi al gezien? Daar heeft de gemeente een plaatje neergezet. Jullie weten wel waarom.'],
     ['Pas op voor dat aapje bij het strand. Hij valt alleen mensen aan die hij leuk vindt. Zegt hij.'],
   ],
 };
@@ -141,4 +142,14 @@ export const MONKEY = {
     ['Het aapje heeft een zonnebril op zijn hoofd. Van wie die is weet niemand.'],
   ],
 };
+
+/** The historic spot. (He knows what he did.) */
+export const kots = { x: 6.4, y: 16.4 };
+export const KOTS_LINES = (visits: number) => [
+  'GEDENKPLAAT',
+  '"Op deze historische plek heeft iemand op Bali gekotst. Op de grond. Buiten. Voor iedereen zichtbaar."',
+  '"Wij noemen geen namen."',
+  '"(Hij was het.)"',
+  `Bezoekers van het kotsmonument: ${visits}`,
+];
 

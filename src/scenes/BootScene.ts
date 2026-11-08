@@ -27,6 +27,15 @@ export class BootScene extends Phaser.Scene {
       const n = Math.floor((tex.getSourceImage() as HTMLImageElement).width / w);
       for (let i = 0; i < n; i++) tex.add(i, 0, i * w, 0, w, h);
     }
+    // walking critters drawn by code: 4 rows (down, up, left, right) x 4 frames
+    for (const [key, size, rows] of [['mole', 48, 4], ['cat', 32, 5]] as const) {
+      const tex = this.textures.get(key);
+      for (let i = 0; i < rows * 4; i++) tex.add(i, 0, (i % 4) * size, Math.floor(i / 4) * size, size, size);
+      ['down', 'up', 'left', 'right'].forEach((dir, row) => {
+        this.anims.create({ key: `${key}-walk-${dir}`, frames: this.anims.generateFrameNumbers(key, { start: row * 4, end: row * 4 + 3 }), frameRate: 7, repeat: -1 });
+        this.anims.create({ key: `${key}-idle-${dir}`, frames: [{ key, frame: row * 4 }], frameRate: 1 });
+      });
+    }
     buildHandmade(this);
     buildAmbientTextures(this);
     for (const coat of ['white', 'brown', 'black']) createCritterAnims(this, `goat-${coat}`);

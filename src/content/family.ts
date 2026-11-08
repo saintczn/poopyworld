@@ -41,3 +41,31 @@ export function benTalk(): string[] {
     'Yara heeft gezegd hoe het moet, zeker.',
   ])];
 }
+
+/** Buurman Mol: lives under the lawn, wanders around the house. More to come. */
+const MOL = [
+  ['Goedendag, buren! Ik ben Buurman Mol.', 'Ik woon onder jullie gazon. Al heel lang. Niet schrikken.'],
+  ['Die bobbels in het gras? Dat ben ik niet.', '...', 'Oké, dat ben ik wel.'],
+  ['Ik zie niet zo goed, daarom heb ik deze bril.', 'Ik zie er nog steeds niks mee, maar hij staat wel heel goed.'],
+  ['Als jullie ooit iets kwijt zijn: zeg het maar. Ik graaf het wel op.', 'Behalve sleutels. Sleutels zijn eng.'],
+  ['De geiten en ik hebben een afspraak. Zij blijven boven, ik blijf onder.', 'Alleen die witte houdt zich er niet aan.'],
+  ['Weet je wat ik het lekkerst vind? Wormen.', 'Weet je wat ik het minst lekker vind? Aardbeien. Net als zij, toch?'],
+];
+let molVisit = 0;
+export function molTalk(): string[] {
+  return MOL[molVisit++ % MOL.length];
+}
+
+/** Simba, the black cat. */
+const SIMBA = [
+  ['Miauw.', 'Simba kijkt je aan alsof jij hém nog iets verschuldigd bent.'],
+  ['Simba rolt op zijn rug in het gras.', 'Het is een val. Niet aan zijn buik komen.'],
+  ['Simba zit heel stil naar een vlinder te staren.', 'Zijn kont wiebelt. Er gaat iets gebeuren.'],
+  ['Simba spint en kopt tegen je been.', 'Hij mist de sneeuw, denk ik. Er staat een sneeuwbol in de woonkamer...'],
+  ['Simba en Buurman Mol hebben een ingewikkelde relatie.'],
+];
+let simbaVisit = 0;
+export function simbaTalk(): string[] {
+  return SIMBA[simbaVisit++ % SIMBA.length];
+}
+

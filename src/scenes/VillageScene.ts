@@ -91,6 +91,10 @@ export class VillageScene extends WorldScene {
       const mine = [spots[i % spots.length], spots[(i + 3) % spots.length], spots[(i + 6) % spots.length]];
       this.addVisitor(v.name, randomLook(r), mine, () => v.lines, 20 + (i % 3) * 3);
     });
+    // an old friend from school
+    let visits = 0;
+    this.addVisitor('Schoolvriendin Bo', randomLook(r), [spots[1], spots[4], spots[8]],
+      () => V.kalabokaFriend((this.registry.get('playerName') as string) ?? '', visits++), 22);
 
     this.ambient = new Ambient(this, { w: W, h: H }, lights, V.flowers.filter(([k]) => k.startsWith('flowers')).map(([, x, y]) => ({ x: x * T, y: y * T })));
     return { x: 22 * T, y: 3.4 * T, facing: 'down' };

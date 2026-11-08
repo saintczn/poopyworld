@@ -232,6 +232,45 @@ export function buildHandmade(scene: Phaser.Scene) {
     px(c, 24, 2, 5, 8, OUT); px(c, 25, 3, 3, 6, '#9be3ff');
   });
 
+  // ---- sticker emotes: 6 icons of 20 x 20 in a little speech bubble ----
+  // 1 heart, 2 laughing, 3 kiss, 4 middle finger, 5 poop, 6 music
+  canvas(scene, 'stickers', 120, 22, (c) => {
+    for (let i = 0; i < 6; i++) {
+      const o = i * 20;
+      // bubble
+      px(c, o + 1, 0, 18, 18, OUT); px(c, o + 2, 1, 16, 16, '#fffaf0'); px(c, o + 2, 15, 16, 2, '#efe2c6');
+      px(c, o + 8, 18, 4, 1, OUT); px(c, o + 9, 19, 2, 1, OUT); px(c, o + 9, 18, 2, 1, '#fffaf0');
+      const p = (x: number, y: number, w: number, h: number, col: string) => px(c, o + x, y, w, h, col);
+      if (i === 0) { // heart
+        const R = '#e8394f', L = '#ff7a8a';
+        p(5, 5, 4, 3, R); p(11, 5, 4, 3, R); p(4, 6, 12, 4, R); p(5, 10, 10, 2, R); p(7, 12, 6, 1, R); p(9, 13, 2, 1, R); p(6, 6, 2, 1, L);
+      } else if (i === 1) { // laughing face
+        const Y = '#f6c83a';
+        p(5, 3, 10, 12, Y); p(4, 5, 12, 8, Y); p(6, 6, 3, 1, OUT); p(11, 6, 3, 1, OUT);
+        p(6, 9, 8, 3, OUT); p(7, 10, 6, 1, '#e8394f'); p(3, 8, 2, 2, '#7ec8f2'); p(15, 8, 2, 2, '#7ec8f2');
+      } else if (i === 2) { // kiss face with heart
+        const Y = '#f6c83a';
+        p(4, 4, 10, 11, Y); p(3, 6, 12, 7, Y); p(5, 7, 2, 1, OUT); p(9, 6, 2, 2, OUT); p(8, 11, 2, 2, '#e8394f');
+        p(13, 3, 2, 2, '#e8394f'); p(16, 3, 2, 2, '#e8394f'); p(13, 4, 5, 2, '#e8394f'); p(14, 6, 3, 1, '#e8394f');
+      } else if (i === 3) { // middle finger
+        const S = '#f0c49a', D = '#c98f63';
+        p(9, 2, 3, 8, S); p(9, 2, 3, 1, D); p(8, 2, 1, 8, OUT); p(12, 2, 1, 8, OUT); p(9, 1, 3, 1, OUT);
+        p(5, 9, 10, 6, S); p(4, 9, 1, 6, OUT); p(15, 9, 1, 6, OUT); p(5, 15, 10, 1, OUT); p(5, 8, 3, 1, OUT); p(13, 8, 2, 1, OUT);
+        p(5, 11, 3, 1, D); p(12, 11, 3, 1, D); p(7, 14, 6, 1, D);
+      } else if (i === 4) { // poop (it is PoopyWorld after all)
+        const B = '#8a5a34', L = '#b07a48';
+        p(8, 3, 3, 2, B); p(6, 5, 8, 3, B); p(4, 8, 12, 3, B); p(3, 11, 14, 4, B); p(7, 5, 2, 1, L); p(5, 8, 3, 1, L); p(4, 11, 3, 1, L);
+        p(7, 12, 2, 2, '#ffffff'); p(11, 12, 2, 2, '#ffffff'); p(8, 13, 1, 1, OUT); p(12, 13, 1, 1, OUT);
+      } else { // music note
+        const M = '#5a4ad1';
+        p(7, 3, 8, 2, M); p(7, 3, 2, 9, M); p(13, 3, 2, 8, M); p(4, 11, 5, 4, M); p(10, 10, 5, 4, M);
+      }
+    }
+  });
+  const st = scene.textures.get('stickers');
+  for (let i = 0; i < 6; i++) st.add(i, 0, i * 20, 0, 20, 22);
+
+
   // ---- wooden sign: 30 x 36 ----
   canvas(scene, 'sign', 30, 36, (c) => {
     woodPost(c, 13, 16, 18);

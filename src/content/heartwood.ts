@@ -115,3 +115,16 @@ export const villagers: Array<{ name: string; lines: string[] }> = [
   { name: 'Lotte', lines: ['Woon jij in dat grote huis met die geiten?', 'Eén van die geiten stond vanochtend op mijn dak. Geen idee hoe.'] },
   { name: 'Ricardo', lines: ['Ik verkoop straks ijsjes op het plein.', 'Alle smaken. Behalve aardbei. Ik heb gehoord dat iemand hier daar niet van houdt.'] },
 ];
+
+/** An old friend who still thinks your name is Kalaboka (your mother shouted it so often). */
+export function kalabokaFriend(name: string, visit: number): string[] {
+  const n = name || 'Kalaboka';
+  const talks = [
+    ['KALABOKA! Hoi! Lang niet gezien!', `Wat? Je heet ${n}? Sinds wanneer?`, 'Je moeder riep altijd "Kalaboka!" naar je. Ik heb je jarenlang zo genoemd. Ik ga nu echt niet meer veranderen.'],
+    ['Hé Kalaboka! Hoe is het met je moeder? Roept ze nog steeds je naam?', 'Je weet wel. KALABOKA!', 'Pas later hoorde ik dat het "hou je mond" betekent in het Portugees. Dat verklaart een hoop.'],
+    [`${n}... ${n}... nee, het klinkt gewoon niet goed.`, 'Kalaboka. Veel beter.'],
+    ['Ik heb je naam in mijn telefoon staan als "Kalaboka 🇧🇷". Gewoon zodat je het weet.'],
+  ];
+  return talks[visit % talks.length];
+}
+
