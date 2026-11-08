@@ -48,6 +48,29 @@ Dag en nacht volgen op Bali de echte Bali-tijd (een paar uur later dan thuis). M
 
 Thuis woont er nu ook een **schildpadje bij de vijver**. De eerste keer mag je hem een naam geven.
 
+## Brazilië (Copacabana)
+
+Vanaf de bushalte in Heartwood kun je nu kiezen: Bali of Brazilië. In Rio:
+
+- de zwart-witte golvende boulevard, kleurrijke flats, de Suikerbroodberg met kabelbaantje;
+- een kiosk (kokoswater, pão de queijo, brigadeiros, en absoluut geen caipirinha met aardbei), een açaí-kraampje en Posto 5;
+- toekans in de palmen, ara's die overvliegen, zeeschildpadden in zee;
+- **Gilly** (in het geel), **Yara** en **Ben** (slaapt onder zijn parasol);
+- **Pênaltis tegen Yara**: vijf penalty's schieten (mikken en kracht) en vijf keer keepen (A/W/D);
+- quest **A Família na Praia**: maak Ben wakker met kokoswater, speel tegen Yara, en Gilly maakt een familiefoto
+  bij Posto 5. Die foto hangt daarna echt aan de muur in jullie woonkamer.
+
+Dag en nacht volgen daar de Rio-tijd.
+
+## Thuis
+
+- **Buurman Mol** loopt rond jullie huis (met brilletje en groen vestje).
+- **Simba**, de zwarte kat, struint door de tuin. In de woonkamer staat een **sneeuwbol**: schud hem en je staat in
+  Simba's sneeuwtuin, waar hij in de sneeuwhopen duikt. Je kunt er ook een sneeuwpop bouwen.
+- Van december tot en met februari sneeuwt het in de tuin.
+- **Kalaboka**: Gilly zegt het vaak, en een oude schoolvriendin in Heartwood noemt je nog steeds zo.
+- Op Bali staat nu een **kotsmonument**. Wij noemen geen namen.
+
 ## Kaart
 
 Met **M** open je de wereldkaart: waar je bent, wat je volgende doel is (met een uitroepteken op de kaart)

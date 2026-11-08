@@ -1,3 +1,4 @@
+import { PHOTO_KEY } from '../content/brasil';
 import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
@@ -151,12 +152,31 @@ export class HouseScene extends WorldScene {
     this.place(name, x, bottom).setDepth(50);
   }
 
+  /** The family photo from Copacabana, once it has been taken. */
+  private familyPhoto(x: number, y: number) {
+    let data: string | null = null;
+    try { data = localStorage.getItem(PHOTO_KEY); } catch { /* fine */ }
+    if (!data) return;
+    const show = () => {
+      if (!this.sys.isActive()) return;
+      const g = this.add.graphics().setDepth(60);
+      g.fillStyle(0x4a2c18); g.fillRect(x - 26, y - 20, 52, 42);
+      g.fillStyle(0xfffaf0); g.fillRect(x - 23, y - 17, 46, 36);
+      this.add.image(x, y - 2, 'family-photo').setDisplaySize(40, 30).setDepth(61);
+      this.interactables.push({ id: 'family-photo', at: { x, y: 150 }, who: 'Familiefoto', lines: ['De familiefoto van Copacabana: Ben, Gilly, jij en Yara voor Posto 5.', 'Yara staat in het midden. Natuurlijk.'] });
+    };
+    if (this.textures.exists('family-photo')) this.textures.remove('family-photo');
+    this.textures.once('addtexture-family-photo', show);
+    this.textures.addBase64('family-photo', data);
+  }
+
   private furnish() {
     // on the back wall
     this.wallItem('window', 64, 110);
     this.wallItem('window', 380, 104);
     this.wallItem('painting-wide', 160, 62);
     this.wallItem('painting-small', 300, 96);
+    this.familyPhoto(440, 64);
     // against the back wall
     this.place('clock', 104, 142, [18, 10]);
     this.place('fireplace', 160, 144, [70, 16]);

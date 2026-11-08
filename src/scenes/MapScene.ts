@@ -97,8 +97,9 @@ export class MapScene extends Phaser.Scene {
     if (fromPlace.id === p.id) return;
     if (fromPlace.island !== p.island) {
       // across the sea you fly
-      this.registry.set('flightTo', p.island === 'bali' ? 'bali' : 'home');
-      this.registry.set('flightArrive', p.island === 'bali' ? null : { scene: p.scene, arrive: p.arrive });
+      this.registry.set('flightTo', p.island);
+      this.registry.set('flightFrom', fromPlace.island);
+      this.registry.set('flightArrive', { scene: p.scene, arrive: p.arrive });
       world.goTo('flight', { x: 0, y: 0 });
     } else {
       world.goTo(p.scene, p.arrive);

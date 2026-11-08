@@ -79,7 +79,7 @@ import snowman3 from './assets/snowman-3.png';
 import snowglobe from './assets/snowglobe.png';
 
 /** Bali art drawn by tools/build_bali.py: bali-palm-a.png becomes the texture 'bali-palm-a'. */
-const baliFiles = import.meta.glob('./assets/bali-*.png', { eager: true, import: 'default' }) as Record<string, string>;
+const baliFiles = import.meta.glob(['./assets/bali-*.png', './assets/br-*.png'], { eager: true, import: 'default' }) as Record<string, string>;
 const bali = Object.fromEntries(Object.entries(baliFiles).map(([path, url]) => [path.split('/').pop()!.replace('.png', ''), url]));
 
 export const sheets = {

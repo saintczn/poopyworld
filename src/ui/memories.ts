@@ -66,3 +66,43 @@ export function askText(o: { title: string; text: string; placeholder: string; o
   });
   wrap.querySelector('form')!.addEventListener('submit', (e) => { e.preventDefault(); close(text.value.trim()); });
 }
+
+/** A small card with a few buttons. `done` gets the index picked, or -1 when cancelled. */
+export function askChoice(title: string, text: string, options: string[], done: (i: number) => void) {
+  const game = (window as unknown as { __game?: Phaser.Game }).__game;
+  game?.registry.set('started', false);
+  if (game?.input.keyboard) game.input.keyboard.enabled = false;
+  const wrap = document.createElement('div');
+  wrap.id = 'choice';
+  wrap.style.cssText = 'position:fixed;inset:0;display:grid;place-items:center;background:rgba(20,30,14,.5);padding:16px;z-index:50';
+  wrap.innerHTML = `<div class="panel hub-card" style="width:min(460px,100%)"><div class="hub-box"><h3></h3><p class="muted"></p>
+    <div class="row" style="flex-wrap:wrap;gap:8px"></div></div></div>`;
+  wrap.querySelector('h3')!.textContent = title;
+  wrap.querySelector('p')!.textContent = text;
+  const row = wrap.querySelector('.row')!;
+  const close = (i: number) => {
+    wrap.remove();
+    document.removeEventListener('keydown', onKey, true);
+    if (game?.input.keyboard) game.input.keyboard.enabled = true;
+    game?.registry.set('started', true);
+    done(i);
+  };
+  options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn small'; b.type = 'button'; b.textContent = `${i + 1}. ${o}`;
+    b.addEventListener('click', () => close(i));
+    row.appendChild(b);
+  });
+  const cancel = document.createElement('button');
+  cancel.className = 'btn alt small'; cancel.type = 'button'; cancel.textContent = 'Toch niet';
+  cancel.addEventListener('click', () => close(-1));
+  row.appendChild(cancel);
+  const onKey = (e: KeyboardEvent) => {
+    const n = Number(e.key);
+    if (n >= 1 && n <= options.length) { e.preventDefault(); e.stopPropagation(); close(n - 1); }
+    if (e.key === 'Escape') { e.preventDefault(); close(-1); }
+  };
+  document.addEventListener('keydown', onKey, true);
+  document.body.appendChild(wrap);
+  (row.firstElementChild as HTMLButtonElement)?.focus();
+}

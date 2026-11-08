@@ -5,15 +5,16 @@
 import { TILE as T } from '../config';
 import { loadMystery } from './mystery';
 import { loadBali, ITEMS } from './bali';
+import { loadBrasil } from './brasil';
 import type { Arrival } from '../scenes/WorldScene';
 
-export type PlaceId = 'villa' | 'heartwood' | 'puck' | 'hollowmere' | 'bali';
+export type PlaceId = 'villa' | 'heartwood' | 'puck' | 'hollowmere' | 'bali' | 'brasil';
 
 export type Place = {
   id: PlaceId; name: string; blurb: string;
   map: { x: number; y: number }; // on the 640x360 map
   scene: string; arrive: Arrival;
-  island: 'home' | 'bali';
+  island: 'home' | 'bali' | 'brasil';
   unlocked: () => boolean;
 };
 
@@ -23,6 +24,7 @@ export const PLACES: Place[] = [
   { id: 'puck', name: 'PUCK', blurb: 'Arcade en bar. Bitterbal Rush!', map: { x: 252, y: 214 }, scene: 'village', arrive: { x: 440, y: 352, facing: 'up' }, island: 'home', unlocked: () => true },
   { id: 'hollowmere', name: 'Hollowmere', blurb: 'Het landhuis op de heuvel. Er klopt iets niet...', map: { x: 360, y: 118 }, scene: 'manor-grounds', arrive: { x: 9 * T, y: 15.2 * T, facing: 'up' }, island: 'home', unlocked: () => loadMystery().letter },
   { id: 'bali', name: 'Bali', blurb: 'Strand, Warung Bitterbal, Casa Umalas, schildpadden en een gevaarlijk aapje.', map: { x: 516, y: 262 }, scene: 'bali', arrive: { x: 3.9 * T, y: 15.3 * T, facing: 'right' }, island: 'bali', unlocked: () => loadBali().visited },
+  { id: 'brasil', name: 'Brazilië', blurb: 'Copacabana: Gilly, Yara, Ben, penalty\'s, açaí en toekans.', map: { x: 508, y: 122 }, scene: 'brasil', arrive: { x: 3.6 * T, y: 11.8 * T, facing: 'right' }, island: 'brasil', unlocked: () => loadBrasil().visited },
 ];
 
 /** Which place a scene belongs to. */
@@ -31,6 +33,7 @@ export function placeOf(scene: string): PlaceId {
   if (scene === 'puck' || scene === 'bitterbal-rush') return 'puck';
   if (scene === 'manor-grounds' || scene === 'manor') return 'hollowmere';
   if (scene === 'bali' || scene === 'casa' || scene === 'surf') return 'bali';
+  if (scene === 'brasil' || scene === 'penalty') return 'brasil';
   return 'heartwood';
 }
 
@@ -43,6 +46,9 @@ export function currentGoal(): { place: PlaceId; text: string } {
   if (!b.visited) return { place: 'heartwood', text: 'Neem de bus naar het vliegveld (bushalte in de onderste straat) en vlieg naar Bali.' };
   if (!b.started) return { place: 'bali', text: 'Ga langs bij Warung Bitterbal op het strand.' };
   if (!b.done) return { place: 'bali', text: `Zoek de spullen van Bram (${b.found.length}/${ITEMS.length} gevonden).` };
+  const br = loadBrasil();
+  if (!br.visited) return { place: 'heartwood', text: 'Gilly belt: ze is in Brazilië! Neem de bus naar het vliegveld en vlieg naar Rio.' };
+  if (!br.photo) return { place: 'brasil', text: br.started ? `Familiefoto: ${[!br.coconut || !br.ben ? 'maak Ben wakker (kokoswater van de kiosk)' : '', !br.yara ? 'speel penalty\'s tegen Yara' : ''].filter(Boolean).join(', ') || 'terug naar Gilly!'}` : 'Zoek Gilly op het strand van Copacabana.' };
   if (!b.turtles) return { place: 'bali', text: 'Help de babyschildpadjes naar zee: de schildpaddenopvang staat op het strand van Bali.' };
   return { place: 'puck', text: 'Alles gedaan voor nu! Daag elkaar uit in PUCK of ga vissen. Wordt vervolgd...' };
 }

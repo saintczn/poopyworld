@@ -230,6 +230,7 @@ export class BaliScene extends WorldScene {
 
   private fly(to: 'home' | 'bali') {
     this.registry.set('flightTo', to);
+    this.registry.set('flightFrom', 'bali');
     this.registry.set('flightArrive', null);
     this.goTo('flight', { x: 0, y: 0 });
   }

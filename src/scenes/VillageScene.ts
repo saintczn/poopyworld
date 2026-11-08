@@ -1,6 +1,7 @@
 import { TILE } from '../config';
 import * as V from '../content/heartwood';
 import { paintGround } from '../world/ground';
+import { askChoice } from '../ui/memories';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { randomLook } from '../characters/look';
@@ -73,10 +74,14 @@ export class VillageScene extends WorldScene {
     this.place('busstop', 28.6 * T, 23.9 * T, [8, 6]);
     this.interactables.push({
       id: 'bus', at: { x: 28.6 * T, y: 24.3 * T }, who: 'Bushalte', lines: [],
-      action: () => this.say('Bushalte', ['Lijn 69: Heartwood – Vliegveld. Vandaar elke dag een vlucht naar Bali.', 'De bus komt eraan. Instappen!'], () => {
-        this.registry.set('flightTo', 'bali');
-        this.registry.set('flightArrive', null);
-        this.goTo('flight', { x: 0, y: 0 });
+      action: () => this.say('Bushalte', ['Lijn 69: Heartwood – Vliegveld. Vandaar vliegen er elke dag vliegtuigen naar verre landen.'], () => {
+        askChoice('Waar wil je heen?', 'De bus brengt je naar het vliegveld.', ['Bali', 'Brazilië (Rio de Janeiro)'], (i) => {
+          if (i < 0) return;
+          this.registry.set('flightTo', i === 0 ? 'bali' : 'brasil');
+          this.registry.set('flightFrom', 'home');
+          this.registry.set('flightArrive', null);
+          this.goTo('flight', { x: 0, y: 0 });
+        });
       }),
     });
 

@@ -22,7 +22,7 @@ export class BootScene extends Phaser.Scene {
       this.textures.get(sheet).add(name, 0, x, y, w, h);
     }
     // little animation strips drawn by tools/build_bali.py: numbered frames 0, 1, 2...
-    for (const [key, w, h] of [['bali-gecko', 20, 12], ['bali-mosquito', 8, 8], ['bali-monkey', 28, 28], ['bali-surf-jelly', 16, 18], ['bali-turtle', 36, 32], ['bali-turtle-baby', 14, 14], ['bali-turtle-side', 40, 22]] as const) {
+    for (const [key, w, h] of [['bali-gecko', 20, 12], ['bali-mosquito', 8, 8], ['bali-monkey', 28, 28], ['bali-surf-jelly', 16, 18], ['bali-turtle', 36, 32], ['bali-turtle-baby', 14, 14], ['bali-turtle-side', 40, 22], ['br-flag', 44, 60], ['br-toucan', 24, 26], ['br-macaw', 40, 28]] as const) {
       const tex = this.textures.get(key);
       const n = Math.floor((tex.getSourceImage() as HTMLImageElement).width / w);
       for (let i = 0; i < n; i++) tex.add(i, 0, i * w, 0, w, h);
@@ -36,6 +36,8 @@ export class BootScene extends Phaser.Scene {
         this.anims.create({ key: `${key}-idle-${dir}`, frames: [{ key, frame: row * 4 }], frameRate: 1 });
       });
     }
+    this.anims.create({ key: 'br-flag-wave', frames: this.anims.generateFrameNumbers('br-flag', { start: 0, end: 1 }), frameRate: 3, repeat: -1 });
+    this.anims.create({ key: 'br-macaw-fly', frames: this.anims.generateFrameNumbers('br-macaw', { start: 0, end: 1 }), frameRate: 5, repeat: -1 });
     buildHandmade(this);
     buildAmbientTextures(this);
     for (const coat of ['white', 'brown', 'black']) createCritterAnims(this, `goat-${coat}`);

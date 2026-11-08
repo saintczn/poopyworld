@@ -375,8 +375,9 @@ def worldmap():
 
     home = blob(104, 88, 92, 70, 1) | blob(60, 140, 40, 30, 2) | blob(170, 60, 40, 34, 3)
     bali = blob(258, 132, 40, 22, 4, 0.18)
+    brasil = blob(262, 54, 42, 28, 9, 0.2)
     a = np.array(img)
-    for land in (home, bali):
+    for land in (home, bali, brasil):
         # shore: sand ring, then grass
         grow = land.copy()
         for _ in range(2):
@@ -390,7 +391,7 @@ def worldmap():
             if v == 0: a[y, x] = hexc('#6aa24a')
             elif v == 7: a[y, x] = hexc('#93c66a')
     # outline the coast
-    coast = (home | bali)
+    coast = (home | bali | brasil)
     sandring = np.all(a == hexc('#e9d39a'), axis=2)
     allland = coast | sandring
     edge = np.zeros_like(allland)
@@ -413,6 +414,17 @@ def worldmap():
     for x, y in [(236, 128), (248, 122), (281, 130), (270, 140), (230, 138)]:
         d.line([(x, y), (x + 1, y - 6)], fill=hexc('#7a5634'))
         for dx, dy in [(-4, -6), (4, -6), (-3, -9), (3, -9), (0, -10)]: d.line([(x + 1, y - 6), (x + 1 + dx, y - 6 + dy // 2 + 2)], fill=hexc('#3c7a30'))
+    # Brazil: a sugarloaf bump, palms and a tiny flag
+    d.polygon([(278, 52), (284, 38), (290, 52)], fill=hexc('#8a8478')); d.line([(270, 44), (284, 38)], fill=hexc('#3a3a3a'))
+    for x, y in [(244, 58), (252, 66), (268, 70), (236, 50)]:
+        d.line([(x, y), (x + 1, y - 6)], fill=hexc('#7a5634'))
+        for dx, dy in [(-4, -6), (4, -6), (-3, -9), (3, -9)]: d.line([(x + 1, y - 6), (x + 1 + dx, y - 6 + dy // 2 + 2)], fill=hexc('#3c7a30'))
+    d.rectangle([255, 40, 266, 47], fill=hexc('#2f9a4a')); d.polygon([(257, 43), (260, 41), (264, 43), (260, 46)], fill=hexc('#f5d000')); d.point((260, 43), fill=hexc('#24418c'))
+    d.line([(255, 40), (255, 52)], fill=hexc('#5a3a1c'))
+    for i in range(0, 60):
+        t = i / 60
+        x = 150 + (250 - 150) * t; y = 118 + (58 - 118) * t - 18 * math.sin(t * math.pi)
+        if i % 3 == 0: d.point((int(x), int(y)), fill=hexc('#ffffff'))
     # flight route (dotted)
     for i in range(0, 60):
         t = i / 60
@@ -424,7 +436,7 @@ def worldmap():
         for i in range(n):
             if i % 2 == 0: d.point((int(x0 + (x1 - x0) * i / n), int(y0 + (y1 - y0) * i / n)), fill=hexc('#a0703a'))
     # compass rose
-    cx, cy = 296, 26
+    cx, cy = 20, 158
     d.polygon([(cx, cy - 12), (cx - 3, cy), (cx + 3, cy)], fill=hexc('#c0392b'))
     d.polygon([(cx, cy + 12), (cx - 3, cy), (cx + 3, cy)], fill=hexc('#f4f1ea'))
     d.polygon([(cx - 12, cy), (cx, cy - 3), (cx, cy + 3)], fill=hexc('#f4f1ea'))
@@ -983,6 +995,202 @@ def kots():
     for y in (9, 12, 15): d.line([(46, y), (57, y)], fill=hexc('#8a6a20'))
     return outline(img)
 
+# ================================================================ Brazil (Copacabana)
+def calcadao(w=128, h=96):
+    """The Copacabana promenade: black and white waves in mosaic stones. Tiles horizontally."""
+    img = Image.new('RGBA', (w, h), hexc('#f4f1ea'))
+    d = ImageDraw.Draw(img)
+    for x in range(w):
+        for y in range(h):
+            # waves running along x, repeating every 32px across, phase per band
+            band = y / 24.0
+            wave = math.sin((x / w) * 2 * math.pi * 2) * 5
+            v = (y + wave) % 24
+            if 6 <= v < 15:
+                d.point((x, y), fill=hexc('#2a2a2e'))
+    # mosaic stones: little grout lines
+    for y in range(0, h, 3):
+        off = (y // 3) % 2
+        for x in range(off, w, 3): d.point((x, y), fill=hexc('#bdb8ae') if img.getpixel((x, y))[0] > 128 else hexc('#16161a'))
+    return img
+
+def facade(seed, wall, trim, w=192, h=208):
+    rnd = random.Random(seed)
+    img = Image.new('RGBA', (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    W, Hc = hexc(wall), hexc(trim)
+    # flat roof with a little parapet
+    d.rectangle([4, 10, w - 5, h - 1], fill=W)
+    d.rectangle([0, 4, w - 1, 12], fill=Hc)
+    d.line([(0, 12), (w - 1, 12)], fill=hexc('#00000040'))
+    # shading on the right
+    d.rectangle([w - 14, 13, w - 5, h - 1], fill=tuple(max(0, c - 22) for c in W[:3]) + (255,))
+    # rows of windows with balconies
+    for fy in range(26, h - 60, 46):
+        for fx in range(18, w - 30, 44):
+            d.rectangle([fx, fy, fx + 22, fy + 28], fill=hexc('#3a5a6a'))
+            d.rectangle([fx + 2, fy + 2, fx + 20, fy + 26], fill=hexc('#7fb5c9'))
+            d.line([(fx + 11, fy + 2), (fx + 11, fy + 26)], fill=hexc('#3a5a6a'))
+            d.polygon([(fx + 4, fy + 26), (fx + 12, fy + 3), (fx + 16, fy + 3), (fx + 8, fy + 26)], fill=hexc('#b5e0ec'))
+            # balcony rail
+            d.rectangle([fx - 4, fy + 28, fx + 26, fy + 30], fill=Hc)
+            for bx in range(fx - 3, fx + 26, 4): d.line([(bx, fy + 30), (bx, fy + 38)], fill=Hc)
+            d.rectangle([fx - 4, fy + 38, fx + 26, fy + 40], fill=Hc)
+            if rnd.random() < 0.5:   # plants on the balcony
+                for k in range(3): d.ellipse([fx + k * 8 - 2, fy + 32, fx + k * 8 + 5, fy + 38], fill=hexc('#3c8a30'))
+                d.point((fx + 2, fy + 33), fill=hexc('#e8584a'))
+    # ground floor: shop with awning
+    gy = h - 52
+    d.rectangle([12, gy + 10, w - 20, h - 1], fill=hexc('#4a3a30'))
+    d.rectangle([16, gy + 14, w - 24, h - 6], fill=hexc('#7fb5c9'))
+    for x in range(12, w - 20, 12):
+        d.polygon([(x, gy), (x + 12, gy), (x + 12, gy + 10), (x, gy + 10)], fill=Hc if (x // 12) % 2 else hexc('#ffffff'))
+    d.rectangle([w // 2 - 10, gy + 14, w // 2 + 10, h - 1], fill=hexc('#5a4030'))
+    return outline(img)
+
+def sugarloaf():
+    W, H = 260, 220
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    rnd = random.Random(31)
+    # the big rock dome
+    pts = []
+    for i in range(0, 181, 6):
+        a = math.radians(i)
+        rx = 92 + rnd.uniform(-2, 2); ry = 190
+        pts.append((130 + math.cos(a) * rx * (1 + 0.15 * math.sin(a * 3)), 210 - math.sin(a) ** 0.8 * ry))
+    d.polygon(pts, fill=hexc('#8a8478'))
+    # light side and streaks of rock
+    for x in range(50, 140):
+        for y in range(20, 210):
+            if img.getpixel((x, y))[3] and (x * 3 + y) % 17 == 0: d.point((x, y), fill=hexc('#a8a294'))
+    for x in range(150, 220):
+        for y in range(30, 210):
+            if img.getpixel((x, y))[3] and (x + y * 2) % 13 == 0: d.point((x, y), fill=hexc('#6c675d'))
+    # forest at the foot and on the sides
+    for _ in range(120):
+        x = rnd.randint(30, 230); y = rnd.randint(150, 214)
+        if img.getpixel((min(W - 1, x), min(H - 1, y)))[3]:
+            d.ellipse([x - 6, y - 5, x + 6, y + 5], fill=hexc(rnd.choice(['#2f6b2a', '#3c7a30', '#4f9438'])))
+    for _ in range(30):
+        x = rnd.randint(70, 200); y = rnd.randint(40, 120)
+        if img.getpixel((x, y))[3]: d.ellipse([x - 4, y - 3, x + 4, y + 3], fill=hexc('#3c7a30'))
+    # cable car station on top
+    d.rectangle([118, 16, 142, 28], fill=hexc('#e8e2d0')); d.rectangle([116, 12, 144, 16], fill=hexc('#c0392b'))
+    return outline(img)
+
+def kiosk():
+    W, H = 128, 112
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    # green and yellow kiosk, round roof
+    d.rectangle([14, 46, 113, 104], fill=hexc('#2f8a4a'))
+    d.rectangle([20, 52, 107, 80], fill=hexc('#fff3c8'))
+    # goods on the counter
+    for i, c in enumerate(['#7a3a8a', '#4f8a3a', '#f0c040', '#7a3a8a', '#e8e2d0']):
+        x = 26 + i * 16
+        d.rectangle([x, 66, x + 9, 79], fill=hexc(c)); d.rectangle([x + 1, 64, x + 8, 66], fill=hexc('#ffffff'))
+    # coconuts piled up
+    for x, y in [(30, 92), (40, 94), (35, 86), (90, 92), (100, 94)]:
+        d.ellipse([x - 5, y - 5, x + 5, y + 5], fill=hexc('#6a8a2a')); d.point((x - 2, y - 2), fill=hexc('#8ab04a'))
+    d.rectangle([14, 80, 113, 84], fill=hexc('#f0c040'))
+    # roof
+    d.pieslice([0, 6, 127, 70], 180, 360, fill=hexc('#f0c040'))
+    for x in range(8, 124, 14): d.polygon([(64, 8), (x, 38), (x + 7, 38)], fill=hexc('#2f8a4a'))
+    d.rectangle([0, 36, 127, 46], fill=hexc('#2f8a4a'))
+    d.line([(0, 46), (127, 46)], fill=hexc('#1f6a3a'))
+    return outline(img)
+
+def acai():
+    img = Image.new('RGBA', (72, 72), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([8, 34, 63, 68], fill=hexc('#6a2a7a'))
+    d.rectangle([10, 30, 61, 36], fill=hexc('#e8e2d0'))
+    for x in (14, 30, 46):
+        d.ellipse([x, 22, x + 12, 32], fill=hexc('#4a1a5a')); d.ellipse([x + 3, 22, x + 9, 25], fill=hexc('#f0c040'))
+    d.rectangle([33, 4, 36, 30], fill=hexc('#ffffff'))
+    d.pieslice([10, 0, 60, 26], 180, 360, fill=hexc('#ff7aa0'))
+    d.text((20, 44), 'ACAI', fill=hexc('#fff3c8'))
+    return outline(img)
+
+def lifeguard():
+    img = Image.new('RGBA', (56, 88), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for x in (8, 44): d.line([(x, 40), (x + (6 if x < 20 else -6), 87)], fill=hexc('#c8c8c8'), width=3)
+    d.line([(12, 66), (44, 66)], fill=hexc('#c8c8c8'), width=2)
+    d.rectangle([4, 20, 52, 42], fill=hexc('#f4f1ea')); d.rectangle([8, 24, 48, 34], fill=hexc('#7fb5c9'))
+    d.polygon([(0, 20), (28, 4), (56, 20)], fill=hexc('#e8584a'))
+    d.rectangle([16, 36, 40, 42], fill=hexc('#e8584a'))
+    d.text((20, 35), '5', fill=hexc('#ffffff'))
+    return outline(img)
+
+def flag_br():
+    """Brazilian flag on a pole, 2 frames of 44x60."""
+    img = Image.new('RGBA', (88, 60), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (44, 60), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.rectangle([2, 2, 4, 59], fill=hexc('#c8c8c8'))
+        for x in range(5, 42):
+            wv = int(round(math.sin(x / 6 + fr * 1.6) * 1.5))
+            d.line([(x, 4 + wv), (x, 28 + wv)], fill=hexc('#2f9a4a'))
+        d.polygon([(8, 16 + 0), (23, 6), (38, 16), (23, 26)], fill=hexc('#f5d000'))
+        d.ellipse([16, 9, 30, 23], fill=hexc('#24418c'))
+        d.line([(16, 15), (30, 17)], fill=hexc('#ffffff'))
+        for x, y in [(19, 19), (25, 20), (22, 12)]: d.point((x, y), fill=hexc('#ffffff'))
+        img.alpha_composite(outline(f), (fr * 44, 0))
+    return img
+
+def toucan():
+    """Perched toucan, 2 frames (head turn) of 24x26."""
+    img = Image.new('RGBA', (48, 26), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (24, 26), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([4, 6, 14, 22], fill=hexc('#1a1a1e'))
+        d.ellipse([6, 8, 12, 14], fill=hexc('#fff3c8'))
+        d.line([(9, 21), (7, 25)], fill=hexc('#1a1a1e'), width=2)
+        sgn = 1 if fr == 0 else -1
+        bx = 11 if fr == 0 else 7
+        d.polygon([(bx, 7), (bx + 12 * sgn, 9), (bx + 10 * sgn, 13), (bx, 12)], fill=hexc('#f08a2a'))
+        d.polygon([(bx, 7), (bx + 12 * sgn, 9), (bx + 8 * sgn, 8)], fill=hexc('#f5d000'))
+        d.point((bx + 11 * sgn, 10), fill=hexc('#c0392b'))
+        d.point((9 - sgn, 9), fill=hexc('#2a6ad0'))
+        img.alpha_composite(outline(f), (fr * 24, 0))
+    return img
+
+def macaw():
+    """Scarlet macaw flying, 2 frames of 40x28."""
+    img = Image.new('RGBA', (80, 28), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (40, 28), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([12, 11, 30, 18], fill=hexc('#d8282a'))
+        d.ellipse([27, 9, 35, 16], fill=hexc('#d8282a')); d.point((32, 11), fill=hexc('#fff3c8'))
+        d.polygon([(34, 12), (38, 14), (34, 16)], fill=hexc('#e8e2d0'))
+        d.polygon([(13, 14), (0, 18), (2, 15), (12, 12)], fill=hexc('#2a6ad0'))   # tail
+        if fr == 0:
+            d.polygon([(18, 12), (12, 0), (26, 3), (25, 12)], fill=hexc('#2a6ad0')); d.polygon([(18, 12), (16, 5), (23, 6), (24, 12)], fill=hexc('#f5d000'))
+        else:
+            d.polygon([(18, 16), (12, 27), (26, 24), (25, 16)], fill=hexc('#2a6ad0')); d.polygon([(18, 16), (16, 22), (23, 21), (24, 16)], fill=hexc('#f5d000'))
+        img.alpha_composite(outline(f), (fr * 40, 0))
+    return img
+
+def goal_top():
+    """A beach football goal seen from the top-down camera (opening facing down)."""
+    img = Image.new('RGBA', (112, 52), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for y in range(4, 34, 4): d.line([(8, y), (103, y)], fill=hexc('#ffffff', 150))
+    for x in range(8, 104, 4): d.line([(x, 4), (x, 34)], fill=hexc('#ffffff', 150))
+    d.rectangle([4, 30, 8, 51], fill=hexc('#ffffff')); d.rectangle([103, 30, 107, 51], fill=hexc('#ffffff'))
+    d.rectangle([4, 26, 107, 31], fill=hexc('#ffffff'))
+    return outline(img, hexc('#5a5a5a'))
+
+def ball():
+    img = Image.new('RGBA', (14, 14), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([1, 1, 12, 12], fill=hexc('#ffffff'))
+    d.polygon([(6, 4), (9, 6), (8, 9), (5, 9), (4, 6)], fill=hexc('#1a1a1a'))
+    for x, y in [(2, 5), (10, 3), (11, 9), (3, 11), (7, 12)]: d.point((x, y), fill=hexc('#1a1a1a'))
+    return outline(img)
+
+def gondola():
+    img = Image.new('RGBA', (20, 18), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.line([(10, 0), (10, 5)], fill=hexc('#3a3a3a'))
+    d.rounded_rectangle([2, 5, 17, 17], 3, fill=hexc('#e8e2d0')); d.rectangle([4, 8, 15, 12], fill=hexc('#7fb5c9'))
+    d.rectangle([2, 14, 17, 15], fill=hexc('#c0392b'))
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1030,4 +1238,20 @@ if __name__ == '__main__':
     save(mole(), 'mole.png')
     save(cat(), 'cat.png')
     save(kots(), 'bali-kots.png')
+    save(calcadao(), 'br-calcadao.png')
+    save(facade(1, '#f2c14e', '#ffffff'), 'br-facade-a.png')
+    save(facade(2, '#7fc8d8', '#ffffff'), 'br-facade-b.png')
+    save(facade(3, '#f0a0b0', '#ffffff'), 'br-facade-c.png')
+    save(facade(4, '#f4f1ea', '#2f8a4a'), 'br-facade-d.png')
+    save(facade(5, '#a8d870', '#ffffff'), 'br-facade-e.png')
+    save(sugarloaf(), 'br-sugarloaf.png')
+    save(kiosk(), 'br-kiosk.png')
+    save(acai(), 'br-acai.png')
+    save(lifeguard(), 'br-posto.png')
+    save(flag_br(), 'br-flag.png')
+    save(toucan(), 'br-toucan.png')
+    save(macaw(), 'br-macaw.png')
+    save(goal_top(), 'br-goal.png')
+    save(ball(), 'br-ball.png')
+    save(gondola(), 'br-gondola.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

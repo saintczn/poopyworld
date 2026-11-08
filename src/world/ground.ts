@@ -13,6 +13,8 @@ export type GroundSpec = {
   base?: 'dirt' | 'sand';
   /** Darker sand paths, painted under the grass. */
   paths?: Rect[];
+  /** Whether the world beyond the map edge counts as grass (default yes). */
+  edgeGrass?: boolean;
   /** Row where the sea begins (it fills the map below, with a foamy shore). */
   sea?: number;
 };
@@ -64,7 +66,7 @@ export function paintGround(scene: Phaser.Scene, key: string, spec: GroundSpec) 
   for (const d of spec.dirt) {
     for (let y = d.y; y < d.y + d.h; y++) for (let x = d.x; x < d.x + d.w; x++) if (grass[y]) grass[y][x] = false;
   }
-  const g = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? true : grass[y][x]);
+  const g = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? spec.edgeGrass ?? true : grass[y][x]);
 
   // 1. Dirt (or sand) everywhere, then the paths.
   const fill = spec.base === 'sand' ? SAND_DARK : DIRT_FILL;
