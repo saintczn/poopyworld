@@ -60,7 +60,18 @@ Vanaf de bushalte in Heartwood kun je nu kiezen: Bali of Brazilië. In Rio:
 - quest **A Família na Praia**: maak Ben wakker met kokoswater, speel tegen Yara, en Gilly maakt een familiefoto
   bij Posto 5. Die foto hangt daarna echt aan de muur in jullie woonkamer.
 
-Dag en nacht volgen daar de Rio-tijd.
+Dag en nacht volgen daar de Rio-tijd. Op het strand: een Biscoito Globo-verkoper ("Olha o Mate!"), footvolley,
+strandgangers, cangas, een zandkasteel, meeuwen, golven en straatlantaarns langs de boulevard.
+
+### Paraty
+
+Bij de taxi in Rio gaat ook een bus naar **Paraty**, het koloniale stadje waar de familie vandaan komt:
+keienstraatjes, witte huisjes met gekleurde deuren, de witte kerk van Santa Rita aan het water, schoeners en kano's
+in de baai, de Serra do Mar erachter. Bij **vloed** (een echte getijdencyclus) loopt de zee de straten in.
+
+Stempelkaart: bezoek de kerk, glij van de **Cachoeira do Tobogã** (natuurlijke waterglijbaan), maak een
+**boottocht** met Seu Zé (dolfijnen en een schildpad onderweg) en zoek de **groene parkietjes** in de boom op het
+plein. Verder: Dona Lurdes met cocada en paçoca, kolibries bij de bloemen, en wat locals.
 
 ## Thuis
 

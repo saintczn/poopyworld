@@ -3,9 +3,11 @@ import { TILE } from '../config';
 import * as R from '../content/brasil';
 import { GILLY_LOOK } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK } from '../content/family';
-import { paintGround } from '../world/ground';
+import { paintGround, rng } from '../world/ground';
+import { randomLook } from '../characters/look';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { WorldScene, type Arrival } from './WorldScene';
+import { askChoice } from '../ui/memories';
 import type { Look } from '../characters/look';
 
 const T = TILE;
@@ -19,6 +21,7 @@ export class BrasilScene extends WorldScene {
   private yaraTalk = 0;
   private benTalk = 0;
   private nextMacaw = 0;
+  private nextGull = 0;
   private photoBusy = false;
 
   constructor() {
@@ -40,6 +43,7 @@ export class BrasilScene extends WorldScene {
     this.buildCity(lights);
     this.buildBeach(lights);
     this.buildPeople();
+    this.buildLife(lights);
 
     // edges
     this.solid(0, 0, W, 7.6 * T);           // the buildings
@@ -91,11 +95,27 @@ export class BrasilScene extends WorldScene {
     const tx = R.taxi.x * T, ty = R.taxi.y * T;
     this.place('busstop', tx, ty + 30, [8, 6]);
     this.interactables.push({
-      id: 'taxi', at: { x: tx + 10, y: ty + 40 }, who: 'Táxi', lines: [],
-      action: () => this.say('Táxi', ['"Aeroporto? Claro! Vamos!"', 'Op naar het vliegveld. Tchau, Rio!'], () => {
-        this.registry.set('flightTo', 'home'); this.registry.set('flightFrom', 'brasil'); this.registry.set('flightArrive', null);
-        this.goTo('flight', { x: 0, y: 0 });
+      id: 'taxi', at: { x: tx + 10, y: ty + 40 }, who: 'Táxi en bus', lines: [],
+      action: () => askChoice('Waar wil je heen?', 'Taxi of bus vanaf Copacabana.', ['Het vliegveld (naar huis)', 'Bus naar Paraty (Costa Verde)'], (i) => {
+        if (i === 0) {
+          this.registry.set('flightTo', 'home'); this.registry.set('flightFrom', 'brasil'); this.registry.set('flightArrive', null);
+          this.goTo('flight', { x: 0, y: 0 });
+        }
+        if (i === 1) this.toParaty();
       }),
+    });
+  }
+
+  /** A few hours along the coast by bus. */
+  private toParaty() {
+    this.registry.set('started', false);
+    const cam = this.cameras.main;
+    cam.fadeOut(500);
+    cam.once('camerafadeoutcomplete', () => {
+      const t = this.add.text(320, 170, 'Vier uur later...\nlangs de Costa Verde, door de bergen...', { fontFamily: FONT, fontSize: '16px', color: '#fff6dc', align: 'center' })
+        .setOrigin(0.5).setScrollFactor(0).setDepth(300000).setResolution(2);
+      cam.fadeIn(300);
+      this.time.delayedCall(2200, () => { t.destroy(); this.registry.set('started', true); this.travel('paraty', { x: 40.6 * T, y: 12.9 * T, facing: 'left' }); });
     });
   }
 
@@ -294,6 +314,91 @@ export class BrasilScene extends WorldScene {
     });
   }
 
+  // ---------------------------------------------------------------- beach life
+  private buildLife(lights: LightSpot[]) {
+    const W = R.MAP_W * T;
+    // foam rolling up the sand
+    const foam = this.add.graphics().setDepth(-900);
+    foam.fillStyle(0xffffff, 0.75);
+    for (let x = 0; x < W; x += 6) foam.fillRect(x, 0, x % 18 === 0 ? 2 : 4, 2);
+    foam.setPosition(0, R.SEA * T + 8);
+    this.tweens.add({ targets: foam, y: R.SEA * T + 1, alpha: { from: 0.9, to: 0.2 }, duration: 1700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    // street lamps along the promenade
+    for (let x = 4; x < R.MAP_W - 4; x += 7) {
+      this.place('br-lamp', x * T, 13.6 * T, [6, 4]);
+      lights.push({ x: x * T + 6, y: 13.6 * T - 66, size: 120, colour: 0xffe2a0 });
+    }
+
+    // towels, a sand castle
+    for (const [key, x, y] of [['br-canga-a', 8.4, 22.4], ['br-canga-b', 19.6, 22.8], ['br-canga-c', 27, 22.2], ['br-canga-a', 47, 22.6]] as const) {
+      this.add.image(x * T, y * T, key).setDepth(-800);
+    }
+    this.place('br-sandcastle', 14 * T, 23.2 * T, [26, 8]);
+    this.interactables.push({ id: 'castle', at: { x: 14 * T, y: 23.5 * T }, who: 'Zandkasteel', lines: ['Een zandkasteel met een rood vlaggetje.', 'Yara zegt dat zij het gebouwd heeft. Een kind van zes zegt van niet.'] });
+
+    // footvolley: football over a volleyball net, no hands allowed
+    const fx = 46 * T, fy = 16.4 * T;
+    this.place('br-footvolley', fx, fy, [130, 6]);
+    const r = rng(31);
+    const players = [[-50, -34], [40, -38], [-46, 30], [44, 34]].map(([dx, dy]) => ({ x: fx + dx, y: fy + dy }));
+    Promise.all(players.map((p, i) => this.addNPC(randomLook(r), p.x, p.y, i < 2 ? 'down' : 'up'))).then(() => {
+      if (!this.sys.isActive()) return;
+      const ball = this.add.image(players[0].x, players[0].y - 30, 'br-ball').setDepth(fy + 60);
+      let at = 0;
+      const pass = () => {
+        if (!ball.active) return;
+        const next = (at + (Math.random() < 0.5 ? 2 : 3)) % 4;
+        const a = players[at], b = players[next];
+        const st = { k: 0 };
+        this.tweens.add({ targets: st, k: 1, duration: 900, ease: 'Linear',
+          onUpdate: () => ball.setPosition(a.x + (b.x - a.x) * st.k, a.y - 30 + (b.y - a.y) * st.k - Math.sin(st.k * Math.PI) * 60).setRotation(st.k * 6),
+          onComplete: () => { at = next; this.time.delayedCall(250, pass); } });
+      };
+      pass();
+    });
+    this.interactables.push({ id: 'footvolley', at: { x: fx, y: fy + 56 }, who: 'Futevôlei', lines: ['Futevôlei: volleybal, maar dan met je voeten, borst en hoofd. Handen zijn verboden.', 'Ze spelen al drie uur. Niemand heeft de bal nog laten vallen. Dit is Rio.'] });
+
+    // the Biscoito Globo vendor walks the beach and shouts
+    this.addNPC(randomLook(rng(12)), 4 * T, 19.6 * T, 'right').then((v) => {
+      if (!this.sys.isActive()) return;
+      const key = v.texture.key.replace('-idle', '');
+      const cart = this.add.image(v.x + 14, v.y - 6, 'br-globe').setOrigin(0.5, 1);
+      const walk = (dir: 1 | -1) => {
+        v.play(`${key}-walk-${dir > 0 ? 'right' : 'left'}`);
+        this.tweens.add({ targets: v, x: dir > 0 ? 47 * T : 4 * T, duration: 30000, onUpdate: () => { v.setDepth(v.y); cart.setPosition(v.x + 14 * dir, v.y - 6).setDepth(v.y + 1); entry.at.x = v.x; },
+          onComplete: () => walk(dir > 0 ? -1 : 1) });
+      };
+      const entry = { id: 'vendor', at: { x: v.x, y: v.y + 8 }, who: 'Vendedor', lines: ['"Olha o Mate! Olha o Globo! Biscoito Globo, mate geladinho!"', 'Je koopt een zak Biscoito Globo: luchtige zoutjes die je alleen op het strand in Rio eet.', 'En een ijskoude mate. Perfect.'] };
+      this.interactables.push(entry);
+      walk(1);
+      this.time.addEvent({ delay: 4500, loop: true, callback: () => {
+        const t = this.add.text(v.x, v.y - 58, Phaser.Math.RND.pick(['Olha o Mate!', 'Olha o Globo!', 'Mate geladinho!']), { fontFamily: FONT, fontSize: '10px', color: '#fff6dc', stroke: '#2a1a14', strokeThickness: 3 })
+          .setOrigin(0.5, 1).setResolution(2).setDepth(9000);
+        this.tweens.add({ targets: t, y: t.y - 14, alpha: 0, duration: 1500, delay: 700, onComplete: () => t.destroy() });
+      } });
+    });
+
+    // some beach-goers
+    const spots = [[6, 21.6], [11, 19.4], [18, 22], [26, 19.8], [31, 22.6], [35, 19.6], [41, 22]].map(([x, y]) => ({ x: x * T, y: y * T }));
+    const people: Array<[string, string[]]> = [
+      ['Surfista', ['"E aí! De golven zijn vandaag gigantisch. Nou ja, middelgroot. Klein eigenlijk."']],
+      ['Carioca', ['"Een carioca gaat niet naar het strand. Een carioca woont op het strand en gaat soms even naar huis."']],
+      ['Vovó', ['"Ai, wat een mooi stel! Wanneer gaan jullie trouwen? Ik vraag het maar."']],
+    ];
+    people.forEach(([n, l], i) => this.addVisitor(n, randomLook(r), [spots[i], spots[i + 2], spots[i + 4]], () => l, 22 + i * 3));
+  }
+
+  private updateGulls(time: number) {
+    if (time < this.nextGull) return;
+    this.nextGull = time + Phaser.Math.Between(5000, 9000);
+    const view = this.cameras.main.worldView;
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const y = Phaser.Math.Between(view.y + 40, view.bottom - 40);
+    const g = this.add.sprite(dir > 0 ? view.x - 30 : view.right + 30, y, 'br-seagull', 0).setDepth(95000).setFlipX(dir < 0).play('br-seagull-fly');
+    this.tweens.add({ targets: g, x: `+=${dir * (view.width + 80)}`, y: y + Phaser.Math.Between(-40, 40), duration: 7000, onComplete: () => g.destroy() });
+  }
+
   // ---------------------------------------------------------------- birds flying over
   private updateMacaws(time: number) {
     if (time < this.nextMacaw) return;
@@ -309,5 +414,6 @@ export class BrasilScene extends WorldScene {
   protected tick(time: number) {
     this.ambient.update(time);
     this.updateMacaws(time);
+    this.updateGulls(time);
   }
 }

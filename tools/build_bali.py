@@ -1191,6 +1191,275 @@ def gondola():
     d.rectangle([2, 14, 17, 15], fill=hexc('#c0392b'))
     return outline(img)
 
+# ================================================================ Paraty
+def pe_de_moleque(w=128, h=128):
+    """Paraty's big irregular river stones ("pé-de-moleque"), tileable."""
+    rnd = random.Random(41)
+    img = Image.new('RGBA', (w, h), hexc('#5a5048'))
+    d = ImageDraw.Draw(img)
+    cols = ['#9a8e80', '#8a7e70', '#a89c8c', '#7e7468', '#b0a494', '#948a7c']
+    # jittered grid of rounded stones, drawn with wrap-around so it tiles
+    step = 16
+    for gy in range(0, h, step):
+        for gx in range(0, w, step):
+            cx = gx + rnd.randint(2, 6); cy = gy + rnd.randint(2, 6)
+            rw = rnd.randint(9, 13); rh = rnd.randint(8, 12)
+            c = hexc(rnd.choice(cols))
+            for ox in (-w, 0, w):
+                for oy in (-h, 0, h):
+                    d.ellipse([cx + ox - 1, cy + oy - 1, cx + ox + rw, cy + oy + rh], fill=c)
+                    d.arc([cx + ox - 1, cy + oy - 1, cx + ox + rw, cy + oy + rh], 200, 300, fill=hexc('#c4b8a8'))
+                    d.arc([cx + ox - 1, cy + oy - 1, cx + ox + rw, cy + oy + rh], 20, 120, fill=hexc('#4a4038'))
+    return img
+
+def colonial(seed, door, w=160, h=156, two=False):
+    """A white colonial house of Paraty: thick white walls, coloured door and window frames, terracotta roof."""
+    rnd = random.Random(seed)
+    img = Image.new('RGBA', (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    D = hexc(door); Dd = tuple(max(0, c - 40) for c in D[:3]) + (255,)
+    roof_h = 34
+    # roof (seen a bit from the front): curved terracotta tiles
+    d.polygon([(0, roof_h), (12, 4), (w - 13, 4), (w - 1, roof_h)], fill=hexc('#b5562e'))
+    for x in range(4, w - 2, 6):
+        d.line([(x, 6), (x - (x - w / 2) * 0.08, roof_h - 1)], fill=hexc('#8a3c1e'))
+    for y in range(8, roof_h, 6): d.line([(6, y), (w - 7, y)], fill=hexc('#c8683a'))
+    d.line([(0, roof_h), (w - 1, roof_h)], fill=hexc('#6a2a14'))
+    # white wall with a coloured corner trim and plinth
+    d.rectangle([4, roof_h + 1, w - 5, h - 1], fill=hexc('#f6f2ea'))
+    for _ in range(80):
+        d.point((rnd.randint(5, w - 6), rnd.randint(roof_h + 2, h - 2)), fill=hexc('#e6e0d4'))
+    d.rectangle([4, roof_h + 1, 9, h - 1], fill=D); d.rectangle([w - 10, roof_h + 1, w - 5, h - 1], fill=D)
+    d.rectangle([4, h - 10, w - 5, h - 1], fill=D)
+    # cornice
+    d.rectangle([2, roof_h + 1, w - 3, roof_h + 4], fill=hexc('#ffffff')); d.line([(2, roof_h + 5), (w - 3, roof_h + 5)], fill=hexc('#d8d0c0'))
+    def window(x, y, ww=22, wh=30, balcony=False):
+        d.rectangle([x - 3, y - 3, x + ww + 2, y + wh + 2], fill=D)
+        d.rectangle([x, y, x + ww - 1, y + wh - 1], fill=Dd)
+        # shutters with slats
+        for k in (0, ww // 2):
+            for yy in range(y + 2, y + wh - 2, 3): d.line([(x + k + 1, yy), (x + k + ww // 2 - 2, yy)], fill=D)
+        d.line([(x + ww // 2, y), (x + ww // 2, y + wh - 1)], fill=hexc('#2a2a2a'))
+        if balcony:
+            d.rectangle([x - 6, y + wh, x + ww + 5, y + wh + 3], fill=hexc('#4a3a30'))
+            for bx in range(x - 5, x + ww + 5, 3): d.line([(bx, y + wh - 8), (bx, y + wh)], fill=hexc('#2a2a2a'))
+            d.line([(x - 6, y + wh - 8), (x + ww + 5, y + wh - 8)], fill=hexc('#2a2a2a'))
+    if two:
+        for wx in (22, w // 2 - 11, w - 44): window(wx, roof_h + 12, balcony=True)
+        gy = roof_h + 62
+    else:
+        gy = roof_h + 18
+    # ground floor: door in the middle, windows beside
+    dx = w // 2 - 14
+    d.rectangle([dx - 4, gy - 4, dx + 31, h - 10], fill=D)
+    d.rectangle([dx, gy, dx + 27, h - 10], fill=Dd)
+    d.line([(dx + 14, gy), (dx + 14, h - 10)], fill=hexc('#2a2a2a'))
+    for yy in range(gy + 4, h - 12, 8):
+        d.rectangle([dx + 3, yy, dx + 11, yy + 5], outline=D); d.rectangle([dx + 17, yy, dx + 25, yy + 5], outline=D)
+    d.arc([dx - 4, gy - 16, dx + 31, gy + 12], 180, 360, fill=D, width=3)
+    for wx in (16, w - 40):
+        window(wx, gy + 4, 22, 34)
+    # a pot of flowers by the door
+    for fx in (dx - 12, dx + 38):
+        d.rectangle([fx, h - 18, fx + 8, h - 10], fill=hexc('#b5562e'))
+        d.ellipse([fx - 3, h - 28, fx + 11, h - 16], fill=hexc('#3c8a30'))
+        d.point((fx + 2, h - 25), fill=hexc(rnd.choice(['#ff4f8b', '#f5c400', '#ffffff']))); d.point((fx + 7, h - 22), fill=hexc('#ff4f8b'))
+    return outline(img)
+
+def church():
+    """Igreja de Santa Rita: white, baroque, with one bell tower and blue-trimmed windows."""
+    W, H = 200, 236
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    white, shade, trim = hexc('#fbf8f0'), hexc('#e2dccc'), hexc('#3a6ab0')
+    # nave
+    d.rectangle([10, 96, 140, H - 1], fill=white)
+    d.polygon([(4, 96), (75, 46), (146, 96)], fill=white)
+    d.polygon([(10, 96), (75, 54), (140, 96)], outline=shade)
+    # baroque curls on the gable
+    for x, sgn in ((22, 1), (128, -1)): d.arc([x - 10, 76, x + 10, 96], 180 if sgn > 0 else 270, 270 if sgn > 0 else 360, fill=shade, width=2)
+    d.ellipse([67, 66, 83, 82], outline=trim, width=2)
+    d.line([(75, 34), (75, 48)], fill=hexc('#6a6a6a')); d.line([(70, 39), (80, 39)], fill=hexc('#6a6a6a'))
+    # door and windows with blue frames
+    d.rectangle([58, H - 62, 92, H - 1], fill=trim); d.rectangle([62, H - 58, 88, H - 1], fill=hexc('#2a4a80'))
+    d.arc([58, H - 76, 92, H - 48], 180, 360, fill=trim, width=3)
+    for x in (24, 110):
+        d.rectangle([x - 2, 124, x + 17, 160], fill=trim); d.rectangle([x + 1, 127, x + 14, 157], fill=hexc('#2a4a80'))
+    # the tower (right)
+    d.rectangle([140, 40, 194, H - 1], fill=white)
+    d.rectangle([186, 40, 194, H - 1], fill=shade)
+    d.rectangle([148, 60, 186, 92], fill=hexc('#3a3a3a'))
+    d.arc([148, 50, 186, 76], 180, 360, fill=white, width=4)
+    d.ellipse([160, 70, 174, 86], fill=hexc('#c9a040'))
+    d.polygon([(136, 40), (167, 6), (198, 40)], fill=hexc('#b5562e'))
+    d.line([(167, 0), (167, 8)], fill=hexc('#6a6a6a')); d.line([(163, 3), (171, 3)], fill=hexc('#6a6a6a'))
+    for y in (110, 150, 190): d.line([(140, y), (194, y)], fill=shade)
+    d.rectangle([152, 120, 180, 140], fill=trim); d.rectangle([155, 123, 177, 137], fill=hexc('#2a4a80'))
+    # plinth
+    d.rectangle([4, H - 8, 196, H - 1], fill=hexc('#c4bfb2'))
+    return outline(img)
+
+def serra(w=512, h=176):
+    """Green mountains of the Serra do Mar, tileable sideways."""
+    rnd = random.Random(55)
+    img = Image.new('RGBA', (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for layer, (col, base, amp) in enumerate([('#5f8f6a', 60, 40), ('#3f7a46', 100, 36), ('#2f6a36', 136, 26)]):
+        pts = [(0, h)]
+        for x in range(0, w + 1, 4):
+            y = base - amp * (0.5 + 0.5 * math.sin(x / w * math.pi * 2 * (2 + layer) + layer)) - 10 * math.sin(x / w * math.pi * 2 * 7 + layer * 2)
+            pts.append((x, y))
+        pts.append((w, h))
+        d.polygon(pts, fill=hexc(col))
+        for _ in range(500):
+            x = rnd.randint(0, w - 1); y = rnd.randint(int(base - amp), h - 1)
+            if img.getpixel((x, y))[:3] == hexc(col)[:3]:
+                d.ellipse([x - 3, y - 2, x + 3, y + 2], fill=hexc(['#4f8a5a', '#2f6a3a', '#3f7a40'][layer]))
+    return img
+
+def waterfall():
+    """Cachoeira do Tobogã: a long sloping rock where the water slides down. 2 frames."""
+    W, H = 160, 288
+    img = Image.new('RGBA', (W * 2, H), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        rnd = random.Random(8)
+        # forest on both sides
+        for _ in range(140):
+            x = rnd.choice([rnd.randint(0, 36), rnd.randint(124, 159)]); y = rnd.randint(0, H - 60)
+            d.ellipse([x - 9, y - 7, x + 9, y + 7], fill=hexc(rnd.choice(['#2f6b2a', '#3c7a30', '#4f9438'])))
+        # the smooth dark rock slab
+        d.polygon([(40, 0), (120, 0), (128, H - 56), (32, H - 56)], fill=hexc('#5a5650'))
+        d.polygon([(46, 0), (70, 0), (60, H - 56), (40, H - 56)], fill=hexc('#6c675f'))
+        # water sheet with moving streaks
+        d.polygon([(56, 0), (104, 0), (110, H - 56), (50, H - 56)], fill=hexc('#7fc0d8', 210))
+        for k in range(26):
+            y = (k * 11 + fr * 6) % (H - 60)
+            x = 60 + (k * 17) % 40
+            d.line([(x, y), (x + 1, y + 8)], fill=hexc('#e8f8ff', 230))
+        # the pool at the bottom
+        d.ellipse([16, H - 70, 144, H - 2], fill=hexc('#3f9ab8'))
+        d.ellipse([28, H - 64, 132, H - 12], fill=hexc('#5ab0c8'))
+        for k in range(10):
+            x = 50 + (k * 13 + fr * 5) % 60
+            d.arc([x - 6, H - 58, x + 6, H - 50], 0, 180, fill=hexc('#ffffff'))
+        f = outline(f)
+        img.alpha_composite(f, (fr * W, 0))
+    return img
+
+def escuna(hull, stripe):
+    """A Paraty schooner, side view from a bit above: colourful hull, two masts, awning."""
+    W, H = 136, 84
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    # masts and rigging
+    for x in (46, 92):
+        d.line([(x, 2), (x, 52)], fill=hexc('#6b4226'), width=2)
+    d.line([(46, 4), (8, 54)], fill=hexc('#3a3a3a')); d.line([(92, 4), (130, 54)], fill=hexc('#3a3a3a'))
+    for x in range(10, 128, 18): d.point((x, 14), fill=hexc(rnd_flag(x)))
+    d.line([(8, 14), (128, 14)], fill=hexc('#3a3a3a'))
+    # awning over the deck
+    d.rectangle([30, 34, 108, 40], fill=hexc('#f4f1ea'))
+    for x in range(30, 108, 8): d.rectangle([x, 34, x + 3, 40], fill=hexc(stripe))
+    d.line([(34, 40), (34, 54)], fill=hexc('#6b4226')); d.line([(104, 40), (104, 54)], fill=hexc('#6b4226'))
+    # hull
+    d.polygon([(2, 50), (134, 50), (124, 74), (14, 74)], fill=hexc(hull))
+    d.rectangle([6, 50, 130, 54], fill=hexc('#ffffff'))
+    d.line([(14, 64), (124, 64)], fill=hexc(stripe), width=3)
+    d.polygon([(124, 50), (134, 44), (134, 50)], fill=hexc(hull))
+    for x in (40, 60, 80, 100): d.ellipse([x, 56, x + 5, 61], fill=hexc('#2a2a2a'))
+    return outline(img)
+
+def rnd_flag(x):
+    return ['#e8584a', '#f5c400', '#2f8a4a', '#3a6ab0', '#ffffff'][(x // 18) % 5]
+
+def canoe():
+    img = Image.new('RGBA', (72, 20), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.polygon([(2, 8), (70, 8), (62, 18), (10, 18)], fill=hexc('#2f8a8a'))
+    d.rectangle([4, 7, 68, 9], fill=hexc('#f5c400'))
+    d.line([(20, 12), (52, 12)], fill=hexc('#e8584a'))
+    d.line([(46, 2), (58, 16)], fill=hexc('#8a6440'), width=2)
+    return outline(img)
+
+def hummingbird():
+    """Beija-flor, hovering, 2 frames of 16x12."""
+    img = Image.new('RGBA', (32, 12), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (16, 12), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([4, 4, 11, 9], fill=hexc('#2fa88a')); d.ellipse([9, 3, 13, 7], fill=hexc('#2f8ad0'))
+        d.line([(13, 5), (16, 6)], fill=hexc('#1a1a1a'))
+        d.line([(1, 7), (4, 7)], fill=hexc('#1f6a5a'))
+        if fr == 0: d.polygon([(6, 5), (3, 0), (9, 2)], fill=hexc('#bfe8e0', 200))
+        else: d.polygon([(6, 7), (3, 11), (9, 10)], fill=hexc('#bfe8e0', 200))
+        d.point((7, 7), fill=hexc('#e8584a'))
+        img.alpha_composite(f, (fr * 16, 0))
+    return img
+
+def doces():
+    """A sweets stall: cocada and paçoca."""
+    img = Image.new('RGBA', (72, 68), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([6, 34, 65, 66], fill=hexc('#8a5a34')); d.rectangle([4, 30, 67, 36], fill=hexc('#b07a48'))
+    for i, c in enumerate(['#f4ecd8', '#c88a50', '#f4ecd8', '#e8b060', '#ffffff', '#c88a50']):
+        x = 8 + i * 9; d.rectangle([x, 26, x + 6, 31], fill=hexc(c))
+    d.rectangle([8, 2, 11, 30], fill=hexc('#6b4226')); d.rectangle([60, 2, 63, 30], fill=hexc('#6b4226'))
+    for x in range(4, 68, 8): d.polygon([(x, 2), (x + 8, 2), (x + 8, 12), (x, 12)], fill=hexc('#2f8a4a' if (x // 8) % 2 else '#f5c400'))
+    d.line([(4, 12), (67, 12)], fill=hexc('#1f6a3a'))
+    return outline(img)
+
+# ================================================================ more Rio
+def footvolley():
+    img = Image.new('RGBA', (136, 52), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for x in (4, 130): d.rectangle([x, 4, x + 2, 51], fill=hexc('#d8d8d8'))
+    d.rectangle([6, 6, 130, 24], fill=hexc('#ffffff', 60))
+    for x in range(6, 130, 5): d.line([(x, 6), (x, 24)], fill=hexc('#ffffff', 170))
+    for y in range(6, 25, 5): d.line([(6, y), (130, y)], fill=hexc('#ffffff', 170))
+    d.rectangle([6, 4, 130, 6], fill=hexc('#ffffff'))
+    return outline(img, hexc('#6a6a6a'))
+
+def canga(c1, c2):
+    img = Image.new('RGBA', (52, 28), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([2, 2, 49, 25], fill=hexc(c1))
+    for x in range(2, 50, 8): d.rectangle([x, 2, x + 3, 25], fill=hexc(c2))
+    for x in range(2, 50, 3): d.point((x, 26), fill=hexc(c1)); d.point((x, 1), fill=hexc(c1))
+    return img
+
+def sandcastle():
+    img = Image.new('RGBA', (40, 34), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    s, sd = hexc('#e6c488'), hexc('#c8a468')
+    d.rectangle([4, 16, 35, 32], fill=s)
+    for x in (4, 16, 28):
+        d.rectangle([x, 8, x + 7, 18], fill=s)
+        for k in range(0, 8, 3): d.rectangle([x + k, 5, x + k + 1, 8], fill=s)
+    d.rectangle([17, 24, 22, 32], fill=sd)
+    d.line([(20, 0), (20, 8)], fill=hexc('#6a6a6a')); d.polygon([(20, 0), (26, 2), (20, 4)], fill=hexc('#e8584a'))
+    d.line([(4, 32), (35, 32)], fill=sd)
+    return outline(img, hexc('#a88448'))
+
+def seagull():
+    img = Image.new('RGBA', (40, 14), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (20, 14), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([7, 6, 13, 9], fill=hexc('#ffffff'))
+        d.point((14, 7), fill=hexc('#f5c400'))
+        if fr == 0: d.line([(2, 2), (7, 7), (10, 6), (13, 7), (18, 2)], fill=hexc('#4a4a4a'), width=1)
+        else: d.line([(2, 9), (7, 7), (10, 6), (13, 7), (18, 9)], fill=hexc('#4a4a4a'), width=1)
+        img.alpha_composite(f, (fr * 20, 0))
+    return img
+
+def streetlamp():
+    img = Image.new('RGBA', (20, 72), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([9, 12, 10, 71], fill=hexc('#3a3a42'))
+    d.rectangle([6, 66, 13, 71], fill=hexc('#3a3a42'))
+    d.line([(10, 12), (16, 6)], fill=hexc('#3a3a42'))
+    d.ellipse([12, 3, 19, 10], fill=hexc('#fff2c0'))
+    return outline(img)
+
+def globe_cart():
+    """The Biscoito Globo / Mate vendor's barrels."""
+    img = Image.new('RGBA', (30, 30), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([2, 10, 13, 28], fill=hexc('#c0c4c8')); d.ellipse([2, 6, 13, 13], fill=hexc('#d8dce0'))
+    d.text((4, 16), 'M', fill=hexc('#2f8a4a'))
+    d.rectangle([16, 4, 28, 28], fill=hexc('#f4f1ea'))
+    for y in range(6, 28, 5): d.ellipse([18, y, 26, y + 3], fill=hexc('#e8c070'))
+    d.line([(16, 4), (28, 4)], fill=hexc('#2f6ab0'), width=2)
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1254,4 +1523,28 @@ if __name__ == '__main__':
     save(goal_top(), 'br-goal.png')
     save(ball(), 'br-ball.png')
     save(gondola(), 'br-gondola.png')
+    save(pe_de_moleque(), 'br-stones.png')
+    save(colonial(1, '#2f6ab0'), 'br-casa-blue.png')
+    save(colonial(2, '#f5b400'), 'br-casa-yellow.png')
+    save(colonial(3, '#2f8a4a', two=True), 'br-sobrado-green.png')
+    save(colonial(4, '#c0392b', two=True), 'br-sobrado-red.png')
+    save(colonial(5, '#8a4ab0'), 'br-casa-purple.png')
+    save(colonial(6, '#2fa8a8', two=True), 'br-sobrado-teal.png')
+    save(church(), 'br-church.png')
+    save(serra(), 'br-serra.png')
+    save(waterfall(), 'br-waterfall.png')
+    save(escuna('#e8584a', '#f5c400'), 'br-escuna-a.png')
+    save(escuna('#2f6ab0', '#ffffff'), 'br-escuna-b.png')
+    save(escuna('#f5c400', '#2f8a4a'), 'br-escuna-c.png')
+    save(canoe(), 'br-canoe.png')
+    save(hummingbird(), 'br-hummingbird.png')
+    save(doces(), 'br-doces.png')
+    save(footvolley(), 'br-footvolley.png')
+    save(canga('#e8584a', '#f5c400'), 'br-canga-a.png')
+    save(canga('#2f8ad0', '#ffffff'), 'br-canga-b.png')
+    save(canga('#2f8a4a', '#f5c400'), 'br-canga-c.png')
+    save(sandcastle(), 'br-sandcastle.png')
+    save(seagull(), 'br-seagull.png')
+    save(streetlamp(), 'br-lamp.png')
+    save(globe_cart(), 'br-globe.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

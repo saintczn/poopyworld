@@ -14,6 +14,7 @@ import { SurfScene } from './scenes/SurfScene';
 import { SnowScene } from './scenes/SnowScene';
 import { BrasilScene } from './scenes/BrasilScene';
 import { PenaltyScene } from './scenes/PenaltyScene';
+import { ParatyScene } from './scenes/ParatyScene';
 import { FlightScene } from './scenes/FlightScene';
 import { MapScene } from './scenes/MapScene';
 import { DEFAULT_LOOK, paintLook, splitSheet, type Look } from './characters/look';
@@ -47,7 +48,7 @@ async function startGame() {
     backgroundColor: '#2d4a2b',
     physics: { default: 'arcade', arcade: { debug: false } },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, GardenScene, HouseScene, VillageScene, PuckScene, BitterbalRush, ManorGrounds, ManorScene, BaliScene, CasaScene, SurfScene, SnowScene, BrasilScene, PenaltyScene, FlightScene, MapScene],
+    scene: [BootScene, GardenScene, HouseScene, VillageScene, PuckScene, BitterbalRush, ManorGrounds, ManorScene, BaliScene, CasaScene, SurfScene, SnowScene, BrasilScene, PenaltyScene, ParatyScene, FlightScene, MapScene],
   });
   (window as unknown as { __game: Phaser.Game }).__game = game; // handy for testing
   // The boot scene waits for the first look before opening the garden.

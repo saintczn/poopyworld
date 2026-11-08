@@ -19,7 +19,7 @@ export const ben = { x: 23.6, y: 21.2 };
 
 export const palms: Array<[string, number, number]> = [
   ['bali-palm-a', 3.4, 14.2], ['bali-palm-c', 9.0, 14.0], ['bali-palm-b', 16.4, 14.2], ['bali-palm-a', 25.0, 14.0],
-  ['bali-palm-c', 32.4, 14.2], ['bali-palm-b', 41.0, 14.6], ['bali-palm-a', 44.6, 18.6],
+  ['bali-palm-c', 32.4, 14.2], ['bali-palm-b', 41.0, 14.6], ['bali-palm-a', 49.6, 19.8],
 ];
 /** Toucans sit in these palms (index into palms). */
 export const toucanPalms = [1, 3, 5];
