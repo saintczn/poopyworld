@@ -41,13 +41,10 @@ export class PuckScene extends WorldScene {
       this.interactables.push({
         id: cab.key, at: { x: cab.x, y: 166 }, who: cab.title, lines: [],
         action: cab.game
-          ? () => this.say(cab.title, [`Beste score: ${best}.`])
-          : () => this.say(cab.title, ['Het scherm knippert: "BINNENKORT".', 'Dit spel komt in een volgende update.']),
+          ? () => this.say(cab.title, [`${cab.title}! Beste score: ${best}.`, 'Femke, Ricardo en Lotte schuiven aan. Spelen!'], () => this.travelTo(cab.game!))
+          : () => this.say(cab.title, ['Het scherm knippert: "BINNENKORT".']),
       });
     }
-    // starting the game: a second action on the Bitterbal Rush cabinet
-    const rush = this.interactables.find((i) => i.id === 'cab-0')!;
-    rush.action = () => this.startRush();
 
     // bar on the right
     this.place('counter-run', 392, 214, [168, 24]);
@@ -65,14 +62,10 @@ export class PuckScene extends WorldScene {
       { id: 'prizes', at: { x: 96, y: 336 }, who: 'Prijzenbalie', lines: [`Je hebt ${save.tickets} tickets.`, 'Straks kun je tickets hier inwisselen voor stickers, kleding en meubels.'] },
     );
     // a regular at the bar
-    this.addVisitor('Barkeeper Mo', randomLook(rng(7)), [{ x: 360, y: 186 }, { x: 420, y: 186 }], () => ['Welkom bij PUCK!', 'Bitterbal Rush is het populairst. Femke is er heel goed in. Zegt ze zelf.'], 30);
+    this.addVisitor('Barkeeper Mo', randomLook(rng(7)), [{ x: 360, y: 186 }, { x: 420, y: 186 }], () => ['Welkom bij PUCK!', 'Vier kasten, vier spellen. Bitterbal Rush, Geitenchaos, Gladde Paniek en Aardbeien Ontsnapping.', 'Femke is overal heel goed in. Zegt ze zelf.'], 30);
 
     this.ambient = new Ambient(this, SPEC.map, lights, [], undefined, true);
     return { x: 256, y: 370, facing: 'up' };
-  }
-
-  private startRush() {
-    this.travelTo('bitterbal-rush');
   }
 
   /** Fades out and starts a mini-game scene (not a walkable place). */

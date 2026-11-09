@@ -1,9 +1,9 @@
 /** PUCK Arcade: the cabinets, the bar, and the tickets/high scores you collect. */
-export const CABINETS = [
+export const CABINETS: Array<{ key: string; game: string | null; title: string; x: number }> = [
   { key: 'cab-0', game: 'bitterbal-rush', title: 'Bitterbal Rush', x: 96 },
-  { key: 'cab-1', game: null, title: 'Goat Mayhem', x: 144 },
-  { key: 'cab-2', game: null, title: 'Slippery Panic', x: 192 },
-  { key: 'cab-3', game: null, title: 'Strawberry Escape', x: 240 },
+  { key: 'cab-1', game: 'goat-mayhem', title: 'Geitenchaos', x: 144 },
+  { key: 'cab-2', game: 'slippery-panic', title: 'Gladde Paniek', x: 192 },
+  { key: 'cab-3', game: 'strawberry-escape', title: 'Aardbeien Ontsnapping', x: 240 },
 ];
 
 export const OPPONENTS = [

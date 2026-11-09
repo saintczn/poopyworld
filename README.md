@@ -82,6 +82,17 @@ plein. Verder: Dona Lurdes met cocada en paçoca, kolibries bij de bloemen, en w
 - **Kalaboka**: Gilly zegt het vaak, en een oude schoolvriendin in Heartwood noemt je nog steeds zo.
 - Op Bali staat nu een **kotsmonument**. Wij noemen geen namen.
 
+## PUCK: vier partyspellen
+
+Alle vier de kasten in PUCK werken nu, steeds jij tegen Femke, Ricardo en Lotte:
+
+- **Bitterbal Rush**: vang vallende bitterballen (goud = 3, mosterd = duizelig).
+- **Geitenchaos**: geiten rennen van je weg; drijf ze je eigen hok in. Stelen mag.
+- **Gladde Paniek**: spiegelglad, smeltend ijs; duw de anderen het water in. Drie rondes.
+- **Aardbeien Ontsnapping**: pak M&M's terwijl boze aardbeien op je jagen.
+
+Je verdient tickets en de beste score per spel wordt bewaard.
+
 ## Kaart
 
 Met **M** open je de wereldkaart: waar je bent, wat je volgende doel is (met een uitroepteken op de kaart)

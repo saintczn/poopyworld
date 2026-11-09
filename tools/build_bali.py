@@ -1460,6 +1460,51 @@ def globe_cart():
     d.line([(16, 4), (28, 4)], fill=hexc('#2f6ab0'), width=2)
     return outline(img)
 
+# ================================================================ PUCK party games
+def strawberry():
+    """An angry strawberry, 2 frames of 30x32 (hop)."""
+    img = Image.new('RGBA', (60, 32), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (30, 32), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        y0 = 6 if fr == 0 else 4
+        d.polygon([(4, y0 + 6), (26, y0 + 6), (24, y0 + 16), (15, y0 + 26), (6, y0 + 16)], fill=hexc('#d8282a'))
+        d.ellipse([3, y0 + 2, 27, y0 + 18], fill=hexc('#e8383a'))
+        d.ellipse([6, y0 + 4, 14, y0 + 10], fill=hexc('#f86a6a'))
+        for x, y in [(8, 14), (14, 12), (20, 14), (11, 19), (17, 19), (14, 24), (23, 18), (6, 18)]:
+            d.point((x, y + y0 - 4), fill=hexc('#ffe27a'))
+        # leaves
+        for dx in (-7, -3, 1, 5):
+            d.polygon([(15, y0 + 3), (15 + dx, y0 - 3), (15 + dx + 3, y0 + 2)], fill=hexc('#3c8a30'))
+        # angry face
+        d.line([(9, y0 + 9), (13, y0 + 11)], fill=hexc('#1a1a1a')); d.line([(21, y0 + 9), (17, y0 + 11)], fill=hexc('#1a1a1a'))
+        d.point((11, y0 + 12), fill=hexc('#ffffff')); d.point((19, y0 + 12), fill=hexc('#ffffff'))
+        d.arc([11, y0 + 15, 19, y0 + 21], 200, 340, fill=hexc('#1a1a1a'))
+        # feet
+        fx = 2 if fr == 0 else -2
+        d.line([(10 + fx, y0 + 24), (9 + fx, 31)], fill=hexc('#2a1a1a')); d.line([(20 - fx, y0 + 24), (21 - fx, 31)], fill=hexc('#2a1a1a'))
+        img.alpha_composite(outline(f), (fr * 30, 0))
+    return img
+
+def mms():
+    """M&M-style candies in 6 colours, 12x10 each."""
+    img = Image.new('RGBA', (72, 10), (0, 0, 0, 0))
+    for i, c in enumerate(['#e8282a', '#f5c400', '#2f8a4a', '#2f6ab0', '#f08a2a', '#6a3a2a']):
+        f = Image.new('RGBA', (12, 10), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([1, 1, 10, 8], fill=hexc(c)); d.ellipse([2, 2, 6, 4], fill=(255, 255, 255, 110))
+        d.text((3, -1), 'm', fill=hexc('#ffffff'))
+        img.alpha_composite(outline(f), (i * 12, 0))
+    return img
+
+def pen(colour):
+    """A small fenced pen corner, 112x88, open on one side (drawn open at the bottom)."""
+    img = Image.new('RGBA', (112, 88), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([4, 4, 107, 83], fill=hexc(colour, 70))
+    for x in range(2, 110, 12): d.rectangle([x, 0, x + 4, 12], fill=hexc('#8a6440'))
+    for y in range(2, 86, 12):
+        d.rectangle([0, y, 4, y + 8], fill=hexc('#8a6440')); d.rectangle([107, y, 111, y + 8], fill=hexc('#8a6440'))
+    d.rectangle([0, 3, 111, 5], fill=hexc('#6b4226'))
+    return img
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1547,4 +1592,6 @@ if __name__ == '__main__':
     save(seagull(), 'br-seagull.png')
     save(streetlamp(), 'br-lamp.png')
     save(globe_cart(), 'br-globe.png')
+    save(strawberry(), 'bali-strawberry.png')
+    save(mms(), 'bali-mms.png')
     for k, im in snow_assets().items(): save(im, k + '.png')
