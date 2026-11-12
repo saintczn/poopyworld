@@ -1,4 +1,6 @@
 import { PHOTO_KEY } from '../content/brasil';
+import { PRIZES, CABINETS, loadPuck } from '../content/puck';
+import { askChoice } from '../ui/memories';
 import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
@@ -152,6 +154,31 @@ export class HouseScene extends WorldScene {
     this.place(name, x, bottom).setDepth(50);
   }
 
+  /** Prizes won at PUCK. */
+  private prizes() {
+    const owned = loadPuck().prizes ?? [];
+    for (const p of PRIZES) {
+      if (!owned.includes(p.id)) continue;
+      const img = p.solid ? this.place(p.tex, p.home.x, p.home.y, p.solid) : this.add.image(p.home.x, p.home.y, p.tex).setOrigin(0.5, p.wall ? 0.5 : 1).setDepth(p.depth ?? (p.wall ? 60 : p.home.y + 2));
+      if (p.id === 'arcade') {
+        this.interactables.push({
+          id: 'home-arcade', at: { x: p.home.x, y: p.home.y + 16 }, who: 'Eigen PUCK-kast', lines: [],
+          action: () => askChoice('Eigen PUCK-kast', 'Welk spel?', CABINETS.map((c) => c.title), (i) => {
+            const game = CABINETS[i]?.game;
+            if (!game) return;
+            this.registry.set('partyReturn', { scene: 'house', arrive: { x: p.home.x, y: p.home.y + 24, facing: 'up' } });
+            this.player.halt();
+            this.cameras.main.fadeOut(250);
+            this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start(game));
+          }),
+        });
+      } else {
+        this.interactables.push({ id: `prize-${p.id}`, at: { x: p.home.x, y: p.wall ? 150 : p.home.y + 12 }, who: p.name, lines: p.lines });
+      }
+      void img;
+    }
+  }
+
   /** The family photo from Copacabana, once it has been taken. */
   private familyPhoto(x: number, y: number) {
     let data: string | null = null;
@@ -177,6 +204,7 @@ export class HouseScene extends WorldScene {
     this.wallItem('painting-wide', 160, 62);
     this.wallItem('painting-small', 300, 96);
     this.familyPhoto(440, 64);
+    this.prizes();
     // against the back wall
     this.place('clock', 104, 142, [18, 10]);
     this.place('fireplace', 160, 144, [70, 16]);

@@ -1,7 +1,8 @@
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { paintRoom, roomWalls, type RoomSpec } from '../world/room';
-import { CABINETS, loadPuck } from '../content/puck';
+import { CABINETS, PRIZES, loadPuck, savePuck } from '../content/puck';
+import { askChoice } from '../ui/memories';
 import { randomLook } from '../characters/look';
 import { rng } from '../world/ground';
 
@@ -59,13 +60,31 @@ export class PuckScene extends WorldScene {
     lights.push({ x: 392, y: 190, size: 180, colour: 0xffb060, always: 0.3 });
     this.interactables.push(
       { id: 'bar', at: { x: 380, y: 250 }, who: 'Bar', lines: ['De barkeeper zet twee glazen klaar.', '"Voor jullie twee altijd het eerste drankje van het huis."'] },
-      { id: 'prizes', at: { x: 96, y: 336 }, who: 'Prijzenbalie', lines: [`Je hebt ${save.tickets} tickets.`, 'Straks kun je tickets hier inwisselen voor stickers, kleding en meubels.'] },
+      { id: 'prizes', at: { x: 96, y: 336 }, who: 'Prijzenbalie', lines: [], action: () => this.prizeCounter() },
     );
     // a regular at the bar
     this.addVisitor('Barkeeper Mo', randomLook(rng(7)), [{ x: 360, y: 186 }, { x: 420, y: 186 }], () => ['Welkom bij PUCK!', 'Vier kasten, vier spellen. Bitterbal Rush, Geitenchaos, Gladde Paniek en Aardbeien Ontsnapping.', 'Femke is overal heel goed in. Zegt ze zelf.'], 30);
 
     this.ambient = new Ambient(this, SPEC.map, lights, [], undefined, true);
     return { x: 256, y: 370, facing: 'up' };
+  }
+
+  /** Trade tickets for prizes; they show up at home. */
+  private prizeCounter() {
+    const save = loadPuck();
+    const owned = save.prizes ?? [];
+    const options = PRIZES.map((p) => `${p.name} — ${owned.includes(p.id) ? 'al van jou' : `${p.price} tickets`}`);
+    askChoice('Prijzenbalie', `Je hebt ${save.tickets} tickets. Gekochte prijzen komen thuis in de woonkamer te staan.`, options, (i) => {
+      if (i < 0) return;
+      const prize = PRIZES[i];
+      const s = loadPuck();
+      s.prizes = s.prizes ?? [];
+      if (s.prizes.includes(prize.id)) { this.say('Prijzenbalie', [`De ${prize.name.toLowerCase()} staat al bij jullie thuis.`]); return; }
+      if (s.tickets < prize.price) { this.say('Prijzenbalie', [`Daarvoor heb je ${prize.price} tickets nodig. Je hebt er ${s.tickets}.`, 'Nog een paar potjes spelen dus!']); return; }
+      s.tickets -= prize.price; s.prizes.push(prize.id); savePuck(s);
+      this.cameras.main.flash(200, 255, 230, 160);
+      this.say('Prijzenbalie', [`Gefeliciteerd! De ${prize.name.toLowerCase()} is van jullie.`, 'Hij wordt meteen thuisbezorgd. Kijk maar in de woonkamer.', `Nog ${s.tickets} tickets over.`]);
+    });
   }
 
   /** Fades out and starts a mini-game scene (not a walkable place). */

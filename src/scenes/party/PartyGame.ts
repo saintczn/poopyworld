@@ -124,7 +124,11 @@ export abstract class PartyGame extends Phaser.Scene {
 
   protected leave() {
     this.cameras.main.fadeOut(250, 20, 10, 24);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('puck', { arrive: { x: 256, y: 190, facing: 'up' } }));
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      const back = this.registry.get('partyReturn') as { scene: string; arrive: object } | null;
+      this.registry.set('partyReturn', null);
+      this.scene.start(back?.scene ?? 'puck', { arrive: back?.arrive ?? { x: 256, y: 190, facing: 'up' } });
+    });
   }
 
   /** The direction a player wants to move this frame (length 0..1). */

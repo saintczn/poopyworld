@@ -135,7 +135,11 @@ export class BitterbalRush extends Phaser.Scene {
 
   private leave() {
     this.cameras.main.fadeOut(250, 20, 10, 24);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('puck', { arrive: { x: 96, y: 180, facing: 'up' } }));
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      const back = this.registry.get('partyReturn') as { scene: string; arrive: object } | null;
+      this.registry.set('partyReturn', null);
+      this.scene.start(back?.scene ?? 'puck', { arrive: back?.arrive ?? { x: 96, y: 180, facing: 'up' } });
+    });
   }
 
   update(_t: number, dtMs: number) {

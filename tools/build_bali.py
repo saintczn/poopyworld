@@ -1596,6 +1596,44 @@ def cobweb():
     for r in (8, 15, 22, 29): d.arc([-r, -r, r, r], 0, 90, fill=(220, 220, 230, 120))
     return img
 
+# ================================================================ PUCK prizes
+def plush_turtle():
+    img = Image.new('RGBA', (26, 20), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([18, 6, 25, 13], fill=hexc('#9ad87a')); d.point((22, 8), fill=hexc('#1a1a1a')); d.point((23, 11), fill=hexc('#e8708a'))
+    for x, y in [(4, 15), (16, 15), (6, 3), (15, 3)]: d.ellipse([x - 3, y - 2, x + 3, y + 3], fill=hexc('#9ad87a'))
+    d.ellipse([2, 3, 20, 18], fill=hexc('#4f9a5a')); d.ellipse([5, 5, 17, 15], fill=hexc('#6ab870'))
+    for cx, cy in [(11, 7), (8, 11), (14, 11)]: d.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=hexc('#3f7a4a'))
+    return outline(img)
+
+def plush_goat():
+    img = Image.new('RGBA', (24, 24), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([3, 9, 20, 22], fill=hexc('#f4f1ea'))
+    for x in (5, 9, 14, 18): d.rectangle([x, 19, x + 1, 23], fill=hexc('#d8d0c0'))
+    d.ellipse([12, 2, 22, 12], fill=hexc('#fffaf0'))
+    d.line([(14, 3), (12, 0)], fill=hexc('#c8a878')); d.line([(19, 3), (21, 0)], fill=hexc('#c8a878'))
+    d.point((15, 7), fill=hexc('#1a1a1a')); d.point((19, 7), fill=hexc('#1a1a1a'))
+    d.point((17, 10), fill=hexc('#e8708a'))
+    d.rectangle([2, 12, 4, 14], fill=hexc('#ff6a8a'))   # a little bow
+    return outline(img)
+
+def dartboard():
+    img = Image.new('RGBA', (28, 30), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.polygon([(2, 6), (25, 6), (23, 17), (14, 28), (4, 17)], fill=hexc('#d8282a'))
+    d.ellipse([1, 2, 26, 20], fill=hexc('#e8383a'))
+    for r, c in ((9, '#ffffff'), (6, '#d8282a'), (3, '#ffffff'), (1, '#1a1a1a')):
+        d.ellipse([13 - r, 11 - r, 13 + r, 11 + r], fill=hexc(c))
+    for dx in (-6, -2, 2, 6): d.polygon([(13, 3), (13 + dx, -1), (13 + dx + 2, 3)], fill=hexc('#3c8a30'))
+    d.line([(17, 9), (24, 4)], fill=hexc('#6b4226')); d.polygon([(23, 3), (26, 2), (25, 5)], fill=hexc('#2f6ab0'))
+    return outline(img)
+
+def trophy():
+    img = Image.new('RGBA', (22, 30), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([5, 24, 16, 29], fill=hexc('#4a3020')); d.rectangle([9, 17, 12, 24], fill=hexc('#c9a040'))
+    d.ellipse([3, 1, 18, 17], fill=hexc('#e8c040')); d.ellipse([5, 3, 11, 8], fill=hexc('#fff0a0'))
+    for x, y in [(7, 10), (12, 6), (14, 12), (9, 13)]: d.point((x, y), fill=hexc('#a87820'))
+    d.rectangle([6, 25, 15, 26], fill=hexc('#c9a040'))
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1691,5 +1729,9 @@ if __name__ == '__main__':
     save(owl_seal(), 'hm-seal-owl.png')
     save(star_rug(), 'hm-rug.png')
     save(cobweb(), 'hm-cobweb.png')
+    save(plush_turtle(), 'bali-prize-turtle.png')
+    save(plush_goat(), 'bali-prize-goat.png')
+    save(dartboard(), 'bali-prize-dart.png')
+    save(trophy(), 'bali-prize-trophy.png')
     save(mms(), 'bali-mms.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

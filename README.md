@@ -27,6 +27,14 @@ In Heartwood Village kun je PUCK binnengaan. De rode kast speelt **Bitterbal Rus
 
 In de brievenbus bij de villa ligt een oude brief. Daarna gaat het pad aan de oostkant van de onderste straat in Heartwood open, naar het spookachtige landhuis Hollowmere. Binnen: dagboekbladzijden, een kist die je op een drukplaat duwt om het ijzeren hek te openen, een boekenkast die opzij schuift, en het eerste zegel (het Wolfzegel). Wordt vervolgd: De Lantaarnkring.
 
+## Hollowmere, hoofdstuk 2: De Lantaarnkring
+
+Na het eerste zegel komt er een tweede brief van O. H. In het landhuis loopt nu **huisbewaarder Grauw** zijn ronde
+met een lantaarn: kom je in zijn lichtbundel, dan word je eruit gegooid. Sluip naar het blauwe sterrenkleed in de
+studeerkamer: daaronder zit een luik naar de **kelder**. Daar is het pikdonker, op je eigen lantaarn na. Draai de
+spiegels zo dat de lichtstraal van de vuurschaal de maan op de stenen deur raakt, en vind het **uilenzegel**.
+Wordt vervolgd: De Klokkentoren.
+
 ## Bali
 
 In de onderste straat van Heartwood staat een bushalte naar het vliegveld. Na een korte vlucht over de kaart kom je op Bali:
@@ -91,7 +99,9 @@ Alle vier de kasten in PUCK werken nu, steeds jij tegen Femke, Ricardo en Lotte:
 - **Gladde Paniek**: spiegelglad, smeltend ijs; duw de anderen het water in. Drie rondes.
 - **Aardbeien Ontsnapping**: pak M&M's terwijl boze aardbeien op je jagen.
 
-Je verdient tickets en de beste score per spel wordt bewaard.
+Je verdient tickets en de beste score per spel wordt bewaard. Bij de **prijzenbalie** ruil je tickets in voor
+een pluche geitje, een pluche schildpad, een aardbei-dartbord, de Gouden Bitterbal-trofee en zelfs een eigen
+PUCK-kast. Alles komt thuis in de woonkamer te staan; op de eigen kast speel je alle vier de spellen vanuit huis.
 
 ## Kaart
 
