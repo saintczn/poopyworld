@@ -26,6 +26,7 @@ import { loadProfile, saveProfile, type Profile } from './characters/profile';
 import { createCharacterAnims } from './entities/Player';
 import { Creator } from './ui/creator';
 import { Hub } from './ui/hub';
+import { Book, markPlayedToday } from './ui/book';
 
 const $ = (id: string) => document.getElementById(id)!;
 let profile: Profile | null = loadProfile();
@@ -84,6 +85,7 @@ async function startGame() {
     showName();
     game.registry.set('started', true);
     game.registry.set('playerName', profile?.name ?? '');
+    markPlayedToday();
     window.focus();
     game.canvas?.focus();
   };
@@ -114,6 +116,15 @@ async function startGame() {
     hub.open(profile.name, () => { game.input.keyboard!.enabled = true; play(); });
   };
   $('hub-open').addEventListener('click', openHub);
+  const book = new Book();
+  const openBook = () => {
+    if (!profile || book.isOpen || hub.isOpen || !game.registry.get('started')) return;
+    game.registry.set('started', false);
+    game.input.keyboard!.enabled = false;
+    book.open(profile.name, () => { game.input.keyboard!.enabled = true; play(); });
+  };
+  $('book-open').addEventListener('click', openBook);
+  game.events.on('open-book', openBook);
   game.events.on('open-hub', openHub);
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && hub.isOpen) hub.close();

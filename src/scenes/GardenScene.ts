@@ -5,6 +5,8 @@ import * as G from '../content/villaGarden';
 import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, isWinter, type LightSpot } from '../world/ambient';
+import { Atmosphere } from '../world/atmosphere';
+import { decorateGarden } from '../world/festive';
 import { snowfall } from './SnowScene';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk, molTalk, simbaTalk } from '../content/family';
@@ -22,7 +24,10 @@ export class GardenScene extends WorldScene {
     super('garden');
   }
 
+  private atmo!: Atmosphere;
+
   protected build(): Arrival {
+    this.atmo = new Atmosphere(this);
     const worldW = G.MAP_W * T, worldH = G.MAP_H * T;
     this.physics.world.setBounds(0, 0, worldW, worldH);
     this.cameras.main.setBounds(0, 0, worldW, worldH).setBackgroundColor('#2d4a2b');
@@ -44,6 +49,7 @@ export class GardenScene extends WorldScene {
     const gate = this.interactables.find((i) => i.id === 'gate');
     if (gate) { gate.who = 'Naar Heartwood'; gate.lines = []; gate.action = () => this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' }); }
     this.addPetTurtle();
+    decorateGarden(this, { x: G.house.x, y: G.house.y, w: 320 }, { x: G.house.x + 80, y: G.house.y + 300 });
     const pond = this.interactables.find((i) => i.id === 'pond');
     if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
     const mailbox = this.interactables.find((i) => i.id === 'mailbox');
@@ -252,7 +258,9 @@ export class GardenScene extends WorldScene {
       const px = x * T, py = y * T;
       const pine = key.startsWith('pine');
       this.add.image(px, py - 4, 'trees', pine ? 'shadow-pine' : 'shadow-tree').setOrigin(0.5, 0.5).setAlpha(0.3).setDepth(-400);
-      this.place(key, px, py, [22, 10]);
+      const tree = this.place(key, px, py, [22, 10]);
+      const tint = this.atmo.treeTint();
+      if (tint && !pine) tree.setTint(tint);
     }
     for (const [key, x, y] of G.flowers) this.place(key, x * T, y * T);
   }

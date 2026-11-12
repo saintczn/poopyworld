@@ -103,6 +103,22 @@ Je verdient tickets en de beste score per spel wordt bewaard. Bij de **prijzenba
 een pluche geitje, een pluche schildpad, een aardbei-dartbord, de Gouden Bitterbal-trofee en zelfs een eigen
 PUCK-kast. Alles komt thuis in de woonkamer te staan; op de eigen kast speel je alle vier de spellen vanuit huis.
 
+## De wereld leeft
+
+- **Seizoenen** volgen de echte kalender: vallende bladeren en warme bomen in de herfst, sneeuw in de winter,
+  bloesem in de lente.
+- **Echt weer**: als het in Amsterdam regent, mist, onweert of sneeuwt, gebeurt dat ook in de tuin, in Heartwood
+  en bij Hollowmere (via Open-Meteo; zonder internet blijft het gewoon droog).
+- **Feestdagen**: Sinterklaas (schoen zetten bij de open haard, de volgende dag een chocoladeletter; pepernoten
+  zoeken in Heartwood), Kerst (boom met cadeautjes, op 25 december mogen ze open; lichtjes aan de villa; kerstboom
+  op het plein), Oud & Nieuw (vuurwerk), Valentijn (hartjes en rozen).
+- **Jullie eigen dagen**: vul in de Hub de verjaardagen en "samen sinds" in. Op een verjaardag hangen er ballonnen
+  en een spandoek, staat er taart met kaarsjes in de woonkamer en feliciteert iedereen je. Op jullie jubileum:
+  "X jaar samen!", hartjes en rozen.
+- **Ons Boek** (J): een plakboek dat zichzelf vult met alles wat jullie doen: dagen samen, de zegels, Bali-stats,
+  de herinneringen van de muur, de familiefoto, Paraty-stempels, PUCK-records, feestdagen, en een pagina voor jullie
+  volgende echte avontuur.
+
 ## Kaart
 
 Met **M** open je de wereldkaart: waar je bent, wat je volgende doel is (met een uitroepteken op de kaart)

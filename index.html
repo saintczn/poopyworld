@@ -101,6 +101,43 @@
   .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
   .hub-box { background: #fffaf0; border: 3px solid var(--wood); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
   .hub-box.wide { grid-column: 1 / -1; }
+  .dates-grid { display: grid; gap: 6px; }
+  .dates-grid .row input { flex: 1; min-width: 0; }
+  /* Ons Boek */
+  #book { position: fixed; inset: 0; z-index: 40; background: rgba(20, 14, 10, .72); display: grid; place-items: center; padding: 16px; overflow: auto; }
+  .book-wrap { display: grid; gap: 10px; width: min(980px, 100%); }
+  .book { display: grid; grid-template-columns: 1fr; background: #6b3f22; border: 4px solid #3a2010; border-radius: 10px; padding: 10px; box-shadow: 0 10px 0 #2a160a; }
+  .book.spread { grid-template-columns: 1fr 1fr; gap: 0; }
+  .book-page { background: #fbf3dc; background-image: linear-gradient(90deg, rgba(0,0,0,.06), transparent 6%, transparent 94%, rgba(0,0,0,.06)); min-height: 440px; padding: 18px 22px 30px; position: relative; color: #3a2a20; font-family: var(--font-body, Nunito, sans-serif); }
+  .book.spread .book-page:first-child { border-right: 2px solid #d8c8a0; }
+  .book-page h3 { font-family: var(--font-pixel); color: #8a3a1a; font-size: 22px; margin: 0 0 12px; }
+  .book-page h4 { font-family: var(--font-pixel); color: #6b3f22; margin: 14px 0 6px; }
+  .book-page footer { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-family: var(--font-pixel); color: #a89070; font-size: 12px; }
+  .book-page.empty { background-color: #f4ead0; }
+  .book-nav { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .book-nav .muted { color: #f4ecd8; }
+  .cover { text-align: center; display: grid; gap: 8px; padding-top: 30px; }
+  .cover h2 { font-family: var(--font-pixel); color: #8a3a1a; font-size: 30px; margin: 0; }
+  .cover-sub { font-family: var(--font-pixel); margin: 0; color: #a86a3a; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+  .stat { display: flex; gap: 8px; align-items: center; background: #fff8e8; border: 2px solid #e0cfa8; border-radius: 6px; padding: 6px 8px; }
+  .stat b { display: block; font-family: var(--font-pixel); font-size: 18px; color: #6b3f22; }
+  .stat span { font-size: 12px; color: #7a6a5a; }
+  canvas.pic { image-rendering: pixelated; flex: none; }
+  .seals { display: flex; gap: 12px; justify-content: center; margin: 6px 0; }
+  .seal { display: grid; justify-items: center; gap: 4px; font-family: var(--font-pixel); font-size: 12px; color: #6b3f22; min-width: 64px; }
+  .seal.missing { opacity: .35; filter: grayscale(1); }
+  .seal .q { font-size: 34px; line-height: 64px; }
+  .memories { padding-left: 18px; margin: 0; display: grid; gap: 4px; }
+  .polaroid { background: #fff; padding: 8px 8px 4px; margin: 4px auto 8px; width: fit-content; transform: rotate(-2deg); box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+  .polaroid img { display: block; width: min(300px, 70vw); image-rendering: pixelated; }
+  .polaroid figcaption { text-align: center; font-family: var(--font-pixel); font-size: 13px; padding: 4px; color: #3a2a20; }
+  .stamps { display: flex; gap: 10px; justify-content: center; }
+  .stamp { display: grid; justify-items: center; font-size: 26px; border: 2px dashed #c0392b; border-radius: 50%; width: 64px; height: 64px; align-content: center; color: #c0392b; transform: rotate(-6deg); }
+  .stamp small { font-size: 10px; font-family: var(--font-pixel); }
+  .stamp.missing { opacity: .3; border-color: #a89070; filter: grayscale(1); }
+  #book textarea { width: 100%; }
+  .small { font-size: 12px; }
   .hub-box h3 { margin: 0; font-family: var(--font-pixel); font-size: 18px; color: var(--wood); }
   .hub-box .label { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 4px 0 0; }
   .hub-box input, .hub-box textarea {
@@ -224,7 +261,8 @@
     <div class="badge panel">Poopy<span>World</span></div>
     <div class="badge panel" id="hud-name" hidden></div>
     <button class="hub-btn panel" type="button" id="hub-open">Hub <kbd>H</kbd></button>
-    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> &middot; Kaart <kbd>M</kbd> &middot; Stickers <kbd>1</kbd>-<kbd>6</kbd> &middot; Inrichten <kbd>B</kbd> (binnen) &middot; Poppetje <kbd>C</kbd></div>
+    <button class="hub-btn panel" type="button" id="book-open">Ons Boek <kbd>J</kbd></button>
+    <div class="keys panel">Lopen <kbd>WASD</kbd> / <kbd>&larr;&uarr;&darr;&rarr;</kbd> &middot; Bekijken <kbd>E</kbd> &middot; Kaart <kbd>M</kbd> &middot; Boek <kbd>J</kbd> &middot; Stickers <kbd>1</kbd>-<kbd>6</kbd> &middot; Inrichten <kbd>B</kbd> (binnen) &middot; Poppetje <kbd>C</kbd></div>
   </div>
 
   <div id="dialog" class="panel" hidden>
@@ -264,6 +302,19 @@
           <h3>Laatste check-ins</h3>
           <div id="hub-history"></div>
           <p class="muted" id="hub-stats"></p>
+        </section>
+        <section class="hub-box wide">
+          <h3>Belangrijke datums</h3>
+          <p class="muted">Op deze dagen viert de hele game feest. Alleen jullie zien dit.</p>
+          <div class="dates-grid">
+            <label class="label" for="bday1-name">Verjaardag 1</label>
+            <div class="row"><input id="bday1-name" maxlength="20" placeholder="Naam"><input id="bday1-date" type="date"></div>
+            <label class="label" for="bday2-name">Verjaardag 2</label>
+            <div class="row"><input id="bday2-name" maxlength="20" placeholder="Naam"><input id="bday2-date" type="date"></div>
+            <label class="label" for="together-date">Samen sinds</label>
+            <div class="row"><input id="together-date" type="date"></div>
+          </div>
+          <div class="row"><button class="btn" type="button" id="dates-save">Opslaan</button><span class="note" id="dates-note"></span></div>
         </section>
       </div>
     </div>

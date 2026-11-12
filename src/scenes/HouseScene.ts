@@ -1,6 +1,7 @@
 import { PHOTO_KEY } from '../content/brasil';
 import { PRIZES, CABINETS, loadPuck } from '../content/puck';
 import { askChoice } from '../ui/memories';
+import { decorateHouse } from '../world/festive';
 import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
@@ -205,6 +206,7 @@ export class HouseScene extends WorldScene {
     this.wallItem('painting-small', 300, 96);
     this.familyPhoto(440, 64);
     this.prizes();
+    decorateHouse(this as never, { tree: { x: 60, y: 222 }, shoe: { x: 184, y: 174 }, table: { x: 370, y: 262 } }, (this.registry.get('playerName') as string) || 'Poopy');
     // against the back wall
     this.place('clock', 104, 142, [18, 10]);
     this.place('fireplace', 160, 144, [70, 16]);

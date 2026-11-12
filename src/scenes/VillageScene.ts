@@ -2,6 +2,8 @@ import { TILE } from '../config';
 import * as V from '../content/heartwood';
 import { paintGround } from '../world/ground';
 import { askChoice } from '../ui/memories';
+import { Atmosphere } from '../world/atmosphere';
+import { decorateVillage } from '../world/festive';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { randomLook } from '../characters/look';
@@ -20,6 +22,7 @@ export class VillageScene extends WorldScene {
 
   protected build(): Arrival {
     const W = V.MAP_W * T, H = V.MAP_H * T;
+    const atmo = new Atmosphere(this, { area: { w: W, h: H }, snowGround: true });
     this.physics.world.setBounds(0, 0, W, H);
     this.cameras.main.setBounds(0, 0, W, H).setBackgroundColor('#2d4a2b');
     paintGround(this, 'village-ground', { w: V.MAP_W, h: V.MAP_H, dirt: V.dirt, seed: 5 });
@@ -43,7 +46,9 @@ export class VillageScene extends WorldScene {
     for (const [key, x, y] of V.trees) {
       const pine = key.startsWith('pine');
       this.add.image(x * T, y * T - 4, 'trees', pine ? 'shadow-pine' : 'shadow-tree').setAlpha(0.3).setDepth(-400);
-      this.place(key, x * T, y * T, [22, 10]);
+      const tree = this.place(key, x * T, y * T, [22, 10]);
+      const tint = atmo.treeTint();
+      if (tint && !pine) tree.setTint(tint);
     }
     for (const [key, x, y] of V.flowers) this.place(key, x * T, y * T);
 
@@ -69,6 +74,8 @@ export class VillageScene extends WorldScene {
         : ['De letters zijn bijna onleesbaar: "...ollowm..." Het pad erachter is overwoekerd met braamstruiken.', 'Je hebt geen reden om daarheen te gaan. Nog niet.']),
     });
     this.solid(0, H - 2.4 * T, W, 2.4 * T);
+
+    decorateVillage(this as never, { x: V.fountain.x * T, y: V.fountain.y * T });
 
     // the bus to the airport (and from there: Bali)
     this.place('busstop', 28.6 * T, 23.9 * T, [8, 6]);

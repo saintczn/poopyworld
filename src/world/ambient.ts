@@ -4,6 +4,7 @@
  */
 import Phaser from 'phaser';
 import { VIEW_WIDTH, VIEW_HEIGHT } from '../config';
+import { season } from './season';
 
 export type LightSpot = { x: number; y: number; size: number; flicker?: boolean; colour?: number; always?: number };
 
@@ -187,8 +188,6 @@ export class Ambient {
 
 /** Winter (December to February), or ?season=winter to try it out. */
 export function isWinter() {
-  const forced = new URLSearchParams(location.search).get('season');
-  if (forced) return forced === 'winter';
-  return [11, 0, 1].includes(new Date().getMonth());
+  return season() === 'winter';
 }
 

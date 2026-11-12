@@ -2,6 +2,7 @@
  * Hub v0: the menu side of PoopyWorld. Today's greeting, a daily check-in, the question of the day
  * and a short history. Saved in this browser until accounts exist (milestone 2).
  */
+import { loadDates, saveDates, daysTogether } from '../world/season';
 import { MOODS, questionOfTheDay } from '../content/questions';
 import { loadCatches } from '../content/fish';
 
@@ -31,6 +32,7 @@ export class Hub {
     $('hub-close').addEventListener('click', () => this.close());
     $('checkin-save').addEventListener('click', () => this.saveCheckIn());
     $('answer-save').addEventListener('click', () => this.saveAnswer());
+    $('dates-save').addEventListener('click', () => this.saveDates());
     const moods = $('moods');
     for (const [name, colour] of MOODS) {
       const b = document.createElement('button');
@@ -63,7 +65,33 @@ export class Hub {
     const caught = Object.values(fish).reduce((a, b) => a + b, 0);
     $('hub-stats').textContent = caught ? `Je hebt al ${caught} keer iets gevangen in de vijver (${Object.keys(fish).length} soorten).` : 'Tip: probeer eens te vissen bij de vijver.';
     this.renderHistory();
+    this.fillDates();
     this.root.hidden = false;
+  }
+
+  private fillDates() {
+    const d = loadDates();
+    const year = new Date().getFullYear();
+    [0, 1].forEach((i) => {
+      const b = d.birthdays[i];
+      $<HTMLInputElement>(`bday${i + 1}-name`).value = b?.name ?? '';
+      $<HTMLInputElement>(`bday${i + 1}-date`).value = b ? `${b.year ?? year}-${b.date}` : '';
+    });
+    $<HTMLInputElement>('together-date').value = d.together ?? '';
+    const days = daysTogether();
+    $('dates-note').textContent = days !== null && days >= 0 ? `Jullie zijn al ${days} dagen samen.` : '';
+  }
+
+  private saveDates() {
+    const birthdays = [1, 2].flatMap((i) => {
+      const name = $<HTMLInputElement>(`bday${i}-name`).value.trim();
+      const v = $<HTMLInputElement>(`bday${i}-date`).value;
+      return name && v ? [{ name, date: v.slice(5), year: v.slice(0, 4) }] : [];
+    });
+    const together = $<HTMLInputElement>('together-date').value || undefined;
+    saveDates({ birthdays, together });
+    const days = daysTogether();
+    $('dates-note').textContent = `Opgeslagen!${days !== null && days >= 0 ? ` Jullie zijn al ${days} dagen samen.` : ''}`;
   }
 
   close() {

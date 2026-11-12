@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { festiveGreeting } from '../world/festive';
 import { INTERACT_RANGE } from '../config';
 import { sprites } from '../assets';
 import { Player } from '../entities/Player';
@@ -31,6 +32,7 @@ export abstract class WorldScene extends Phaser.Scene {
   private keys!: Keys;
   private hint!: Phaser.GameObjects.Image;
   protected dialog = new Dialog();
+  private greeted = new Set<string>();
   private nearby: Interactable | null = null;
   private interactPressed = false;
   private escapePressed = false;
@@ -70,6 +72,9 @@ export abstract class WorldScene extends Phaser.Scene {
     kb.on('keydown-ESC', () => { if (this.fishing.isOpen) this.fishing.close(); else this.escapePressed = true; });
     // Sticker emotes on keys 1-6.
     ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.showSticker(i)));
+    kb.on('keydown-J', () => {
+      if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-book'); }
+    });
     kb.on('keydown-H', () => {
       if (this.registry.get('started') && !this.dialog.isOpen) { this.player.halt(); this.game.events.emit('open-hub'); }
     });
@@ -195,7 +200,10 @@ export abstract class WorldScene extends Phaser.Scene {
         talking = true;
         this.tweens.killTweensOf(npc);
         npc.play(`${key}-idle-${dirTo(this.player.x - npc.x, this.player.y - npc.y)}`);
-        this.say(name, talk());
+        const lines = talk();
+        const hello = festiveGreeting();
+        if (hello && !this.greeted.has(name)) { this.greeted.add(name); lines.unshift(hello); }
+        this.say(name, lines);
         this.time.delayedCall(6000, () => { talking = false; walk(); });
       };
       this.time.delayedCall(Phaser.Math.Between(1000, 3000), walk);

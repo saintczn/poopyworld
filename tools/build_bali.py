@@ -1634,6 +1634,85 @@ def trophy():
     d.rectangle([6, 25, 15, 26], fill=hexc('#c9a040'))
     return outline(img)
 
+# ================================================================ holidays
+def xmas_tree():
+    W, H = 64, 96
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([26, 78, 37, 92], fill=hexc('#6b4226'))
+    d.rectangle([18, 86, 45, 95], fill=hexc('#c0392b')); d.line([(18, 88), (45, 88)], fill=hexc('#e8c040'))
+    for i, (y0, y1, hw) in enumerate([(52, 82, 30), (30, 62, 24), (12, 40, 17)]):
+        d.polygon([(32, y0 - (y1 - y0) + 6), (32 - hw, y1), (32 + hw, y1)], fill=hexc('#2f6b2a'))
+        d.polygon([(32, y0 - (y1 - y0) + 8), (32 - hw + 6, y1 - 2), (32, y1 - 2)], fill=hexc('#3c8a36'))
+        for x in range(32 - hw + 3, 32 + hw - 2, 5): d.point((x, y1 - 1), fill=hexc('#1f4a1e'))
+    # garland and baubles
+    for y, a in ((34, 1), (56, -1), (76, 1)):
+        for k in range(-18, 19, 2): d.point((32 + k, y + (k * a) // 6), fill=hexc('#e8c040'))
+    for x, y, c in [(24, 46, '#e8282a'), (40, 40, '#2f6ab0'), (20, 68, '#e8c040'), (44, 70, '#e8282a'), (32, 58, '#ffffff'), (30, 28, '#e8282a'), (14, 80, '#2f6ab0'), (50, 80, '#e8c040')]:
+        d.ellipse([x - 2, y - 2, x + 2, y + 2], fill=hexc(c)); d.point((x - 1, y - 1), fill=hexc('#ffffff'))
+    # star
+    d.polygon([(32, 0), (34, 5), (39, 5), (35, 8), (37, 13), (32, 10), (27, 13), (29, 8), (25, 5), (30, 5)], fill=hexc('#ffe27a'))
+    return outline(img)
+
+def present(c1, c2, w=20, h=16):
+    img = Image.new('RGBA', (w + 2, h + 6), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([1, 5, w, h + 4], fill=hexc(c1))
+    d.rectangle([w // 2 - 1, 5, w // 2 + 1, h + 4], fill=hexc(c2)); d.rectangle([1, 9, w, 10], fill=hexc(c2))
+    d.ellipse([w // 2 - 6, 0, w // 2, 6], outline=hexc(c2), width=2); d.ellipse([w // 2, 0, w // 2 + 6, 6], outline=hexc(c2), width=2)
+    return outline(img)
+
+def shoe():
+    img = Image.new('RGBA', (26, 22), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.polygon([(2, 20), (2, 10), (8, 8), (14, 12), (24, 15), (24, 20)], fill=hexc('#6b4226'))
+    d.polygon([(2, 10), (8, 8), (9, 12), (3, 13)], fill=hexc('#8c5a36'))
+    d.line([(2, 20), (24, 20)], fill=hexc('#3a2010'))
+    d.line([(6, 9), (8, 0)], fill=hexc('#f08a2a'), width=3); d.line([(8, 0), (10, 2)], fill=hexc('#3c8a30'), width=2)   # a carrot for the horse
+    return outline(img)
+
+def choco_letter():
+    img = Image.new('RGBA', (30, 34), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([1, 1, 28, 32], fill=hexc('#e8e2d0')); d.rectangle([3, 3, 26, 30], fill=hexc('#6a3a1a'))
+    d.rectangle([3, 3, 26, 5], fill=hexc('#8a5a2a'))
+    return outline(img)
+
+def cake():
+    img = Image.new('RGBA', (36, 34), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([1, 26, 34, 33], fill=hexc('#f4f1ea'))
+    d.rectangle([4, 14, 31, 28], fill=hexc('#f8c8d8')); d.ellipse([4, 24, 31, 31], fill=hexc('#f8c8d8')); d.ellipse([4, 10, 31, 18], fill=hexc('#fff0f4'))
+    for x in range(5, 31, 4): d.ellipse([x, 16, x + 3, 20], fill=hexc('#fff0f4'))
+    for x, c in [(9, '#e8282a'), (17, '#2f6ab0'), (25, '#2f8a4a')]:
+        d.rectangle([x, 4, x + 1, 12], fill=hexc(c)); d.ellipse([x - 1, 0, x + 2, 4], fill=hexc('#ffb030'))
+    for x, y in [(8, 22), (14, 24), (22, 21), (27, 24)]: d.point((x, y), fill=hexc('#e8282a'))
+    return outline(img)
+
+def balloons():
+    img = Image.new('RGBA', (48, 44), (0, 0, 0, 0))
+    for i, (c, x) in enumerate([('#e8282a', 0), ('#f5c400', 16), ('#2f8ad0', 32)]):
+        f = Image.new('RGBA', (16, 44), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([2, 0, 13, 14], fill=hexc(c)); d.ellipse([4, 2, 7, 6], fill=(255, 255, 255, 140))
+        d.polygon([(7, 14), (9, 14), (8, 16)], fill=hexc(c))
+        for y in range(16, 44, 2): d.point((8 + ((y // 4) % 2), y), fill=hexc('#6a6a6a'))
+        img.alpha_composite(outline(f), (x, 0))
+    return img
+
+def heart():
+    img = Image.new('RGBA', (11, 10), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([0, 0, 5, 5], fill=hexc('#ff4f7a')); d.ellipse([5, 0, 10, 5], fill=hexc('#ff4f7a'))
+    d.polygon([(0, 3), (10, 3), (5, 9)], fill=hexc('#ff4f7a')); d.point((2, 1), fill=hexc('#ffc0d0'))
+    return img
+
+def roses():
+    img = Image.new('RGBA', (22, 34), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.polygon([(5, 20), (17, 20), (15, 33), (7, 33)], fill=hexc('#b8e0f0'))
+    for x, y in [(6, 6), (11, 3), (16, 7), (9, 11), (14, 12)]:
+        d.line([(x, y + 3), (11, 22)], fill=hexc('#3c8a30'))
+        d.ellipse([x - 3, y - 3, x + 3, y + 3], fill=hexc('#d8283a')); d.point((x - 1, y - 1), fill=hexc('#ff6a7a'))
+    return outline(img)
+
+def pepernoot():
+    img = Image.new('RGBA', (8, 7), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([0, 0, 7, 6], fill=hexc('#b8742a')); d.ellipse([1, 1, 4, 3], fill=hexc('#d8944a'))
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1733,5 +1812,16 @@ if __name__ == '__main__':
     save(plush_goat(), 'bali-prize-goat.png')
     save(dartboard(), 'bali-prize-dart.png')
     save(trophy(), 'bali-prize-trophy.png')
+    save(xmas_tree(), 'hm-xmas-tree.png')
+    save(present('#e8282a', '#f5c400'), 'hm-present-a.png')
+    save(present('#2f6ab0', '#ffffff', 16, 12), 'hm-present-b.png')
+    save(present('#2f8a4a', '#e8282a', 14, 18), 'hm-present-c.png')
+    save(shoe(), 'hm-shoe.png')
+    save(choco_letter(), 'hm-choco.png')
+    save(cake(), 'hm-cake.png')
+    save(balloons(), 'hm-balloons.png')
+    save(heart(), 'hm-heart.png')
+    save(roses(), 'hm-roses.png')
+    save(pepernoot(), 'hm-pepernoot.png')
     save(mms(), 'bali-mms.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

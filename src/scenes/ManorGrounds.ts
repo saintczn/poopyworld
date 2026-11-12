@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Atmosphere } from '../world/atmosphere';
 import { TILE } from '../config';
 import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
@@ -17,6 +18,7 @@ export class ManorGrounds extends WorldScene {
   }
 
   protected build(): Arrival {
+    new Atmosphere(this);
     this.physics.world.setBounds(0, 0, W * T, H * T);
     this.cameras.main.setBounds(0, 0, W * T, H * T).setBackgroundColor('#1c241c');
     paintGround(this, 'manor-ground', {
