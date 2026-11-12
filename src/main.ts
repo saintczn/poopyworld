@@ -8,6 +8,7 @@ import { PuckScene } from './scenes/PuckScene';
 import { BitterbalRush } from './scenes/BitterbalRush';
 import { ManorGrounds } from './scenes/ManorGrounds';
 import { ManorScene } from './scenes/ManorScene';
+import { CellarScene } from './scenes/CellarScene';
 import { BaliScene } from './scenes/BaliScene';
 import { CasaScene } from './scenes/CasaScene';
 import { SurfScene } from './scenes/SurfScene';
@@ -51,7 +52,7 @@ async function startGame() {
     backgroundColor: '#2d4a2b',
     physics: { default: 'arcade', arcade: { debug: false } },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, GardenScene, HouseScene, VillageScene, PuckScene, BitterbalRush, ManorGrounds, ManorScene, BaliScene, CasaScene, SurfScene, SnowScene, BrasilScene, PenaltyScene, ParatyScene, GoatMayhem, SlipperyPanic, StrawberryEscape, FlightScene, MapScene],
+    scene: [BootScene, GardenScene, HouseScene, VillageScene, PuckScene, BitterbalRush, ManorGrounds, ManorScene, CellarScene, BaliScene, CasaScene, SurfScene, SnowScene, BrasilScene, PenaltyScene, ParatyScene, GoatMayhem, SlipperyPanic, StrawberryEscape, FlightScene, MapScene],
   });
   (window as unknown as { __game: Phaser.Game }).__game = game; // handy for testing
   // The boot scene waits for the first look before opening the garden.

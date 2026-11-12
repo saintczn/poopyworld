@@ -1505,6 +1505,97 @@ def pen(colour):
     d.rectangle([0, 3, 111, 5], fill=hexc('#6b4226'))
     return img
 
+# ================================================================ Hollowmere, chapter 2
+def mirror_stand():
+    """A tall mirror on a pivot, 2 frames: '/' and '\\' (seen from the front-top). 32x44."""
+    img = Image.new('RGBA', (64, 44), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (32, 44), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.ellipse([6, 36, 26, 43], fill=hexc('#3a3030'))
+        d.rectangle([14, 26, 17, 38], fill=hexc('#6b5a40'))
+        if fr == 0: pts = [(4, 26), (12, 30), (28, 6), (20, 2)]
+        else: pts = [(28, 26), (20, 30), (4, 6), (12, 2)]
+        d.polygon(pts, fill=hexc('#c9a040'))
+        inner = [(p[0] + (2 if p[0] < 16 else -2), p[1] + (1 if p[1] < 16 else -1)) for p in pts]
+        d.polygon(inner, fill=hexc('#b8d8e8'))
+        d.line([inner[0], inner[2]], fill=hexc('#ffffff', 200))
+        img.alpha_composite(outline(f), (fr * 32, 0))
+    return img
+
+def moon_door():
+    """A stone door with a carved moon, 2 frames: dull and glowing. 64x80."""
+    img = Image.new('RGBA', (128, 80), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (64, 80), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.rectangle([2, 6, 61, 79], fill=hexc('#4a4450'))
+        d.pieslice([2, 0, 61, 24], 180, 360, fill=hexc('#4a4450'))
+        for y in range(12, 80, 12): d.line([(4, y), (59, y)], fill=hexc('#3a3440'))
+        for y in range(12, 80, 24): d.line([(32, y), (32, y + 12)], fill=hexc('#3a3440'))
+        c = '#e8f0ff' if fr else '#6a6470'
+        d.ellipse([18, 24, 46, 52], fill=hexc(c))
+        d.ellipse([26, 22, 50, 48], fill=hexc('#4a4450'))
+        if fr:
+            for x, y in [(14, 20), (50, 56), (12, 50), (52, 28)]: d.point((x, y), fill=hexc('#ffffff'))
+        img.alpha_composite(outline(f), (fr * 64, 0))
+    return img
+
+def brazier():
+    """A stone fire bowl with a flame, 2 frames of 28x40."""
+    img = Image.new('RGBA', (56, 40), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (28, 40), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        d.rectangle([11, 24, 16, 38], fill=hexc('#5a5450')); d.rectangle([7, 36, 20, 39], fill=hexc('#4a4440'))
+        d.pieslice([2, 14, 25, 32], 0, 180, fill=hexc('#6a6460'))
+        d.rectangle([2, 20, 25, 23], fill=hexc('#7a7470'))
+        sw = 2 if fr else -2
+        d.polygon([(6, 21), (10 + sw, 6), (14, 13), (18 - sw, 2), (22, 21)], fill=hexc('#ff8a2a'))
+        d.polygon([(9, 21), (12 + sw, 11), (15, 15), (17 - sw, 8), (19, 21)], fill=hexc('#ffe27a'))
+        img.alpha_composite(outline(f), (fr * 28, 0))
+    return img
+
+def trapdoor():
+    """A wooden trapdoor, 2 frames: closed and open (dark stairs). 48x36."""
+    img = Image.new('RGBA', (96, 36), (0, 0, 0, 0))
+    for fr in range(2):
+        f = Image.new('RGBA', (48, 36), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+        if fr == 0:
+            d.rectangle([2, 4, 45, 33], fill=hexc('#7a5230'))
+            for x in range(2, 46, 9): d.line([(x, 4), (x, 33)], fill=hexc('#5a3820'))
+            d.rectangle([2, 10, 45, 12], fill=hexc('#3a3030')); d.rectangle([2, 26, 45, 28], fill=hexc('#3a3030'))
+            d.ellipse([19, 15, 28, 23], outline=hexc('#8a8a8a'), width=2)
+        else:
+            d.rectangle([2, 4, 45, 33], fill=hexc('#120c10'))
+            for k, y in enumerate(range(8, 33, 6)): d.rectangle([4 + k, y, 43 - k, y + 2], fill=hexc('#4a4450'))
+            d.rectangle([2, 0, 45, 4], fill=hexc('#7a5230'))
+        img.alpha_composite(outline(f), (fr * 48, 0))
+    return img
+
+def owl_seal():
+    img = Image.new('RGBA', (40, 40), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([1, 1, 38, 38], fill=hexc('#a8b0c8')); d.ellipse([4, 4, 35, 35], fill=hexc('#c8d0e8'))
+    d.arc([6, 3, 22, 19], 90, 270, fill=hexc('#e8f0ff'), width=3)   # half moon
+    d.ellipse([13, 14, 27, 32], fill=hexc('#6a7090'))
+    d.polygon([(13, 16), (15, 10), (18, 15)], fill=hexc('#6a7090')); d.polygon([(27, 16), (25, 10), (22, 15)], fill=hexc('#6a7090'))
+    d.ellipse([15, 16, 19, 20], fill=hexc('#e8f0ff')); d.ellipse([21, 16, 25, 20], fill=hexc('#e8f0ff'))
+    d.point((17, 18), fill=hexc('#1a1a1a')); d.point((23, 18), fill=hexc('#1a1a1a'))
+    d.polygon([(19, 21), (21, 21), (20, 23)], fill=hexc('#e8c040'))
+    return outline(img, hexc('#3a3a50'))
+
+def star_rug():
+    img = Image.new('RGBA', (96, 60), hexc('#2a3a7a')); d = ImageDraw.Draw(img)
+    d.rectangle([3, 3, 92, 56], outline=hexc('#c9a040'), width=2)
+    for x, y in [(20, 16), (48, 30), (74, 18), (30, 44), (66, 44), (14, 34), (84, 36)]:
+        d.polygon([(x, y - 4), (x + 1, y - 1), (x + 4, y), (x + 1, y + 1), (x, y + 4), (x - 1, y + 1), (x - 4, y), (x - 1, y - 1)], fill=hexc('#e8d080'))
+    for x in range(0, 96, 3): d.point((x, 0), fill=hexc('#c9a040')); d.point((x, 59), fill=hexc('#c9a040'))
+    return img
+
+def cobweb():
+    img = Image.new('RGBA', (32, 32), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for a in range(0, 91, 18):
+        d.line([(0, 0), (int(31 * math.cos(math.radians(a))), int(31 * math.sin(math.radians(a))))], fill=(220, 220, 230, 140))
+    for r in (8, 15, 22, 29): d.arc([-r, -r, r, r], 0, 90, fill=(220, 220, 230, 120))
+    return img
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1593,5 +1684,12 @@ if __name__ == '__main__':
     save(streetlamp(), 'br-lamp.png')
     save(globe_cart(), 'br-globe.png')
     save(strawberry(), 'bali-strawberry.png')
+    save(mirror_stand(), 'hm-mirror.png')
+    save(moon_door(), 'hm-moondoor.png')
+    save(brazier(), 'hm-brazier.png')
+    save(trapdoor(), 'hm-trapdoor.png')
+    save(owl_seal(), 'hm-seal-owl.png')
+    save(star_rug(), 'hm-rug.png')
+    save(cobweb(), 'hm-cobweb.png')
     save(mms(), 'bali-mms.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

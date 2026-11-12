@@ -2,7 +2,8 @@ import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { paintRoom, roomWalls, type RoomSpec } from '../world/room';
-import { loadMystery, saveMystery, PAGES, SEAL_FOUND } from '../content/mystery';
+import { loadMystery, saveMystery, PAGES, SEAL_FOUND, GRAUW, TRAPDOOR } from '../content/mystery';
+import type { Look } from '../characters/look';
 
 /**
  * Inside Hollowmere Manor. The hall (left) and Odile's study (right) are split by a wall with an iron gate.
@@ -17,6 +18,12 @@ const DIVIDER = { x: 416, w: 32 };
 const GATE = { y0: 232, y1: 296 };
 const PLATE = { x: 372, y: 264 };
 const SHELF = { x: 640, y: 142 };
+const CONE_LEN = 120, CONE_HALF = 0.5;
+/** Grauw's round: through the hall, through the gate, around the study and back. */
+const ROUTE: Array<{ x: number; y: number; wait?: number }> = [
+  { x: 110, y: 210, wait: 1.6 }, { x: 330, y: 210 }, { x: 380, y: 268 }, { x: 470, y: 268 }, { x: 690, y: 240, wait: 1.6 },
+  { x: 690, y: 350 }, { x: 480, y: 350, wait: 1.2 }, { x: 470, y: 268 }, { x: 380, y: 268 }, { x: 330, y: 340, wait: 1.4 }, { x: 110, y: 340 },
+];
 
 export class ManorScene extends WorldScene {
   private ambient!: Ambient;
@@ -28,6 +35,13 @@ export class ManorScene extends WorldScene {
   private shelf!: Phaser.GameObjects.Image;
   private seal?: Phaser.GameObjects.Image;
   private crateHooked = false;
+  private grauw?: Phaser.GameObjects.Sprite;
+  private grauwKey = '';
+  private cone!: Phaser.GameObjects.Graphics;
+  private grauwDir = { x: 1, y: 0 };
+  private grauwWait = 0;
+  private grauwStep = 0;
+  private grace = 0;
 
   constructor() {
     super('manor');
@@ -157,8 +171,112 @@ export class ManorScene extends WorldScene {
       c.at.x = this.crate.x; c.at.y = this.crate.y;
     });
 
+    this.chapter2(save);
+
     this.ambient = new Ambient(this, SPEC.map, lights, [], undefined, true, { tint: [150, 140, 190], night: 0.85 });
     return { x: SPEC.door.x, y: 370, facing: 'up' };
+  }
+
+  // ================================================================ chapter 2
+  private chapter2(save: ReturnType<typeof loadMystery>) {
+    if (!save.seal1) return;
+    // the star rug in the study, with the trapdoor underneath
+    const rx = 540, ry = 270;
+    const door = this.add.image(rx, ry, 'hm-trapdoor', save.trapdoor ? 1 : 0).setDepth(-460);
+    const rug = this.add.image(rx + (save.trapdoor ? 40 : 0), ry + (save.trapdoor ? 10 : 0), 'hm-rug').setDepth(-450).setAngle(save.trapdoor ? 8 : 0);
+    this.interactables.push({
+      id: 'trapdoor', at: { x: rx, y: ry + 26 }, who: 'Blauw kleed', lines: [],
+      action: () => {
+        const m = loadMystery();
+        if (!m.letter2) { this.say('Blauw kleed', TRAPDOOR.closed); return; }
+        if (!m.trapdoor) {
+          m.trapdoor = true; saveMystery(m);
+          this.tweens.add({ targets: rug, x: rx + 40, y: ry + 10, angle: 8, duration: 500 });
+          door.setFrame(1);
+          this.say('Luik', TRAPDOOR.find, () => this.travel('cellar', { x: 96, y: 360, facing: 'up' }));
+          return;
+        }
+        this.travel('cellar', { x: 96, y: 360, facing: 'up' });
+      },
+    });
+    if (!save.letter2 || save.seal2) return;
+
+    // Grauw, the caretaker, walks his round with a lantern
+    this.cone = this.add.graphics().setDepth(90005).setBlendMode(Phaser.BlendModes.ADD);
+    const look = { body: 'm', skin: 'Porcelain', eyes: 'Gray', hair: 'none', hairColor: 'Gray', beard: 'mustache', shirt: 'longsleeve', shirtColor: 'Black', legs: 'pants', legsColor: 'Charcoal', shoes: 'boots', shoesColor: 'Black' } as Look;
+    const install = this.registry.get('installLook') as (l: Look) => Promise<string>;
+    install(look).then((key) => {
+      if (!this.sys.isActive()) return;
+      this.grauwKey = key;
+      const start = ROUTE[0];
+      this.grauw = this.add.sprite(start.x, start.y, `${key}-idle`, 6).setOrigin(0.5, 61 / 64).play(`${key}-idle-down`);
+    });
+    if (!save.caught) this.time.delayedCall(600, () => this.say('Hollowmere', ['Je hoort voetstappen... en ziet het schijnsel van een lantaarn.', ...GRAUW.hint]));
+  }
+
+  private updateGrauw(dt: number) {
+    const g = this.grauw;
+    if (!g || !this.player) return;
+    const target = ROUTE[this.grauwStep];
+    const dx = target.x - g.x, dy = target.y - g.y, d = Math.hypot(dx, dy);
+    if (this.grauwWait > 0) {
+      this.grauwWait -= dt;
+      // look around while waiting
+      const t = this.time.now / 700;
+      const a = Math.atan2(this.grauwDir.y, this.grauwDir.x) + Math.sin(t) * 0.6;
+      this.drawCone(g.x, g.y - 30, a);
+      g.play(`${this.grauwKey}-idle-${this.dirName(Math.cos(a), Math.sin(a))}`, true);
+    } else if (d < 2) {
+      this.grauwStep = (this.grauwStep + 1) % ROUTE.length;
+      if (target.wait) this.grauwWait = target.wait;
+    } else {
+      const sp = 52 * dt;
+      g.x += dx / d * Math.min(sp, d); g.y += dy / d * Math.min(sp, d);
+      this.grauwDir = { x: dx / d, y: dy / d };
+      g.play(`${this.grauwKey}-walk-${this.dirName(dx, dy)}`, true);
+      this.drawCone(g.x, g.y - 30, Math.atan2(dy, dx));
+    }
+    g.setDepth(g.y);
+    // caught?
+    if (this.grace > 0) { this.grace -= dt; return; }
+    if (!this.registry.get('started')) return;
+    const px = this.player.x, py = this.player.y - 20;
+    const vx = px - g.x, vy = py - (g.y - 30), dist = Math.hypot(vx, vy);
+    if (dist < 34 || (dist < CONE_LEN && Math.abs(Phaser.Math.Angle.Wrap(Math.atan2(vy, vx) - this.coneAngle)) < CONE_HALF)) this.caught();
+  }
+
+  private coneAngle = 0;
+  private drawCone(x: number, y: number, a: number) {
+    this.coneAngle = a;
+    const c = this.cone; c.clear();
+    c.fillStyle(0xffd27a, 0.22);
+    c.beginPath(); c.moveTo(x, y);
+    for (let k = -1; k <= 1; k += 0.25) c.lineTo(x + Math.cos(a + k * CONE_HALF) * CONE_LEN, y + Math.sin(a + k * CONE_HALF) * CONE_LEN);
+    c.closePath(); c.fillPath();
+    c.fillStyle(0xffe8a0, 0.35); c.fillCircle(x, y, 7);
+  }
+
+  private dirName(x: number, y: number) {
+    return Math.abs(x) > Math.abs(y) ? (x < 0 ? 'left' : 'right') : y < 0 ? 'up' : 'down';
+  }
+
+  private caught() {
+    const m = loadMystery();
+    m.caught = (m.caught ?? 0) + 1; saveMystery(m);
+    this.grace = 3;
+    this.player.halt();
+    const t = this.add.text(this.grauw!.x, this.grauw!.y - 70, '!', { fontFamily: '"Pixelify Sans", monospace', fontSize: '22px', color: '#ff6a5a', stroke: '#1a1018', strokeThickness: 4 })
+      .setOrigin(0.5).setResolution(2).setDepth(99999);
+    this.tweens.add({ targets: t, y: t.y - 10, alpha: 0, duration: 900, delay: 400, onComplete: () => t.destroy() });
+    this.cameras.main.shake(200, 0.006);
+    this.say('Grauw', GRAUW.caught[(m.caught - 1) % GRAUW.caught.length], () => {
+      this.cameras.main.fadeOut(300);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.player.setPosition(SPEC.door.x, 360).face('up');
+        this.grace = 2;
+        this.cameras.main.fadeIn(300);
+      });
+    });
   }
 
   private shelfOpenNow() {
@@ -196,6 +314,7 @@ export class ManorScene extends WorldScene {
 
   protected tick(time: number) {
     this.ambient.update(time);
+    this.updateGrauw(this.game.loop.delta / 1000);
     if (!this.player || !this.crate) return;
     if (!this.crateHooked) {
       this.physics.add.collider(this.player, this.crate);

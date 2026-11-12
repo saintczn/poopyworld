@@ -33,7 +33,7 @@ export const PLACES: Place[] = [
 export function placeOf(scene: string): PlaceId {
   if (scene === 'garden' || scene === 'house') return 'villa';
   if (scene === 'puck' || scene === 'bitterbal-rush') return 'puck';
-  if (scene === 'manor-grounds' || scene === 'manor') return 'hollowmere';
+  if (scene === 'manor-grounds' || scene === 'manor' || scene === 'cellar') return 'hollowmere';
   if (scene === 'bali' || scene === 'casa' || scene === 'surf') return 'bali';
   if (scene === 'brasil' || scene === 'penalty') return 'brasil';
   if (scene === 'paraty') return 'paraty';
@@ -46,6 +46,8 @@ export function currentGoal(): { place: PlaceId; text: string } {
   const b = loadBali();
   if (!m.letter) return { place: 'villa', text: 'Kijk in de brievenbus bij jullie villa.' };
   if (!m.seal1) return { place: 'hollowmere', text: 'Los het raadsel van landhuis Hollowmere op (oostkant van de onderste straat in Heartwood).' };
+  if (!m.letter2) return { place: 'villa', text: 'Er zit weer post in de brievenbus bij de villa...' };
+  if (!m.seal2) return { place: 'hollowmere', text: 'Hoofdstuk 2: sluip langs Grauw naar het luik in de studeerkamer en vind het tweede zegel.' };
   if (!b.visited) return { place: 'heartwood', text: 'Neem de bus naar het vliegveld (bushalte in de onderste straat) en vlieg naar Bali.' };
   if (!b.started) return { place: 'bali', text: 'Ga langs bij Warung Bitterbal op het strand.' };
   if (!b.done) return { place: 'bali', text: `Zoek de spullen van Bram (${b.found.length}/${ITEMS.length} gevonden).` };

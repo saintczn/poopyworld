@@ -9,7 +9,7 @@ import { snowfall } from './SnowScene';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk, molTalk, simbaTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
-import { loadMystery, saveMystery, LETTER } from '../content/mystery';
+import { loadMystery, saveMystery, LETTER, LETTER2 } from '../content/mystery';
 import { askText } from '../ui/memories';
 
 const T = TILE;
@@ -53,7 +53,9 @@ export class GardenScene extends WorldScene {
       mailbox.action = () => {
         const m = loadMystery();
         if (!m.letter) { m.letter = true; saveMystery(m); this.say('Brievenbus', LETTER); }
-        else this.say('Brievenbus', m.seal1 ? ['Leeg. Maar je hebt het gevoel dat er binnenkort weer iets in komt...'] : ['De brief van O. H. heb je al gelezen.', 'Het pad naar de heuvel begint aan het eind van de onderste straat in Heartwood.', ...normal.slice(0, 0)]);
+        else if (m.seal1 && !m.letter2) { m.letter2 = true; saveMystery(m); this.say('Brievenbus', LETTER2); }
+        else if (m.seal2) this.say('Brievenbus', ['Leeg. Ergens in de verte slaat een klok.']);
+        else this.say('Brievenbus', m.letter2 ? ['De tweede brief van O. H. heb je al gelezen. Het luik zit onder het blauwe kleed in de studeerkamer.'] : ['De brief van O. H. heb je al gelezen.', 'Het pad naar de heuvel begint aan het eind van de onderste straat in Heartwood.', ...normal.slice(0, 0)]);
       };
     }
     this.addKroki();
