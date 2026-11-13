@@ -11,7 +11,8 @@ import { snowfall } from './SnowScene';
 import { GILLY_LOOK, gillyRamble } from '../content/gilly';
 import { YARA_LOOK, BEN_LOOK, yaraTalk, benTalk, molTalk, simbaTalk } from '../content/family';
 import { addCritter, GOAT, CHICKEN } from '../world/critters';
-import { loadMystery, saveMystery, LETTER, LETTER2 } from '../content/mystery';
+import { loadMystery, saveMystery, LETTER, LETTER2, LETTER4 } from '../content/mystery';
+import { starName } from './StarChamberScene';
 import { askText } from '../ui/memories';
 
 const T = TILE;
@@ -49,6 +50,11 @@ export class GardenScene extends WorldScene {
     const gate = this.interactables.find((i) => i.id === 'gate');
     if (gate) { gate.who = 'Naar Heartwood'; gate.lines = []; gate.action = () => this.travel('village', { x: 22 * T, y: 3.4 * T, facing: 'down' }); }
     this.addPetTurtle();
+    if (loadMystery().finale) {
+      // Odile's telescope: look at your star
+      this.place('telescope', G.house.x + 300, G.house.y + 262, [16, 8]);
+      this.interactables.push({ id: 'star', at: { x: G.house.x + 300, y: G.house.y + 276 }, who: 'Telescoop', lines: [], action: () => this.lookAtStar() });
+    }
     decorateGarden(this, { x: G.house.x, y: G.house.y, w: 320 }, { x: G.house.x + 80, y: G.house.y + 300 });
     const pond = this.interactables.find((i) => i.id === 'pond');
     if (pond) { pond.lines = []; pond.who = 'Vissen'; pond.action = () => this.startFishing(); }
@@ -60,7 +66,10 @@ export class GardenScene extends WorldScene {
         const m = loadMystery();
         if (!m.letter) { m.letter = true; saveMystery(m); this.say('Brievenbus', LETTER); }
         else if (m.seal1 && !m.letter2) { m.letter2 = true; saveMystery(m); this.say('Brievenbus', LETTER2); }
-        else if (m.seal2) this.say('Brievenbus', ['Leeg. Ergens in de verte slaat een klok.']);
+        else if (m.seal3 && !m.letter4) { m.letter4 = true; saveMystery(m); this.say('Brievenbus', LETTER4); }
+        else if (m.finale) this.say('Brievenbus', ['Een laatste kaartje, met een sterretje erop getekend: "Dank jullie wel. Kijk omhoog. — O."']);
+        else if (m.letter4) this.say('Brievenbus', ['De laatste brief van O. H. heb je al. Het begin is de oude put achter het landhuis.']);
+        else if (m.seal2) this.say('Brievenbus', ['Leeg. Ergens in de verte slaat een klok. "Zoek de klok die nooit stilstaat..."']);
         else this.say('Brievenbus', m.letter2 ? ['De tweede brief van O. H. heb je al gelezen. Het luik zit onder het blauwe kleed in de studeerkamer.'] : ['De brief van O. H. heb je al gelezen.', 'Het pad naar de heuvel begint aan het eind van de onderste straat in Heartwood.', ...normal.slice(0, 0)]);
       };
     }
@@ -181,6 +190,31 @@ export class GardenScene extends WorldScene {
     this.add.rectangle(0, 0, G.MAP_W * T, G.MAP_H * T, 0xf4f8ff, 0.62).setOrigin(0).setDepth(-900);
     for (const [x, y] of [[620, 600], [860, 520], [300, 640], [980, 300], [180, 300]]) this.add.image(x, y, 'snow-pile').setOrigin(0.5, 0.8).setDepth(y);
     snowfall(this, 60);
+  }
+
+  /** Looking through Odile's telescope at the star named after you. */
+  private lookAtStar() {
+    this.player.halt();
+    this.registry.set('started', false);
+    const cam = this.cameras.main;
+    const parts: Phaser.GameObjects.GameObject[] = [];
+    const g = this.add.graphics();
+    g.fillStyle(0x060818); g.fillRect(0, 0, 640, 360);
+    for (let i = 0; i < 220; i++) { g.fillStyle(0xffffff, 0.2 + (i % 7) * 0.1); g.fillRect((i * 97) % 640, (i * 61) % 360, i % 13 === 0 ? 2 : 1, i % 13 === 0 ? 2 : 1); }
+    g.lineStyle(60, 0x000000); g.strokeCircle(320, 180, 200);
+    parts.push(g);
+    const glow = this.add.image(320, 160, 'glow').setScale(0.7).setTint(0xfff4c0).setBlendMode(Phaser.BlendModes.ADD);
+    const core = this.add.image(320, 160, 'dot').setScale(3);
+    const name = this.add.text(320, 222, `De Ster van ${starName((this.registry.get('playerName') as string) || 'jullie')}`, { fontFamily: '"Pixelify Sans", monospace', fontSize: '16px', color: '#fff4c0' }).setOrigin(0.5).setResolution(2);
+    const hint = this.add.text(320, 330, 'E: terug', { fontFamily: '"Pixelify Sans", monospace', fontSize: '10px', color: '#8a90b0' }).setOrigin(0.5).setResolution(2);
+    parts.push(glow, core, name, hint);
+    this.tweens.add({ targets: glow, scale: 0.85, alpha: 0.7, duration: 1400, yoyo: true, repeat: -1 });
+    const box = this.add.container(0, 0, parts).setScrollFactor(0).setDepth(300000).setAlpha(0);
+    this.tweens.add({ targets: box, alpha: 1, duration: 600 });
+    this.time.delayedCall(500, () => this.input.keyboard!.once('keydown-E', () => {
+      this.tweens.add({ targets: box, alpha: 0, duration: 400, onComplete: () => { box.destroy(); this.registry.set('started', true); } });
+    }));
+    void cam;
   }
 
   protected tick(time: number) {

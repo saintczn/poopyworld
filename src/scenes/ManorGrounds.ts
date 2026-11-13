@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Atmosphere } from '../world/atmosphere';
+import { loadMystery, saveMystery, WELL } from '../content/mystery';
 import { TILE } from '../config';
 import { paintGround } from '../world/ground';
 import { WorldScene, type Arrival } from './WorldScene';
@@ -36,6 +37,17 @@ export class ManorGrounds extends WorldScene {
     this.solid(m.x + 288, m.y + 70, 64, 90);
     this.solid(m.x + 22, m.y + 60, 10, 120);
     this.interactables.push({ id: 'manor-door', at: { x: m.x + 80, y: m.y + 206 }, who: 'Hollowmere Manor', lines: [], action: () => this.enter() });
+
+    // the old well behind the manor (chapter 4)
+    this.place('hm-well', 19.5 * T, 9.4 * T, [44, 14]);
+    this.interactables.push({
+      id: 'well', at: { x: 19.5 * T, y: 9.8 * T }, who: 'Oude put', lines: [], action: () => {
+        const mm = loadMystery();
+        if (!mm.letter4) { this.say('Oude put', WELL.closed); return; }
+        if (!mm.rope) { mm.rope = true; saveMystery(mm); }
+        this.say('Oude put', WELL.open, () => this.travel('tunnels', { x: 72, y: 84, facing: 'down' }));
+      },
+    });
 
     // iron fence along the front, with a gap for the path
     for (let x = 1; x < W - 1; x++) if (x < 8 || x > 9) this.add.image(x * T, 11 * T, 'iron-fence').setOrigin(0).setDepth(11 * T + 28);

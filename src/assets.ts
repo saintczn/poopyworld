@@ -72,6 +72,7 @@ import plane from './assets/plane.png';
 import barstools from './assets/barstools.png';
 import mole from './assets/mole.png';
 import cat from './assets/cat.png';
+import hooded from './assets/hooded.png';
 import snowPile from './assets/snow-pile.png';
 import snowman1 from './assets/snowman-1.png';
 import snowman2 from './assets/snowman-2.png';
@@ -83,7 +84,7 @@ const baliFiles = import.meta.glob(['./assets/bali-*.png', './assets/br-*.png', 
 const bali = Object.fromEntries(Object.entries(baliFiles).map(([path, url]) => [path.split('/').pop()!.replace('.png', ''), url]));
 
 export const sheets = {
-  ...bali, worldmap, busstop, plane, barstools, mole, cat, snowglobe,
+  ...bali, worldmap, busstop, plane, barstools, mole, cat, snowglobe, hooded,
   'snow-pile': snowPile, 'snowman-1': snowman1, 'snowman-2': snowman2, 'snowman-3': snowman3,
   'house-blue': houseBlue, 'house-green': houseGreen, 'house-purple': housePurple, cottage, 'cottage-blue': cottageBlue, 'house-b': houseB, fountain, villa, manor, portraits, candles, floorlights, seals, slab, desk,
   terrain, trees, plants, flowers, wildflowers, rocks, soil, fence, house, table, trough,

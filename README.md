@@ -27,6 +27,17 @@ In Heartwood Village kun je PUCK binnengaan. De rode kast speelt **Bitterbal Rus
 
 In de brievenbus bij de villa ligt een oude brief. Daarna gaat het pad aan de oostkant van de onderste straat in Heartwood open, naar het spookachtige landhuis Hollowmere. Binnen: dagboekbladzijden, een kist die je op een drukplaat duwt om het ijzeren hek te openen, een boekenkast die opzij schuift, en het eerste zegel (het Wolfzegel). Wordt vervolgd: De Lantaarnkring.
 
+## Hollowmere, hoofdstuk 3 en 4: De Klokkentoren, De Tunnels en de Sterrenkamer
+
+Na het tweede zegel opent de staande klok in de hal een geheime trap naar de **zolder**: stoflakens, maanlicht en
+drie grammofoonplaten van Odile (eentje ligt onder een laken). De platen samen verklappen de tijd die de
+**klokkentoren** moet aangeven (pas op: de klok loopt vijf minuten voor). Zet de wijzers met de twee hendels,
+trek aan het touw, en het **kattenzegel** valt uit de klok. Daarna komt brief 4: de oude **put** achter het landhuis
+leidt naar donkere **tunnels** waar de Lantaarnkring patrouilleert. Los het raadsel bij de deur op, vind het
+**hertenzegel**, en breng alle vier de zegels naar de **Sterrenkamer**. Daar verschijnt Odile, komt Grauw
+eindelijk tot inkeer, en gaat het plafond open: er wordt een ster naar jullie vernoemd (de twee namen uit
+"Belangrijke datums" in de Hub). Daarna staat er een telescoop in de tuin van de villa om jullie ster te bekijken.
+
 ## Hollowmere, hoofdstuk 2: De Lantaarnkring
 
 Na het eerste zegel komt er een tweede brief van O. H. In het landhuis loopt nu **huisbewaarder Grauw** zijn ronde

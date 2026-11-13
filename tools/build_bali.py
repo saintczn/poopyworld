@@ -1713,6 +1713,172 @@ def pepernoot():
     d.ellipse([0, 0, 7, 6], fill=hexc('#b8742a')); d.ellipse([1, 1, 4, 3], fill=hexc('#d8944a'))
     return outline(img)
 
+# ================================================================ Hollowmere, chapters 3 and 4
+def gramophone():
+    img = Image.new('RGBA', (40, 52), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.rectangle([6, 30, 33, 50], fill=hexc('#6b4226')); d.line([(6, 30), (33, 30)], fill=hexc('#8c5a36'))
+    d.rectangle([9, 33, 30, 47], outline=hexc('#4a2c18'))
+    d.ellipse([8, 25, 31, 33], fill=hexc('#1a1a1a')); d.ellipse([17, 27, 22, 31], fill=hexc('#c0392b'))
+    d.line([(26, 28), (24, 14)], fill=hexc('#c9a040'), width=2)
+    d.polygon([(24, 14), (8, 0), (2, 6), (4, 16), (16, 18)], fill=hexc('#c9a040'))
+    d.polygon([(8, 3), (4, 8), (6, 14), (14, 15)], fill=hexc('#e8c060'))
+    d.ellipse([3, 2, 12, 16], fill=hexc('#3a2a10'))
+    return outline(img)
+
+def record(col):
+    img = Image.new('RGBA', (18, 18), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([0, 0, 17, 17], fill=hexc('#1a1a1e'))
+    for r in (7, 5): d.ellipse([9 - r, 9 - r, 8 + r, 8 + r], outline=hexc('#3a3a40'))
+    d.ellipse([6, 6, 11, 11], fill=hexc(col)); d.point((8, 8), fill=hexc('#1a1a1e'))
+    d.arc([2, 2, 15, 15], 200, 250, fill=hexc('#6a6a74'))
+    return img
+
+def gear(r, teeth, col='#a8843a'):
+    n = r * 2 + 8
+    img = Image.new('RGBA', (n, n), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    c = n / 2
+    pts = []
+    for i in range(teeth * 2):
+        a = i / (teeth * 2) * math.pi * 2
+        rr = r + 4 if i % 2 == 0 else r
+        for da in (-0.5, 0.5):
+            aa = a + da * math.pi / (teeth * 2)
+            pts.append((c + math.cos(aa) * rr, c + math.sin(aa) * rr))
+    d.polygon(pts, fill=hexc(col))
+    d.ellipse([c - r + 6, c - r + 6, c + r - 6, c + r - 6], fill=hexc('#8a6a2a'))
+    for k in range(4):
+        a = k * math.pi / 2
+        d.line([(c, c), (c + math.cos(a) * (r - 6), c + math.sin(a) * (r - 6))], fill=hexc(col), width=4)
+    d.ellipse([c - 5, c - 5, c + 5, c + 5], fill=hexc('#4a3a1a'))
+    return outline(img)
+
+def clockface():
+    n = 176
+    img = Image.new('RGBA', (n, n), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    c = n / 2
+    d.ellipse([0, 0, n - 1, n - 1], fill=hexc('#4a3a2a'))
+    d.ellipse([6, 6, n - 7, n - 7], fill=hexc('#e8dcc0'))
+    d.ellipse([12, 12, n - 13, n - 13], outline=hexc('#8a7a5a'), width=2)
+    for i in range(60):
+        a = i / 60 * math.pi * 2 - math.pi / 2
+        r0 = 70 if i % 5 else 62
+        d.line([(c + math.cos(a) * r0, c + math.sin(a) * r0), (c + math.cos(a) * 76, c + math.sin(a) * 76)], fill=hexc('#3a2a1a'), width=1 if i % 5 else 3)
+    romans = ['XII', 'I', 'II', 'III', 'IIII', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
+    for i, rn in enumerate(romans):
+        a = i / 12 * math.pi * 2 - math.pi / 2
+        x, y = c + math.cos(a) * 50, c + math.sin(a) * 50
+        w = len(rn) * 4
+        d.text((x - w / 2, y - 5), rn, fill=hexc('#3a2a1a'))
+    return outline(img)
+
+def ladder():
+    img = Image.new('RGBA', (28, 80), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    for x in (3, 22): d.rectangle([x, 0, x + 3, 79], fill=hexc('#8a6440'))
+    for y in range(6, 80, 10): d.rectangle([3, y, 25, y + 2], fill=hexc('#a8844c'))
+    return outline(img)
+
+def well():
+    img = Image.new('RGBA', (64, 72), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([4, 40, 59, 70], fill=hexc('#6c675f'))
+    d.ellipse([10, 44, 53, 62], fill=hexc('#0c0a0e'))
+    for a in range(0, 360, 30):
+        x = 32 + math.cos(math.radians(a)) * 26; y = 55 + math.sin(math.radians(a)) * 13
+        d.ellipse([x - 5, y - 4, x + 5, y + 4], fill=hexc('#8e8a80')); d.arc([x - 5, y - 4, x + 5, y + 4], 200, 330, fill=hexc('#aaa69a'))
+    for x in (8, 54): d.rectangle([x, 8, x + 3, 50], fill=hexc('#6b4226'))
+    d.polygon([(2, 12), (32, 0), (62, 12), (56, 16), (8, 16)], fill=hexc('#5a3820'))
+    d.line([(10, 22), (54, 22)], fill=hexc('#8a6440'), width=3)
+    d.line([(32, 22), (32, 42)], fill=hexc('#c8b890'))
+    d.rectangle([28, 40, 36, 48], fill=hexc('#8a6440'))
+    return outline(img)
+
+def hooded():
+    """A member of the Lantaarnkring: long dark robe and hood, carrying a lantern. 4 rows x 4 frames, 48x48."""
+    FW = 48
+    img = Image.new('RGBA', (FW * 4, FW * 4), (0, 0, 0, 0))
+    robe, robe_l, robe_d = hexc('#2a2436'), hexc('#3e3650'), hexc('#18141e')
+    for row, facing in enumerate(['down', 'up', 'left', 'right']):
+        for fr in range(4):
+            f = Image.new('RGBA', (FW, FW), (0, 0, 0, 0)); d = ImageDraw.Draw(f)
+            step = [0, 1, 0, -1][fr]; bob = 0 if fr % 2 == 0 else -1
+            cx = 24
+            # robe: a long bell shape, hem swinging
+            d.polygon([(cx - 9, 14 + bob), (cx + 9, 14 + bob), (cx + 13 + step, 46), (cx - 13 + step, 46)], fill=robe)
+            d.polygon([(cx - 6, 16 + bob), (cx, 16 + bob), (cx - 2 + step, 45), (cx - 10 + step, 45)], fill=robe_l)
+            d.line([(cx - 13 + step, 46), (cx + 13 + step, 46)], fill=robe_d)
+            # hood
+            d.ellipse([cx - 9, 2 + bob, cx + 9, 20 + bob], fill=robe)
+            d.polygon([(cx - 9, 10 + bob), (cx, -1 + bob), (cx + 9, 10 + bob)], fill=robe)
+            if facing == 'down':
+                d.ellipse([cx - 5, 8 + bob, cx + 5, 18 + bob], fill=hexc('#0a080c'))
+                d.point((cx - 2, 12 + bob), fill=hexc('#ffd27a')); d.point((cx + 2, 12 + bob), fill=hexc('#ffd27a'))
+            elif facing in ('left', 'right'):
+                sgn = -1 if facing == 'left' else 1
+                d.ellipse([cx + sgn * 2 - 4, 8 + bob, cx + sgn * 2 + 4, 18 + bob], fill=hexc('#0a080c'))
+                d.point((cx + sgn * 4, 12 + bob), fill=hexc('#ffd27a'))
+            # the lantern in one hand
+            lx = cx + (12 if facing != 'left' else -12)
+            if facing != 'up':
+                d.line([(lx, 24 + bob), (lx, 28 + bob)], fill=hexc('#3a3a3a'))
+                d.rectangle([lx - 3, 28 + bob, lx + 3, 35 + bob], fill=hexc('#c9a040'))
+                d.rectangle([lx - 2, 29 + bob, lx + 2, 34 + bob], fill=hexc('#ffe27a'))
+            # a gold lantern symbol on the chest
+            if facing == 'down': d.rectangle([cx - 1, 24 + bob, cx + 1, 27 + bob], fill=hexc('#c9a040'))
+            img.alpha_composite(outline(f, hexc('#08060a')), (fr * FW, row * FW))
+    return img
+
+def dais():
+    img = Image.new('RGBA', (120, 72), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([2, 26, 117, 70], fill=hexc('#4a4450'))
+    d.ellipse([6, 18, 113, 60], fill=hexc('#6a6470'))
+    d.ellipse([12, 22, 107, 54], outline=hexc('#8a8490'), width=2)
+    for x, y in [(30, 38), (60, 28), (90, 38), (60, 48)]:
+        d.ellipse([x - 9, y - 6, x + 9, y + 6], fill=hexc('#2a2430'))
+    for k in range(8):
+        a = k / 8 * math.pi * 2
+        d.point((60 + math.cos(a) * 44, 38 + math.sin(a) * 15), fill=hexc('#c9a040'))
+    return outline(img)
+
+def seal(kind):
+    img = Image.new('RGBA', (40, 40), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    base, ring = ('#e8a060', '#f8c890') if kind == 'cat' else ('#8ac0a0', '#b8e0c8')
+    d.ellipse([1, 1, 38, 38], fill=hexc(base)); d.ellipse([4, 4, 35, 35], fill=hexc(ring))
+    if kind == 'cat':
+        # a sun behind a black cat
+        for k in range(8):
+            a = k / 8 * math.pi * 2
+            d.line([(20 + math.cos(a) * 9, 14 + math.sin(a) * 9), (20 + math.cos(a) * 14, 14 + math.sin(a) * 14)], fill=hexc('#f5c400'), width=2)
+        d.ellipse([13, 7, 27, 21], fill=hexc('#f5c400'))
+        d.ellipse([12, 18, 28, 33], fill=hexc('#1e1c22'))
+        d.ellipse([14, 13, 26, 24], fill=hexc('#1e1c22'))
+        d.polygon([(14, 16), (14, 9), (18, 14)], fill=hexc('#1e1c22')); d.polygon([(26, 16), (26, 9), (22, 14)], fill=hexc('#1e1c22'))
+        d.point((17, 18), fill=hexc('#c8e04a')); d.point((23, 18), fill=hexc('#c8e04a'))
+        d.line([(28, 30), (32, 26), (31, 22)], fill=hexc('#1e1c22'), width=2)
+    else:
+        # a stag under a comet
+        d.line([(8, 8), (16, 12)], fill=hexc('#ffffff'), width=2); d.ellipse([15, 10, 20, 15], fill=hexc('#ffffff'))
+        d.ellipse([13, 20, 29, 30], fill=hexc('#6a4a2a'))
+        d.ellipse([22, 13, 30, 22], fill=hexc('#6a4a2a'))
+        for x, y in [(23, 13), (29, 13)]:
+            d.line([(x, y), (x - 2, y - 6)], fill=hexc('#4a3218')); d.line([(x - 1, y - 3), (x + 2, y - 7)], fill=hexc('#4a3218'))
+        for x in (15, 19, 24, 27): d.line([(x, 29), (x, 34)], fill=hexc('#4a3218'))
+        d.point((27, 17), fill=hexc('#1a1a1a'))
+    return outline(img, hexc('#3a3040'))
+
+def dust_sheet():
+    img = Image.new('RGBA', (56, 44), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.polygon([(6, 43), (2, 18), (10, 4), (46, 2), (54, 16), (50, 43)], fill=hexc('#d8d4cc'))
+    for x in (14, 26, 38): d.line([(x, 6), (x - 2, 42)], fill=hexc('#b8b4ac'))
+    d.polygon([(10, 4), (46, 2), (40, 10), (16, 12)], fill=hexc('#e8e4dc'))
+    return outline(img, hexc('#5a5650'))
+
+def round_window():
+    img = Image.new('RGBA', (64, 64), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.ellipse([0, 0, 63, 63], fill=hexc('#4a3a2a')); d.ellipse([5, 5, 58, 58], fill=hexc('#1a2440'))
+    d.ellipse([34, 12, 46, 24], fill=hexc('#f0f0e0')); d.ellipse([38, 12, 48, 22], fill=hexc('#1a2440'))
+    for x, y in [(14, 20), (22, 40), (44, 44), (18, 30), (50, 34)]: d.point((x, y), fill=hexc('#ffffff'))
+    d.line([(32, 5), (32, 58)], fill=hexc('#4a3a2a'), width=3); d.line([(5, 32), (58, 32)], fill=hexc('#4a3a2a'), width=3)
+    return outline(img)
+
 def save(img, name):
     img.save(OUT / name)
     print('wrote', name, img.size)
@@ -1823,5 +1989,20 @@ if __name__ == '__main__':
     save(heart(), 'hm-heart.png')
     save(roses(), 'hm-roses.png')
     save(pepernoot(), 'hm-pepernoot.png')
+    save(gramophone(), 'hm-gramophone.png')
+    save(record('#c0392b'), 'hm-record-a.png')
+    save(record('#2f6ab0'), 'hm-record-b.png')
+    save(record('#e8c040'), 'hm-record-c.png')
+    save(gear(40, 12), 'hm-gear-big.png')
+    save(gear(22, 8, '#b8944a'), 'hm-gear-small.png')
+    save(clockface(), 'hm-clockface.png')
+    save(ladder(), 'hm-ladder.png')
+    save(well(), 'hm-well.png')
+    save(hooded(), 'hooded.png')
+    save(dais(), 'hm-dais.png')
+    save(seal('cat'), 'hm-seal-cat.png')
+    save(seal('stag'), 'hm-seal-stag.png')
+    save(dust_sheet(), 'hm-dustsheet.png')
+    save(round_window(), 'hm-roundwindow.png')
     save(mms(), 'bali-mms.png')
     for k, im in snow_assets().items(): save(im, k + '.png')

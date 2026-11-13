@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { WorldScene, type Arrival } from './WorldScene';
 import { Ambient, type LightSpot } from '../world/ambient';
 import { paintRoom, roomWalls, type RoomSpec } from '../world/room';
-import { loadMystery, saveMystery, PAGES, SEAL_FOUND, GRAUW, TRAPDOOR } from '../content/mystery';
+import { loadMystery, saveMystery, PAGES, SEAL_FOUND, GRAUW, TRAPDOOR, CLOCK } from '../content/mystery';
 import type { Look } from '../characters/look';
 
 /**
@@ -172,6 +172,14 @@ export class ManorScene extends WorldScene {
     });
 
     this.chapter2(save);
+    this.interactables.push({
+      id: 'clock', at: { x: 200, y: 160 }, who: 'Staande klok', lines: [], action: () => {
+        const mm = loadMystery();
+        if (!mm.seal2) { this.say('Staande klok', CLOCK.normal); return; }
+        if (!mm.clockOpen) { mm.clockOpen = true; saveMystery(mm); this.say('Staande klok', CLOCK.open, () => this.travel('attic', { x: 120, y: 360, facing: 'up' })); return; }
+        this.travel('attic', { x: 120, y: 360, facing: 'up' });
+      },
+    });
 
     this.ambient = new Ambient(this, SPEC.map, lights, [], undefined, true, { tint: [150, 140, 190], night: 0.85 });
     return { x: SPEC.door.x, y: 370, facing: 'up' };

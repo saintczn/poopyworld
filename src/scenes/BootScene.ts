@@ -28,7 +28,7 @@ export class BootScene extends Phaser.Scene {
       for (let i = 0; i < n; i++) tex.add(i, 0, i * w, 0, w, h);
     }
     // walking critters drawn by code: 4 rows (down, up, left, right) x 4 frames
-    for (const [key, size, rows] of [['mole', 48, 4], ['cat', 32, 5]] as const) {
+    for (const [key, size, rows] of [['mole', 48, 4], ['cat', 32, 5], ['hooded', 48, 4]] as const) {
       const tex = this.textures.get(key);
       for (let i = 0; i < rows * 4; i++) tex.add(i, 0, (i % 4) * size, Math.floor(i / 4) * size, size, size);
       ['down', 'up', 'left', 'right'].forEach((dir, row) => {

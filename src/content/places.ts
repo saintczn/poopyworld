@@ -33,7 +33,7 @@ export const PLACES: Place[] = [
 export function placeOf(scene: string): PlaceId {
   if (scene === 'garden' || scene === 'house') return 'villa';
   if (scene === 'puck' || scene === 'bitterbal-rush') return 'puck';
-  if (scene === 'manor-grounds' || scene === 'manor' || scene === 'cellar') return 'hollowmere';
+  if (['manor-grounds', 'manor', 'cellar', 'attic', 'clocktower', 'tunnels', 'starchamber'].includes(scene)) return 'hollowmere';
   if (scene === 'bali' || scene === 'casa' || scene === 'surf') return 'bali';
   if (scene === 'brasil' || scene === 'penalty') return 'brasil';
   if (scene === 'paraty') return 'paraty';
@@ -48,6 +48,9 @@ export function currentGoal(): { place: PlaceId; text: string } {
   if (!m.seal1) return { place: 'hollowmere', text: 'Los het raadsel van landhuis Hollowmere op (oostkant van de onderste straat in Heartwood).' };
   if (!m.letter2) return { place: 'villa', text: 'Er zit weer post in de brievenbus bij de villa...' };
   if (!m.seal2) return { place: 'hollowmere', text: 'Hoofdstuk 2: sluip langs Grauw naar het luik in de studeerkamer en vind het tweede zegel.' };
+  if (!m.seal3) return { place: 'hollowmere', text: `Hoofdstuk 3: zoek de klok die nooit stilstaat, in de hal van Hollowmere.${m.clockOpen ? ` Platen gevonden: ${(m.records ?? []).length}/3.` : ''}` };
+  if (!m.letter4) return { place: 'villa', text: 'Er zit weer post in de brievenbus...' };
+  if (!m.finale) return { place: 'hollowmere', text: m.seal4 ? 'Hoofdstuk 4: breng de vier zegels naar de Sterrenkamer, aan het einde van de tunnels.' : 'Hoofdstuk 4: de oude put achter het landhuis leidt naar de tunnels. Vind het vierde zegel.' };
   if (!b.visited) return { place: 'heartwood', text: 'Neem de bus naar het vliegveld (bushalte in de onderste straat) en vlieg naar Bali.' };
   if (!b.started) return { place: 'bali', text: 'Ga langs bij Warung Bitterbal op het strand.' };
   if (!b.done) return { place: 'bali', text: `Zoek de spullen van Bram (${b.found.length}/${ITEMS.length} gevonden).` };

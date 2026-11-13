@@ -99,15 +99,16 @@ function pages(name: string): Page[] {
     html: `<div class="seals">
       <div class="seal ${m.seal1 ? '' : 'missing'}">${pic('seal-gold', 1)}<span>Wolf</span></div>
       <div class="seal ${m.seal2 ? '' : 'missing'}">${pic('hm-seal-owl', 1.6)}<span>Uil</span></div>
-      <div class="seal missing"><span class="q">?</span><span>???</span></div>
-      <div class="seal missing"><span class="q">?</span><span>???</span></div>
+      <div class="seal ${m.seal3 ? '' : 'missing'}">${m.seal3 ? pic('hm-seal-cat', 1.6) : '<span class="q">?</span>'}<span>${m.seal3 ? 'Kat' : '???'}</span></div>
+      <div class="seal ${m.seal4 ? '' : 'missing'}">${m.seal4 ? pic('hm-seal-stag', 1.6) : '<span class="q">?</span>'}<span>${m.seal4 ? 'Hert' : '???'}</span></div>
     </div>
     <div class="stats">
-      ${stat('zegels gevonden', `${(m.seal1 ? 1 : 0) + (m.seal2 ? 1 : 0)} / 4`)}
+      ${stat('zegels gevonden', `${[m.seal1, m.seal2, m.seal3, m.seal4].filter(Boolean).length} / 4`)}
       ${stat('keer betrapt door Grauw', m.caught ?? 0)}
+      ${stat('keer betrapt door de Lantaarnkring', m.tunnelCaught ?? 0)}
       ${stat('brieven van O. H.', (m.letter ? 1 : 0) + (m.letter2 ? 1 : 0))}
     </div>
-    <p class="muted">${m.seal2 ? 'Wordt vervolgd: De Klokkentoren.' : m.seal1 ? 'Er komt nog post...' : m.letter ? 'Het pad naar de heuvel wacht.' : 'Kijk eens in de brievenbus.'}</p>`,
+    <p class="muted">${m.finale ? 'Het geheim is opgelost. Boven de villa staat nu een ster met jullie naam.' : m.seal2 ? 'Het verhaal is nog niet af...' : m.seal1 ? 'Er komt nog post...' : m.letter ? 'Het pad naar de heuvel wacht.' : 'Kijk eens in de brievenbus.'}</p>`,
   });
   out.push({
     title: 'Bali',
